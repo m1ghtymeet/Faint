@@ -1,0 +1,223 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Dist|x64">
+      <Configuration>Dist</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{8900D8DD-F5DF-5679-FEF7-E14F6A56BDDA}</ProjectGuid>
+    <IgnoreWarnCompileDuplicatedFilename>true</IgnoreWarnCompileDuplicatedFilename>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>msdfgen</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Dist|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Dist|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <OutDir>msdfgen\bin\Debug-windows-x86_64\msdfgen\</OutDir>
+    <IntDir>msdfgen\bin-obj\Debug-windows-x86_64\msdfgen\</IntDir>
+    <TargetName>msdfgen</TargetName>
+    <TargetExt>.lib</TargetExt>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <OutDir>msdfgen\bin\Release-windows-x86_64\msdfgen\</OutDir>
+    <IntDir>msdfgen\bin-obj\Release-windows-x86_64\msdfgen\</IntDir>
+    <TargetName>msdfgen</TargetName>
+    <TargetExt>.lib</TargetExt>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Dist|x64'">
+    <OutDir>msdfgen\bin\Dist-windows-x86_64\msdfgen\</OutDir>
+    <IntDir>msdfgen\bin-obj\Dist-windows-x86_64\msdfgen\</IntDir>
+    <TargetName>msdfgen</TargetName>
+    <TargetExt>.lib</TargetExt>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <WarningLevel>TurnOffAllWarnings</WarningLevel>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <AdditionalIncludeDirectories>msdf-atlas-gen\include;freetype\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <MinimalRebuild>false</MinimalRebuild>
+      <StringPooling>true</StringPooling>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <AdditionalOptions>/MTd %(AdditionalOptions)</AdditionalOptions>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <ConformanceMode>true</ConformanceMode>
+      <ExternalWarningLevel>Level3</ExternalWarningLevel>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <WarningLevel>TurnOffAllWarnings</WarningLevel>
+      <AdditionalIncludeDirectories>msdf-atlas-gen\include;freetype\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <Optimization>Full</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <MinimalRebuild>false</MinimalRebuild>
+      <StringPooling>true</StringPooling>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <AdditionalOptions>/MTd %(AdditionalOptions)</AdditionalOptions>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <ConformanceMode>true</ConformanceMode>
+      <ExternalWarningLevel>Level3</ExternalWarningLevel>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Dist|x64'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <WarningLevel>TurnOffAllWarnings</WarningLevel>
+      <AdditionalIncludeDirectories>msdf-atlas-gen\include;freetype\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <Optimization>Full</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <MinimalRebuild>false</MinimalRebuild>
+      <StringPooling>true</StringPooling>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <ConformanceMode>true</ConformanceMode>
+      <ExternalWarningLevel>Level3</ExternalWarningLevel>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="msdfgen\Core\Bitmap.h" />
+    <ClInclude Include="msdfgen\Core\Bitmap.hpp" />
+    <ClInclude Include="msdfgen\Core\BitmapRef.hpp" />
+    <ClInclude Include="msdfgen\Core\Contour.h" />
+    <ClInclude Include="msdfgen\Core\DistanceMapping.h" />
+    <ClInclude Include="msdfgen\Core\EdgeColor.h" />
+    <ClInclude Include="msdfgen\Core\EdgeHolder.h" />
+    <ClInclude Include="msdfgen\Core\MSDFErrorCorrection.h" />
+    <ClInclude Include="msdfgen\Core\Projection.h" />
+    <ClInclude Include="msdfgen\Core\Range.hpp" />
+    <ClInclude Include="msdfgen\Core\SDFTransformation.h" />
+    <ClInclude Include="msdfgen\Core\Scanline.h" />
+    <ClInclude Include="msdfgen\Core\Shape.h" />
+    <ClInclude Include="msdfgen\Core\ShapeDistanceFinder.h" />
+    <ClInclude Include="msdfgen\Core\ShapeDistanceFinder.hpp" />
+    <ClInclude Include="msdfgen\Core\SignedDistance.hpp" />
+    <ClInclude Include="msdfgen\Core\Vector2.hpp" />
+    <ClInclude Include="msdfgen\Core\arithmetics.hpp" />
+    <ClInclude Include="msdfgen\Core\base.h" />
+    <ClInclude Include="msdfgen\Core\bitmap-interpolation.hpp" />
+    <ClInclude Include="msdfgen\Core\contour-combiners.h" />
+    <ClInclude Include="msdfgen\Core\edge-coloring.h" />
+    <ClInclude Include="msdfgen\Core\edge-segments.h" />
+    <ClInclude Include="msdfgen\Core\edge-selectors.h" />
+    <ClInclude Include="msdfgen\Core\equation-solver.h" />
+    <ClInclude Include="msdfgen\Core\export-svg.h" />
+    <ClInclude Include="msdfgen\Core\generator-config.h" />
+    <ClInclude Include="msdfgen\Core\msdf-error-correction.h" />
+    <ClInclude Include="msdfgen\Core\pixel-conversion.hpp" />
+    <ClInclude Include="msdfgen\Core\rasterization.h" />
+    <ClInclude Include="msdfgen\Core\render-sdf.h" />
+    <ClInclude Include="msdfgen\Core\save-bmp.h" />
+    <ClInclude Include="msdfgen\Core\save-fl32.h" />
+    <ClInclude Include="msdfgen\Core\save-rgba.h" />
+    <ClInclude Include="msdfgen\Core\save-tiff.h" />
+    <ClInclude Include="msdfgen\Core\sdf-error-estimation.h" />
+    <ClInclude Include="msdfgen\Core\shape-description.h" />
+    <ClInclude Include="msdfgen\ext\import-font.h" />
+    <ClInclude Include="msdfgen\ext\import-svg.h" />
+    <ClInclude Include="msdfgen\ext\resolve-shape-geometry.h" />
+    <ClInclude Include="msdfgen\ext\save-png.h" />
+    <ClInclude Include="msdfgen\msdfgen-ext.h" />
+    <ClInclude Include="msdfgen\msdfgen.h" />
+    <ClInclude Include="msdfgen\resource.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="msdfgen\Core\Contour.cpp" />
+    <ClCompile Include="msdfgen\Core\DistanceMapping.cpp" />
+    <ClCompile Include="msdfgen\Core\EdgeHolder.cpp" />
+    <ClCompile Include="msdfgen\Core\MSDFErrorCorrection.cpp" />
+    <ClCompile Include="msdfgen\Core\Projection.cpp" />
+    <ClCompile Include="msdfgen\Core\Scanline.cpp" />
+    <ClCompile Include="msdfgen\Core\Shape.cpp" />
+    <ClCompile Include="msdfgen\Core\contour-combiners.cpp" />
+    <ClCompile Include="msdfgen\Core\edge-coloring.cpp" />
+    <ClCompile Include="msdfgen\Core\edge-segments.cpp" />
+    <ClCompile Include="msdfgen\Core\edge-selectors.cpp" />
+    <ClCompile Include="msdfgen\Core\equation-solver.cpp" />
+    <ClCompile Include="msdfgen\Core\export-svg.cpp" />
+    <ClCompile Include="msdfgen\Core\msdf-error-correction.cpp" />
+    <ClCompile Include="msdfgen\Core\msdfgen.cpp" />
+    <ClCompile Include="msdfgen\Core\rasterization.cpp" />
+    <ClCompile Include="msdfgen\Core\render-sdf.cpp" />
+    <ClCompile Include="msdfgen\Core\save-bmp.cpp" />
+    <ClCompile Include="msdfgen\Core\save-fl32.cpp" />
+    <ClCompile Include="msdfgen\Core\save-rgba.cpp" />
+    <ClCompile Include="msdfgen\Core\save-tiff.cpp" />
+    <ClCompile Include="msdfgen\Core\sdf-error-estimation.cpp" />
+    <ClCompile Include="msdfgen\Core\shape-description.cpp" />
+    <ClCompile Include="msdfgen\ext\import-font.cpp" />
+    <ClCompile Include="msdfgen\ext\import-svg.cpp" />
+    <ClCompile Include="msdfgen\ext\resolve-shape-geometry.cpp" />
+    <ClCompile Include="msdfgen\ext\save-png.cpp" />
+    <ClCompile Include="msdfgen\main.cpp" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

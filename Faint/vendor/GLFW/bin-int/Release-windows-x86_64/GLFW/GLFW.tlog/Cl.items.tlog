@@ -1,0 +1,15 @@
+D:\C++ Projects\Hazel\Faint\vendor\GLFW\src\context.c;D:\C++ Projects\Hazel\Faint\vendor\GLFW\bin-int\Release-windows-x86_64\GLFW\context.obj
+D:\C++ Projects\Hazel\Faint\vendor\GLFW\src\egl_context.c;D:\C++ Projects\Hazel\Faint\vendor\GLFW\bin-int\Release-windows-x86_64\GLFW\egl_context.obj
+D:\C++ Projects\Hazel\Faint\vendor\GLFW\src\init.c;D:\C++ Projects\Hazel\Faint\vendor\GLFW\bin-int\Release-windows-x86_64\GLFW\init.obj
+D:\C++ Projects\Hazel\Faint\vendor\GLFW\src\input.c;D:\C++ Projects\Hazel\Faint\vendor\GLFW\bin-int\Release-windows-x86_64\GLFW\input.obj
+D:\C++ Projects\Hazel\Faint\vendor\GLFW\src\monitor.c;D:\C++ Projects\Hazel\Faint\vendor\GLFW\bin-int\Release-windows-x86_64\GLFW\monitor.obj
+D:\C++ Projects\Hazel\Faint\vendor\GLFW\src\osmesa_context.c;D:\C++ Projects\Hazel\Faint\vendor\GLFW\bin-int\Release-windows-x86_64\GLFW\osmesa_context.obj
+D:\C++ Projects\Hazel\Faint\vendor\GLFW\src\vulkan.c;D:\C++ Projects\Hazel\Faint\vendor\GLFW\bin-int\Release-windows-x86_64\GLFW\vulkan.obj
+D:\C++ Projects\Hazel\Faint\vendor\GLFW\src\wgl_context.c;D:\C++ Projects\Hazel\Faint\vendor\GLFW\bin-int\Release-windows-x86_64\GLFW\wgl_context.obj
+D:\C++ Projects\Hazel\Faint\vendor\GLFW\src\win32_init.c;D:\C++ Projects\Hazel\Faint\vendor\GLFW\bin-int\Release-windows-x86_64\GLFW\win32_init.obj
+D:\C++ Projects\Hazel\Faint\vendor\GLFW\src\win32_joystick.c;D:\C++ Projects\Hazel\Faint\vendor\GLFW\bin-int\Release-windows-x86_64\GLFW\win32_joystick.obj
+D:\C++ Projects\Hazel\Faint\vendor\GLFW\src\win32_monitor.c;D:\C++ Projects\Hazel\Faint\vendor\GLFW\bin-int\Release-windows-x86_64\GLFW\win32_monitor.obj
+D:\C++ Projects\Hazel\Faint\vendor\GLFW\src\win32_thread.c;D:\C++ Projects\Hazel\Faint\vendor\GLFW\bin-int\Release-windows-x86_64\GLFW\win32_thread.obj
+D:\C++ Projects\Hazel\Faint\vendor\GLFW\src\win32_time.c;D:\C++ Projects\Hazel\Faint\vendor\GLFW\bin-int\Release-windows-x86_64\GLFW\win32_time.obj
+D:\C++ Projects\Hazel\Faint\vendor\GLFW\src\win32_window.c;D:\C++ Projects\Hazel\Faint\vendor\GLFW\bin-int\Release-windows-x86_64\GLFW\win32_window.obj
+D:\C++ Projects\Hazel\Faint\vendor\GLFW\src\window.c;D:\C++ Projects\Hazel\Faint\vendor\GLFW\bin-int\Release-windows-x86_64\GLFW\window.obj

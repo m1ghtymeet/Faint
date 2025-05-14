@@ -1,0 +1,33 @@
+﻿cl : command line  warning D9025: overriding '/MT' with '/MTd'
+cl : command line  warning D9025: overriding '/MT' with '/MTd'
+cl : command line  warning D9025: overriding '/MT' with '/MTd'
+  Charset.cpp
+  FontGeometry.cpp
+cl : command line  warning D9025: overriding '/MT' with '/MTd'
+cl : command line  warning D9025: overriding '/MT' with '/MTd'
+  GlyphGeometry.cpp
+  GridAtlasPacker.cpp
+cl : command line  warning D9025: overriding '/MT' with '/MTd'
+  Padding.cpp
+cl : command line  warning D9025: overriding '/MT' with '/MTd'
+  RectanglePacker.cpp
+cl : command line  warning D9025: overriding '/MT' with '/MTd'
+  TightAtlasPacker.cpp
+cl : command line  warning D9025: overriding '/MT' with '/MTd'
+cl : command line  warning D9025: overriding '/MT' with '/MTd'
+  Workload.cpp
+cl : command line  warning D9025: overriding '/MT' with '/MTd'
+  artery-font-export.cpp
+cl : command line  warning D9025: overriding '/MT' with '/MTd'
+  bitmap-blit.cpp
+cl : command line  warning D9025: overriding '/MT' with '/MTd'
+  charset-parser.cpp
+  csv-export.cpp
+  glyph-generators.cpp
+  image-encode.cpp
+  json-export.cpp
+  main.cpp
+  shadron-preview-generator.cpp
+  size-selectors.cpp
+  utf8.cpp
+  msdf-atlas-gen.vcxproj -> D:\C++ Projects\Hazel\Faint\vendor\msdf-atlas-gen\bin\Release-windows-x86_64\msdf-atlas-gen\msdf-atlas-gen.lib

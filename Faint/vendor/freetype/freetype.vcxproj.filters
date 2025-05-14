@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="autofit">
+      <UniqueIdentifier>{81ECED47-EDCB-6CE3-F6E3-F7B96242D344}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="base">
+      <UniqueIdentifier>{8078947C-6CAF-950D-159C-7B1001B2110F}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="bdf">
+      <UniqueIdentifier>{1161880B-7D6A-887C-06E6-9E7C72EE937C}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="cache">
+      <UniqueIdentifier>{B95D350F-2572-5DC0-EEF3-00205AC759F1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="cff">
+      <UniqueIdentifier>{9465880B-006F-887C-89EA-9E7CF5F2937C}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="cid">
+      <UniqueIdentifier>{F565880B-616F-887C-EAEA-9E7C56F3937C}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="gzip">
+      <UniqueIdentifier>{7F9F977C-6BD6-980D-14C3-7E1000D9140F}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="lzw">
+      <UniqueIdentifier>{828E880B-EE97-887C-7713-9F7CE31B947C}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="pcf">
+      <UniqueIdentifier>{7E9C880B-EAA5-887C-7321-9F7CDF29947C}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="pfr">
+      <UniqueIdentifier>{ED9C880B-59A6-887C-E221-9F7C4E2A947C}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="psaux">
+      <UniqueIdentifier>{56742A10-C288-52C1-8B0A-F620F7DD4EF2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="pshinter">
+      <UniqueIdentifier>{12922C67-FE5E-8772-2778-751A13A4BC00}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="psnames">
+      <UniqueIdentifier>{7C0779C5-E8E6-F760-F1FE-82375D5D5EC2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="raster">
+      <UniqueIdentifier>{D66FE718-C211-12EF-ABCC-2543970D993F}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="sdf">
+      <UniqueIdentifier>{62A9880B-CEB2-887C-572E-9F7CC336947C}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="sfnt">
+      <UniqueIdentifier>{A0DF9D7C-8C16-9F0D-3503-851021191B0F}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="smooth">
+      <UniqueIdentifier>{9F79131C-8B1B-3EF2-74D6-51466017C542}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="truetype">
+      <UniqueIdentifier>{E7B747E9-D384-A2F4-FC9D-909CE8C9D782}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="type1">
+      <UniqueIdentifier>{185E7610-8472-9EC1-4DF4-4121B9C79AF2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="type42">
+      <UniqueIdentifier>{AD21421F-99C3-6CF5-827E-80496EBFF345}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="winfonts">
+      <UniqueIdentifier>{BD23FCE8-A9F0-56F4-D209-459CBE358C82}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\autofit\autofit.c">
+      <Filter>autofit</Filter>
+    </ClCompile>
+    <ClCompile Include="src\base\ftbase.c">
+      <Filter>base</Filter>
+    </ClCompile>
+    <ClCompile Include="src\base\ftbbox.c">
+      <Filter>base</Filter>
+    </ClCompile>
+    <ClCompile Include="src\base\ftbdf.c">
+      <Filter>base</Filter>
+    </ClCompile>
+    <ClCompile Include="src\base\ftbitmap.c">
+      <Filter>base</Filter>
+    </ClCompile>
+    <ClCompile Include="src\base\ftcid.c">
+      <Filter>base</Filter>
+    </ClCompile>
+    <ClCompile Include="src\base\ftdebug.c">
+      <Filter>base</Filter>
+    </ClCompile>
+    <ClCompile Include="src\base\ftfstype.c">
+      <Filter>base</Filter>
+    </ClCompile>
+    <ClCompile Include="src\base\ftgasp.c">
+      <Filter>base</Filter>
+    </ClCompile>
+    <ClCompile Include="src\base\ftglyph.c">
+      <Filter>base</Filter>
+    </ClCompile>
+    <ClCompile Include="src\base\ftgxval.c">
+      <Filter>base</Filter>
+    </ClCompile>
+    <ClCompile Include="src\base\ftinit.c">
+      <Filter>base</Filter>
+    </ClCompile>
+    <ClCompile Include="src\base\ftmm.c">
+      <Filter>base</Filter>
+    </ClCompile>
+    <ClCompile Include="src\base\ftotval.c">
+      <Filter>base</Filter>
+    </ClCompile>
+    <ClCompile Include="src\base\ftpatent.c">
+      <Filter>base</Filter>
+    </ClCompile>
+    <ClCompile Include="src\base\ftpfr.c">
+      <Filter>base</Filter>
+    </ClCompile>
+    <ClCompile Include="src\base\ftstroke.c">
+      <Filter>base</Filter>
+    </ClCompile>
+    <ClCompile Include="src\base\ftsynth.c">
+      <Filter>base</Filter>
+    </ClCompile>
+    <ClCompile Include="src\base\ftsystem.c">
+      <Filter>base</Filter>
+    </ClCompile>
+    <ClCompile Include="src\base\fttype1.c">
+      <Filter>base</Filter>
+    </ClCompile>
+    <ClCompile Include="src\base\ftwinfnt.c">
+      <Filter>base</Filter>
+    </ClCompile>
+    <ClCompile Include="src\bdf\bdf.c">
+      <Filter>bdf</Filter>
+    </ClCompile>
+    <ClCompile Include="src\cache\ftcache.c">
+      <Filter>cache</Filter>
+    </ClCompile>
+    <ClCompile Include="src\cff\cff.c">
+      <Filter>cff</Filter>
+    </ClCompile>
+    <ClCompile Include="src\cid\type1cid.c">
+      <Filter>cid</Filter>
+    </ClCompile>
+    <ClCompile Include="src\gzip\ftgzip.c">
+      <Filter>gzip</Filter>
+    </ClCompile>
+    <ClCompile Include="src\lzw\ftlzw.c">
+      <Filter>lzw</Filter>
+    </ClCompile>
+    <ClCompile Include="src\pcf\pcf.c">
+      <Filter>pcf</Filter>
+    </ClCompile>
+    <ClCompile Include="src\pfr\pfr.c">
+      <Filter>pfr</Filter>
+    </ClCompile>
+    <ClCompile Include="src\psaux\psaux.c">
+      <Filter>psaux</Filter>
+    </ClCompile>
+    <ClCompile Include="src\pshinter\pshinter.c">
+      <Filter>pshinter</Filter>
+    </ClCompile>
+    <ClCompile Include="src\psnames\psmodule.c">
+      <Filter>psnames</Filter>
+    </ClCompile>
+    <ClCompile Include="src\raster\raster.c">
+      <Filter>raster</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sdf\sdf.c">
+      <Filter>sdf</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sfnt\sfnt.c">
+      <Filter>sfnt</Filter>
+    </ClCompile>
+    <ClCompile Include="src\smooth\smooth.c">
+      <Filter>smooth</Filter>
+    </ClCompile>
+    <ClCompile Include="src\truetype\truetype.c">
+      <Filter>truetype</Filter>
+    </ClCompile>
+    <ClCompile Include="src\type1\type1.c">
+      <Filter>type1</Filter>
+    </ClCompile>
+    <ClCompile Include="src\type42\type42.c">
+      <Filter>type42</Filter>
+    </ClCompile>
+    <ClCompile Include="src\winfonts\winfnt.c">
+      <Filter>winfonts</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>
