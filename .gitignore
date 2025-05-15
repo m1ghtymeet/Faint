@@ -1,0 +1,20 @@
+# Compiled Files
+*.o
+*.obj
+*.exe
+*.dll
+*.so
+*.out
+
+*.cpp
+*.h
+*.hpp
+
+bin/
+obj/
+build/
+dist/
+.vscode/
+.idea/
+*.user
+*.suo
