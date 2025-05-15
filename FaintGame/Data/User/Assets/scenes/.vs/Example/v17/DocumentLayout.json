@@ -1,0 +1,37 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "D:\\C\u002B\u002B Projects\\Hazel\\Hazelnut\\assets\\scenes\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{387B96E1-6084-46E9-8FB5-0633529AADE1}|Example.csproj|d:\\c\u002B\u002B projects\\hazel\\hazelnut\\assets\\scenes\\test.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{387B96E1-6084-46E9-8FB5-0633529AADE1}|Example.csproj|solutionrelative:test.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 0,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "test.cs",
+              "DocumentMoniker": "D:\\C\u002B\u002B Projects\\Hazel\\Hazelnut\\assets\\scenes\\test.cs",
+              "RelativeDocumentMoniker": "test.cs",
+              "ToolTip": "D:\\C\u002B\u002B Projects\\Hazel\\Hazelnut\\assets\\scenes\\test.cs",
+              "RelativeToolTip": "test.cs",
+              "ViewState": "AgIAAA0AAAAAAAAAAAAQwBkAAAAoAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-03-13T14:29:32.625Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
