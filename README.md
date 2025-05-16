@@ -10,11 +10,11 @@
 
 ### 1. What's Faint?
 Faint is a 3D game engine developed in C++, with support for C# scripting via Coral.
-Development began in 2022 by MightyMeet with the goal of creating a flexible and powerful engine for indie and hobbyist developers.
+Development began in 2024 by MightyMeet with the goal of creating a flexible and powerful engine for indie and hobbyist developers.
 
 ### 2. Download
-Get the latest release from the [page](https://github.com/m1ghtymeet).
-View all available versions [here](https://github.com/m1ghtymeet/releases).
+Get the latest release from the [page](https://github.com/m1ghtymeet/Faint/releases).
+View all available versions [here](https://github.com/m1ghtymeet/Faint/releases).
 
 To clone the repository using Git:
 ```bash
@@ -26,7 +26,7 @@ git clone https://github.com/m1ghtymeet/Faint
 - Built-in Game Editor
 - Build and Export Standalone Games
 - OBJ/FBX Model Loading (via Assimp)
-- Automatic detection of CPU or GPIU presence
+- Automatic detection of CPU or GPU presence
 
 ### 4. Planned Features
 - Custom/Handeling Shaders
