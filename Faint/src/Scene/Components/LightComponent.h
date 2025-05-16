@@ -32,7 +32,7 @@ namespace Faint {
 		bool CastShadows = true;
 		bool IsVolumetric = false;
 
-		Ref<Framebuffer2> m_Framebuffers[CSM_AMOUNT];
+		//Ref<Framebuffer2> m_Framebuffers[CSM_AMOUNT];
         Matrix4 mViewProjections[CSM_AMOUNT];
         float mCascadeSplitDepth[CSM_AMOUNT];
         float mCascadeSplits[CSM_AMOUNT];

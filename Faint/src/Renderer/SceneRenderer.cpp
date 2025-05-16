@@ -273,9 +273,8 @@ namespace Faint {
 			g_frameBuffers["GBuffer"].Resize(framebufferResolution.x, framebufferResolution.y);
 		}
 
-		//SkyboxPass();
 		GBufferPass(scene);
-		
+
 		// Save previous Matrix
 		auto modelView = scene.Reg().view<TransformComponent, MeshRendererComponent, VisibilityComponent>();
 		for (auto e : modelView) {
@@ -290,6 +289,7 @@ namespace Faint {
 		}
 
 		ShadingPass(scene);
+		//SkyboxPass();
 
 		BlitFrameBuffer(&g_frameBuffers["GBuffer"], &g_frameBuffers["FinalImage"], "Lighting", "Color", GL_COLOR_BUFFER_BIT, GL_LINEAR);
 		//BlitToDefaultFrameBuffer(&g_frameBuffers["FinalImage"], "Color", GL_COLOR_BUFFER_BIT, GL_NEAREST);
@@ -589,32 +589,32 @@ namespace Faint {
 			{
 				RenderCommand::Disable(RendererEnum::FACE_CULL);
 
-				light.m_Framebuffers[0]->Bind();
-				light.m_Framebuffers[0]->Clear();
-				{
-					Matrix4 lightTransform = Matrix4(1.0f);
-
-					Vec3 pos = transform.GetGlobalPosition();
-					
-					for (int i = 0; i < CSM_AMOUNT; i++)
-					{
-						shader.SetMat4("projectionView", light.GetProjection() * glm::inverse(transform.GetGlobalMatrix()));
-					}
-					//lightSpaceMatrix = light.GetProjection() * glm::inverse(transform.GetGlobalMatrix());
-					
-					for (auto e : meshView)
-					{
-						auto [transform, mesh, visibility] = meshView.get<TransformComponent, MeshRendererComponent, VisibilityComponent>(e);
-						if (mesh._Model != nullptr && visibility.Visible) {
-
-							for (auto& m : mesh._Model->GetMeshes())
-								Renderer::SubmitMesh(m, transform.GetGlobalMatrix());
-						}
-					}
-
-					Renderer::Flush(&shader, true);
-				}
-				light.m_Framebuffers[0]->Unbind();
+				//light.m_Framebuffers[0]->Bind();
+				//light.m_Framebuffers[0]->Clear();
+				//{
+				//	Matrix4 lightTransform = Matrix4(1.0f);
+				//
+				//	Vec3 pos = transform.GetGlobalPosition();
+				//	
+				//	for (int i = 0; i < CSM_AMOUNT; i++)
+				//	{
+				//		shader.SetMat4("projectionView", light.GetProjection() * glm::inverse(transform.GetGlobalMatrix()));
+				//	}
+				//	//lightSpaceMatrix = light.GetProjection() * glm::inverse(transform.GetGlobalMatrix());
+				//	
+				//	for (auto e : meshView)
+				//	{
+				//		auto [transform, mesh, visibility] = meshView.get<TransformComponent, MeshRendererComponent, VisibilityComponent>(e);
+				//		if (mesh._Model != nullptr && visibility.Visible) {
+				//
+				//			for (auto& m : mesh._Model->GetMeshes())
+				//				Renderer::SubmitMesh(m, transform.GetGlobalMatrix());
+				//		}
+				//	}
+				//
+				//	Renderer::Flush(&shader, true);
+				//}
+				//light.m_Framebuffers[0]->Unbind();
 			}
 		}
 	}

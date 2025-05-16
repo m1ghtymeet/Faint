@@ -16,6 +16,7 @@ namespace Faint::Physics {
 	void BeginFrame();
 	void StepPhysics(float deltaTime);
 	void SubmitDebugLinesToRenderer(const DebugRenderMode& debugRenderMode);
+	void AddCollisionReport(CollisionReport& collisionReport);
 	void ClearCollisionReports();
 	void ClearCharacterControllerCollisionReports();
 	std::vector<CollisionReport>& GetCollisionReports();

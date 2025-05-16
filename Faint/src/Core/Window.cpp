@@ -209,7 +209,7 @@ namespace Faint {
 		}
 		else {
 			float resolutionScale = glm::clamp(Engine::GetProject()->Settings.ResolutionScale, 0.5f, 2.0f);
-			scene->m_EditorCamera->SetViewportSize(viewportWidth * resolutionScale, viewportHeight * resolutionScale);
+			Engine::GetCurrentScene()->m_EditorCamera->SetViewportSize(viewportWidth * resolutionScale, viewportHeight * resolutionScale);
 			scene->Draw(scene->m_EditorCamera->GetProjectionMatrix(), scene->m_EditorCamera->GetViewMatrix());
 		}
 

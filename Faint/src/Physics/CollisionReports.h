@@ -42,6 +42,6 @@ public:
         CollisionReport report;
         report.rigidA = pairHeader.actors[0];
         report.rigidB = pairHeader.actors[1];
-        //Physics::AddCollisionReport(report);
+        Faint::Physics::AddCollisionReport(report);
     }
 };

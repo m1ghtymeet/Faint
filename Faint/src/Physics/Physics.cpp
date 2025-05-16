@@ -1,5 +1,6 @@
 #include "Physics.h"
 #include <iostream>
+#include <entt.hpp>
 
 PxFilterFlags contactReportFilterShader(PxFilterObjectAttributes attributes0, PxFilterData filterData0, PxFilterObjectAttributes attributes1, PxFilterData filterData1, PxPairFlags& pairFlags, const void* constantBlock, PxU32 constantBlockSize) {
 	PX_UNUSED(attributes0);
@@ -102,8 +103,16 @@ namespace Faint::Physics {
 		g_scene->fetchResults(true);
 	}
 
+	void AddCollisionReport(CollisionReport& collisionReport) {
+		g_collisionReports.push_back(collisionReport);
+
+		auto* entityA = reinterpret_cast<entt::entity*>(collisionReport.rigidA->userData);
+		auto* entityB = reinterpret_cast<entt::entity*>(collisionReport.rigidB->userData);
+		std::cout << "Collision detected between " << (int)*entityA << " and " << (int)*entityB << "\n";
+	}
+
 	void ClearCollisionReports() {
-		
+		g_collisionReports.clear();
 	}
 
 	std::vector<CollisionReport>& GetCollisionReports() {

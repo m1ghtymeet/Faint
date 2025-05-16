@@ -344,6 +344,8 @@ namespace Faint {
             glTextureParameteri(colorAttachment.id, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
             glTextureParameteri(colorAttachment.id, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
             glTextureParameteri(colorAttachment.id, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+            if (colorAttachment.internalFormat == GL_R32I)
+                glTextureParameteri(colorAttachment.id, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
             glNamedFramebufferTexture(m_id, GL_COLOR_ATTACHMENT0 + static_cast<GLenum>(i), colorAttachment.id, 0);
             std::string debugLabel = "Texture (FBO: " + std::string(m_name) + " Tex: " + std::string(colorAttachment.name) + ")";
             glObjectLabel(GL_TEXTURE, colorAttachment.id, static_cast<GLsizei>(debugLabel.length()), debugLabel.c_str());

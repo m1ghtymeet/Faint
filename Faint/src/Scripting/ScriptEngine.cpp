@@ -25,14 +25,14 @@ namespace Faint {
 		luaState->set_function("createEntity", [](const std::string& name) {
 			Entity newEntity = Engine::GetCurrentScene()->CreateEntity(name);
 			std::cout << "[Lua] Created Entity '" << name << "' With ID: " << newEntity.GetID() << "\n";
-			});
+		});
 
 		luaState->set_function("keyDown", [](int key) {
 			return Input::KeyDown(key);
-			});
+		});
 		luaState->set_function("keyPress", [](int key) {
 			return Input::KeyPressed(key);
-			});
+		});
 
 		/* ^^^ Binding Entity ^^^ */
 		luaState->new_usertype<Entity>("Entity",

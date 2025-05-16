@@ -127,7 +127,7 @@ namespace Faint::Renderer {
                     deferredShader.SetInt(uniformAccessor + "ShadowMapID", 1);
                     //deferredShader->SetInt(uniformAccessor + "Transform", light);
                     
-                    light.m_Framebuffers[0]->GetTexture(GL_DEPTH_ATTACHMENT)->Bind(shadowMapTextureSlot);
+                    //light.m_Framebuffers[0]->GetTexture(GL_DEPTH_ATTACHMENT)->Bind(shadowMapTextureSlot);
                     deferredShader.SetInt("ShadowMaps[" + std::to_string(0) + "]", shadowMapTextureSlot);
                     
                 }
@@ -145,7 +145,7 @@ namespace Faint::Renderer {
                     deferredShader.SetInt(uniformAccessor + "ShadowMapID", spotShadowMapCount);
                     deferredShader.SetMat4(uniformAccessor + "Transform", light.GetProjection() * glm::inverse(transform.GetGlobalMatrix()));
 
-                    light.m_Framebuffers[0]->GetTexture(GL_DEPTH_ATTACHMENT)->Bind(shadowMapTextureSlot);
+                    //light.m_Framebuffers[0]->GetTexture(GL_DEPTH_ATTACHMENT)->Bind(shadowMapTextureSlot);
                     deferredShader.SetInt("SpotShadowMaps[" + std::to_string(spotShadowMapCount) + "]", shadowMapTextureSlot);
                     spotShadowMapCount++;
                 }

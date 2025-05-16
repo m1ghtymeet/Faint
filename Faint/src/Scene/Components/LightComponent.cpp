@@ -11,11 +11,11 @@ namespace Faint {
 		SetCastShadows(true);
 
 		for (int i = 0; i < 3; i++) {
-			Ref<Framebuffer2> shadowMap = CreateRef<Framebuffer2>(false, glm::vec2(4096, 4096));
-			Ref<Texture> texture = CreateRef<Texture>(glm::vec2(4096, 4096), GL_DEPTH_COMPONENT);
-			texture->SetParameter(GL_TEXTURE_COMPARE_MODE, GL_COMPARE_REF_TO_TEXTURE);
-			shadowMap->SetTexture(texture, GL_DEPTH_ATTACHMENT);
-			m_Framebuffers[i] = shadowMap;
+			//Ref<Framebuffer2> shadowMap = CreateRef<Framebuffer2>(false, glm::vec2(4096, 4096));
+			//Ref<Texture> texture = CreateRef<Texture>(glm::vec2(4096, 4096), GL_DEPTH_COMPONENT);
+			//texture->SetParameter(GL_TEXTURE_COMPARE_MODE, GL_COMPARE_REF_TO_TEXTURE);
+			//shadowMap->SetTexture(texture, GL_DEPTH_ATTACHMENT);
+			//m_Framebuffers[i] = shadowMap;
 		}
 	}
 
@@ -33,16 +33,16 @@ namespace Faint {
 			{
 				for (int i = 0; i < CSM_AMOUNT; i++)
 				{
-					m_Framebuffers[i] = CreateRef<Framebuffer2>(false, Vec2(4096, 4096));
-					auto texture = CreateRef<Texture>(Vec2(4096, 4096), GL_DEPTH_COMPONENT, GL_DEPTH_COMPONENT, GL_FLOAT);
-					texture->SetParameter(GL_TEXTURE_COMPARE_MODE, GL_COMPARE_REF_TO_TEXTURE);
-					m_Framebuffers[i]->SetTexture(texture, GL_DEPTH_ATTACHMENT);
+					//m_Framebuffers[i] = CreateRef<Framebuffer2>(false, Vec2(4096, 4096));
+					//auto texture = CreateRef<Texture>(Vec2(4096, 4096), GL_DEPTH_COMPONENT, GL_DEPTH_COMPONENT, GL_FLOAT);
+					//texture->SetParameter(GL_TEXTURE_COMPARE_MODE, GL_COMPARE_REF_TO_TEXTURE);
+					//m_Framebuffers[i]->SetTexture(texture, GL_DEPTH_ATTACHMENT);
 				}
 			}
 		}
 		else {
-			for (int i = 0; i < CSM_AMOUNT; i++)
-				m_Framebuffers[i] = nullptr;
+			//for (int i = 0; i < CSM_AMOUNT; i++)
+				//m_Framebuffers[i] = nullptr;
 		}
 	}
 	Matrix4 LightComponent::GetProjection()

@@ -68,15 +68,15 @@ namespace Faint {
 
 		bool EntityIsParent(Entity entity, Entity parent);
 
-		void OnRuntimeStart();
-		void OnRuntimeStop();
+		//void OnRuntimeStart();
+		//void OnRuntimeStop();
+		//
+		//void OnSimulationStart();
+		//void OnSimulationStop();
 
-		void OnSimulationStart();
-		void OnSimulationStop();
-
-		void OnUpdateEditor(Time time, EditorCamera& camera, Framebuffer2& frameBuffer);
-		void OnUpdateSimulation(Time time, EditorCamera& camera, Framebuffer2& frameBuffer);
-		void OnUpdateRuntime(Time time, Framebuffer2& frameBuffer);
+		//void OnUpdateEditor(Time time, EditorCamera& camera, Framebuffer2& frameBuffer);
+		//void OnUpdateSimulation(Time time, EditorCamera& camera, Framebuffer2& frameBuffer);
+		//void OnUpdateRuntime(Time time, Framebuffer2& frameBuffer);
 		void OnViewportResize(float width, float height);
 
 		Entity DuplicateEntity(Entity entity);
