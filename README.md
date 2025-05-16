@@ -53,4 +53,4 @@ Faint relies on the following libraries/tools:
 - **Disk Space:** 800MB
 
 ## Learning Resources
-![Learn OpenGL](https://learnopengl.com/)
+[Learn OpenGL](https://learnopengl.com/)
