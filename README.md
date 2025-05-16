@@ -28,7 +28,7 @@ git clone https://github.com/m1ghtymeet/Faint
 - OBJ/FBX Model Loading (via Assimp)
 - Automatic detection of CPU or GPIU presence
 
-## 4. Planned Features
+### 4. Planned Features
 - Custom/Handeling Shaders
 - Lua Scripting
 - Custom Windows Theme
