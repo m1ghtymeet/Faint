@@ -1,40 +1,56 @@
-# What's Faint?
-Faint is a 3D Game Engine made in C++ and C# as its scripting language.
-The construction of this engine started in 2022 by MightyMeet
+# Faint
 
-# Features
-- PBR Renderer
-- Game editor
-- Output Game
-- OBJ/FBX Model Loading
-- Find out if you have a CPU or GPU
+## Contents
+- [1. What's Faint?](#1-what's Faint)
+- [2. Downloading](#2-download)
+- [3. Features](#3-introduction)
+- [4. Planed Features](#4-planned-features)
+- [5. Dependencies](#5-dependencies)
+- [6. Requirements](#6-system-requirements)
 
-## Dependencies
-Faint depends:
-- OpenGL and GLAD
-- GLM
-- Assimp (Animation Loading)
-- Premake5 (Project generation)
-- ECS/entt (Entity Component System)
-- Coral (C# Scripting)
-- ImGUI
-- NVIDIA PhysX (Advanced Physics)
-- Soloud
-- nlohmann json
-- yaml-cpp (YAML serializer)
-- tinyobj
+### 1. What's Faint?
+Faint is a 3D game engine developed in C++, with support for C# scripting via Coral.
+Development began in 2022 by MightyMeet with the goal of creating a flexible and powerful engine for indie and hobbyist developers.
 
-## Will added...
+### 2. Download
+Get the latest release from the [page](https://github.com/m1ghtymeet).
+View all available versions [here](https://github.com/m1ghtymeet/releases).
+
+To clone the repository using Git:
+```bash
+git clone https://github.com/m1ghtymeet/Faint
+```
+
+## 3. Features
+- Physically-Based Rendering (PBR)
+- Built-in Game Editor
+- Build and Export Standalone Games
+- OBJ/FBX Model Loading (via Assimp)
+- Automatic detection of CPU or GPIU presence
+
+## 4. Planned Features
 - Custom/Handeling Shaders
 - Lua Scripting
 - Custom Windows Theme
 
-## Requirements
-- **OS:** Windows 7/10
-- **CPU:** x64
-- **Memory RAM:** 150MB
-- **GPU:** Graphics card supporting OpenGL 4.5
-- **Space:** 800MB
+## 5. Dependencies
+Faint relies on the following libraries/tools:
+- Rendering: OpenGL, GLAD, ImGui
+- Math: GLM
+- Model/Asset Loading: Assimp tinyobj
+- Scripting: Coral (C#)
+- Project Generation: Premake5
+- ECS: EnTT
+- Physics: NVIDIA PhysX
+- Audio: Soloud
+- Serialization: nlohmann::json, yaml-cpp
 
-# Authentic resources for learning
+## 6. System Requirements
+- **OS:** Windows 7/10 (64-bit)
+- **CPU:** x64 processor
+- **RAM:** Minimum 150MB
+- **GPU:** Graphics card with OpenGL 4.5 support
+- **Disk Space:** 800MB
+
+# Learning Resources
 ![Learn OpenGL](https://learnopengl.com/)
