@@ -21,7 +21,7 @@ To clone the repository using Git:
 git clone https://github.com/m1ghtymeet/Faint
 ```
 
-## 3. Features
+### 3. Features
 - Physically-Based Rendering (PBR)
 - Built-in Game Editor
 - Build and Export Standalone Games
@@ -33,7 +33,7 @@ git clone https://github.com/m1ghtymeet/Faint
 - Lua Scripting
 - Custom Windows Theme
 
-## 5. Dependencies
+### 5. Dependencies
 Faint relies on the following libraries/tools:
 - Rendering: OpenGL, GLAD, ImGui
 - Math: GLM
@@ -45,12 +45,12 @@ Faint relies on the following libraries/tools:
 - Audio: Soloud
 - Serialization: nlohmann::json, yaml-cpp
 
-## 6. System Requirements
+### 6. System Requirements
 - **OS:** Windows 7/10 (64-bit)
 - **CPU:** x64 processor
 - **RAM:** Minimum 150MB
 - **GPU:** Graphics card with OpenGL 4.5 support
 - **Disk Space:** 800MB
 
-# Learning Resources
+## Learning Resources
 ![Learn OpenGL](https://learnopengl.com/)
