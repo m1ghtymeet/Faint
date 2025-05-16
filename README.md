@@ -1,9 +1,9 @@
 # Faint
 
 ## Contents
-- [1. What's Faint?](#1-what's Faint)
+- [1. What's Faint?](#1-what's-Faint)
 - [2. Downloading](#2-download)
-- [3. Features](#3-introduction)
+- [3. Features](#3-features)
 - [4. Planed Features](#4-planned-features)
 - [5. Dependencies](#5-dependencies)
 - [6. Requirements](#6-system-requirements)
