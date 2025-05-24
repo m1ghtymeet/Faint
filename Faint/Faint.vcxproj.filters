@@ -701,6 +701,9 @@
     <ClCompile Include="src\Renderer\SceneRenderer.cpp">
       <Filter>src\Renderer</Filter>
     </ClCompile>
+    <ClCompile Include="src\Renderer\SceneRenderer_util.cpp">
+      <Filter>src\Renderer</Filter>
+    </ClCompile>
     <ClCompile Include="src\Renderer\Shader.cpp">
       <Filter>src\Renderer</Filter>
     </ClCompile>

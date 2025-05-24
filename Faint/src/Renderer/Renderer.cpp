@@ -10,6 +10,7 @@
 namespace Faint::Renderer {
 
     RendererAPI m_api = RendererAPI::OPENGL;
+    std::vector<Light2> m_Lights;
 
     RenderList m_RenderList;
 
@@ -50,13 +51,13 @@ namespace Faint::Renderer {
     }
 
     void BeginScene() {
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        glClearColor(0.10588, 0.10588, 0.10588, 1.0);
-        glEnable(GL_DEPTH_TEST);
+
+        //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        //glClearColor(0.10588, 0.10588, 0.10588, 1.0);
+        //glEnable(GL_DEPTH_TEST);
     }
 
     void EndScene() {
-
         Shader deferredShader = ShaderManager::GetShader("deferred");
         deferredShader.Bind();
         deferredShader.SetInt("LightCount", 0);
@@ -218,14 +219,12 @@ namespace Faint::Renderer {
     void DrawQuad(Matrix4 transform)
     {
         //ZoneScoped;
-        QuadMesh->Bind();
         QuadMesh->Draw(nullptr, false);
     }
 
     void DrawCube(Matrix4 transform)
     {
         //ZoneScoped;
-        CubeMesh->Bind();
         CubeMesh->Draw(nullptr, false);
     }
 }

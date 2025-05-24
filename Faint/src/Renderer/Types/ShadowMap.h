@@ -15,7 +15,7 @@ namespace Faint {
 		void Bind(GLuint slot);
 		void Unbind();
 
-		GLuint GetID() { return m_ID; }
+		GLuint GetID();
 		GLuint GetTextureID() { return m_TextureID; }
 
 	private:

@@ -339,6 +339,7 @@
     <ClCompile Include="src\Renderer\Renderer.cpp" />
     <ClCompile Include="src\Renderer\Renderer2D.cpp" />
     <ClCompile Include="src\Renderer\SceneRenderer.cpp" />
+    <ClCompile Include="src\Renderer\SceneRenderer_util.cpp" />
     <ClCompile Include="src\Renderer\Shader.cpp" />
     <ClCompile Include="src\Renderer\ShadersManager.cpp" />
     <ClCompile Include="src\Renderer\Shapes\BoxGizmo.cpp" />

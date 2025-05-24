@@ -31,11 +31,11 @@ namespace Faint {
 	}
 
 	void RenderCommand::Clear() {
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	}
 
 	void RenderCommand::SetClearColor(const glm::vec4& color) {
-		glClearColor(color.r, color.g, color.b, color.a);
+		//glClearColor(color.r, color.g, color.b, color.a);
 	}
 
 	void RenderCommand::Enable(const RendererEnum enumType) {

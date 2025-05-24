@@ -25,6 +25,8 @@ project "ImGui"
 		"imgui_impl_opengl3_loader.h",
 		"imgui_impl_glfw.h",
 		"imgui_impl_glfw.cpp",
+		"TextEditor.h",
+		"TextEditor.cpp",
 	}
 	
 	includedirs {

@@ -35,6 +35,11 @@ namespace Faint {
 		void OutlinePass(Scene& scene);
 		void DebugPass(Scene& scene);
 
+		// Util
+		void BlitToDefaultFrameBuffer(FrameBuffer* srcFrameBuffer, const char* srcName, GLbitfield mask, GLenum filter);
+		void BlitToDefaultFrameBuffer(FrameBuffer* srcFrameBuffer, const char* srcName, glm::vec4 srcRect, glm::vec4 dstRect, GLbitfield mask, GLenum filter);
+		void BlitFrameBuffer(FrameBuffer* srcFrameBuffer, FrameBuffer* dstFrameBuffer, const char* srcName, const char* dstName, GLbitfield mask, GLenum filter);
+
 		inline int m_hoveredEntityID = 0;
 	}
 }

@@ -37,7 +37,6 @@ namespace Faint {
     float fixedUpdateDifference = 0.0f;
 
     void Engine::Init() {
-
         ScriptingEngineNet::Get().OnGameAssemblyLoaded().AddStatic(&Engine::OnScriptingEngineGameAssemblyLoaded);
 
         AudioManager::Get().Initialize();
@@ -55,8 +54,7 @@ namespace Faint {
         Modules::StartupModules();
     }
 
-    void Engine::Update(Time time)
-    {
+    void Engine::Update(Time time) {
         JobSystem::Get().Update();
 
         if (Engine::IsPlayMode()) {
@@ -113,8 +111,11 @@ namespace Faint {
         }
     }
 
-    void Engine::EnterPlayMode()
-    {
+    void Engine::Close() {
+
+    }
+
+    void Engine::EnterPlayMode() {
         if (GetGameState() == GameState::Playing || GetGameState() == GameState::Loading) {
             HZ_CORE_ERROR("Cannot enter play mode if is already in play mode or is loading.");
             return;
@@ -147,7 +148,7 @@ namespace Faint {
     {
         // ZoneScoped
 
-        RenderCommand::Clear();
+        //RenderCommand::Clear();
 
         {
             ImGui_ImplOpenGL3_NewFrame();

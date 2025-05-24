@@ -43,6 +43,7 @@ namespace Faint {
 
 		m_vertexArray->Bind();
 		RenderCommand::DrawElements(RendererEnum::TRIANGLES, m_indicesCount, RendererEnum::UINT, 0);
+		glBindVertexArray(0);
 	}
 	void Mesh::DebugDraw() {
 		

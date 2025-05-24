@@ -15,20 +15,20 @@ namespace Faint {
 
 	Material::Material()
 	{
-		if (m_DefaultAlbedo == nullptr)
-			m_DefaultAlbedo = TextureManager::Get()->GetTexture("data/textures/Default.png");
-		if (m_DefaultNormal == nullptr)
-			m_DefaultNormal = TextureManager::Get()->GetTexture("data/textures/Default_Normal.png");
-		if (m_DefaultMetalness == nullptr)
-			m_DefaultMetalness = TextureManager::Get()->GetTexture("data/textures/Default_Metalness.png");
-		if (m_DefaultRoughness == nullptr)
-			m_DefaultRoughness = TextureManager::Get()->GetTexture("data/textures/Default_Roughness.png");
+		//if (m_DefaultAlbedo == nullptr)
+		//	m_DefaultAlbedo = TextureManager::Get()->GetTexture("data/textures/Default.png");
+		//if (m_DefaultNormal == nullptr)
+		//	m_DefaultNormal = TextureManager::Get()->GetTexture("data/textures/Default_Normal.png");
+		//if (m_DefaultMetalness == nullptr)
+		//	m_DefaultMetalness = TextureManager::Get()->GetTexture("data/textures/Default_Metalness.png");
+		//if (m_DefaultRoughness == nullptr)
+		//	m_DefaultRoughness = TextureManager::Get()->GetTexture("data/textures/Default_Roughness.png");
 
-		m_Albedo = m_DefaultAlbedo;
-		m_Normal = m_DefaultNormal;
-		m_AO = m_DefaultNormal;
-		m_Metalness = m_DefaultMetalness;
-		m_Roughness = m_DefaultRoughness;
+		//m_Albedo = m_DefaultAlbedo;
+		//m_Normal = m_DefaultNormal;
+		//m_AO = m_DefaultNormal;
+		//m_Metalness = m_DefaultMetalness;
+		//m_Roughness = m_DefaultRoughness;
 
 		data.m_AlbedoColor = Vec3(1, 1, 1);
 
@@ -46,7 +46,6 @@ namespace Faint {
 		glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
 		m_Albedo = TextureManager::Get()->GetTexture(albedo);
-
 		m_Name = albedo;
 	}
 	Material::Material(const Vec3 albedoColor) {

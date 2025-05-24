@@ -33,8 +33,7 @@ namespace Faint {
 			m_RenderList[material].push_back({ std::move(mesh), std::move(transform), entityId, previousMatrix });
 		}
 
-		void Flush(Shader* shader, bool depthOnly = false)
-		{
+		void Flush(Shader* shader, bool depthOnly = false) {
 			shader->Bind();
 			for (auto& i : m_RenderList)
 			{
@@ -46,13 +45,12 @@ namespace Faint {
 					if (!depthOnly)
 						shader->SetInt("aEntityID", m.entityId + 1);
 
-					shader->SetMat4("model", m.transform);
+					shader->SetMat4("modelMatrix", m.transform);
 					m.mesh->Draw(shader);
 				}
 			}
 
 			m_RenderList.clear();
-			//shader->Stop();
 		}
 	};
 }

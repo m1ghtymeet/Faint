@@ -10,14 +10,12 @@
 #include "Scene/Scene.h"
 #include "Math/Math.h"
 
-namespace Faint {
+namespace Faint::Renderer {
+
 	struct Light2 {
 		TransformComponent transform;
 		LightComponent light;
 	};
-}
-
-namespace Faint::Renderer {
 
 	inline Ref<Mesh> QuadMesh;
 	inline Ref<Mesh> CubeMesh;
@@ -38,7 +36,6 @@ namespace Faint::Renderer {
 	void OnWindowResize(uint32_t width, uint32_t height);
 
 	// Light
-	inline std::vector<Light2> m_Lights;
 	void RegisterLight(TransformComponent transform, LightComponent light);
 
 	// Debug

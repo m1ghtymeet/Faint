@@ -5,171 +5,64 @@
 #include "Engine.h"
 #include "Scene/Components.h"
 #include "Scene/Components/ParentComponent.h"
-#include "AssetManagment/Project.h"
 #include "Renderer/Renderer2D.h"
 #include "Renderer/Types/ShadowMap.h"
 #include "Input/Input.h"
 #include "Util/Util.h"
 
-#include <complex>
-#include <iostream>
-#include <numeric>
-#include <string_view>
-#include <vector>
+namespace Faint::SceneRenderer {
+	std::unordered_map<std::string, FrameBuffer> g_frameBuffers;
+	std::unordered_map<std::string, CubemapTexture> g_cubemapTextures;
 
-namespace Faint {
-	namespace SceneRenderer {
-		void BlitToDefaultFrameBuffer(FrameBuffer* srcFrameBuffer, const char* srcName, GLbitfield mask, GLenum filter) {
-			GLint srcAttachmentSlot = srcFrameBuffer->GetColorAttachmentSlotByName(srcName);
-			if (srcAttachmentSlot != GL_INVALID_VALUE) {
-				glBindFramebuffer(GL_READ_FRAMEBUFFER, srcFrameBuffer->GetHandle());
-				glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
-				glReadBuffer(srcAttachmentSlot);
-				glDrawBuffer(GL_BACK);
-				glm::vec4 srcRect;
-				srcRect.x = 0;
-				srcRect.y = 0;
-				srcRect.z = (float)srcFrameBuffer->GetWidth();
-				srcRect.w = (float)srcFrameBuffer->GetHeight();
-				glm::vec4 dstRect;
-				dstRect.x = 0;
-				dstRect.y = 0;
-				dstRect.z = Window::Get()->GetWidth();
-				dstRect.w = Window::Get()->GetHeight();
-				glBlitFramebuffer(0, 0, (GLint)srcFrameBuffer->GetWidth(), (GLint)srcFrameBuffer->GetHeight(), 0, 0, (GLint)Window::Get()->GetWidth(), (GLint)Window::Get()->GetHeight(), mask, filter);
-			}
-		}
+	glm::vec3 g_lightDir = glm::normalize(glm::vec3(-2.0f, 4.0f, -1.0f));
+	glm::vec3 g_lightPos = -g_lightDir * 10.0f;
 
-		void BlitToDefaultFrameBuffer(FrameBuffer* srcFrameBuffer, const char* srcName, glm::vec4 srcRect, glm::vec4 dstRect, GLbitfield mask, GLenum filter) {
-			GLint srcAttachmentSlot = srcFrameBuffer->GetColorAttachmentSlotByName(srcName);
-			if (srcAttachmentSlot != GL_INVALID_VALUE) {
-				glBindFramebuffer(GL_READ_FRAMEBUFFER, srcFrameBuffer->GetHandle());
-				glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
-				glReadBuffer(srcAttachmentSlot);
-				glDrawBuffer(GL_BACK);
-				glBlitFramebuffer((GLint)srcRect.x, (GLint)srcRect.y, (GLint)srcRect.z, (GLint)srcRect.w, (GLint)dstRect.x, (GLint)dstRect.y, (GLint)dstRect.z, (GLint)dstRect.w, mask, filter);
-			}
-		}
+	glm::mat4 lightProjection = glm::ortho(-20.0f, 20.0f, -20.0f, 20.0f, 0.1f, 100.0f);
+	glm::mat4 lightView = glm::lookAt(
+		g_lightPos,
+		glm::vec3(0.0f),
+		glm::vec3(0.0f, 1.0f, 0.0f)
+	);
+	glm::mat4 g_lightSpaceMatrix;
 
-		void BlitFrameBuffer(FrameBuffer* srcFrameBuffer, FrameBuffer* dstFrameBuffer, const char* srcName, const char* dstName, GLbitfield mask, GLenum filter) {
-			GLint srcAttachmentSlot = srcFrameBuffer->GetColorAttachmentSlotByName(srcName);
-			GLint dstAttachmentSlot = dstFrameBuffer->GetColorAttachmentSlotByName(dstName);
-			if (srcAttachmentSlot != GL_INVALID_VALUE && dstAttachmentSlot != GL_INVALID_VALUE) {
-				glBindFramebuffer(GL_READ_FRAMEBUFFER, srcFrameBuffer->GetHandle());
-				glBindFramebuffer(GL_DRAW_FRAMEBUFFER, dstFrameBuffer->GetHandle());
-				glReadBuffer(srcAttachmentSlot);
-				glDrawBuffer(dstAttachmentSlot);
-				glm::vec4 srcRect;
-				srcRect.x = 0;
-				srcRect.y = 0;
-				srcRect.z = (float)srcFrameBuffer->GetWidth();
-				srcRect.w = (float)srcFrameBuffer->GetHeight();
-				glm::vec4 dstRect;
-				dstRect.x = 0;
-				dstRect.y = 0;
-				dstRect.z = (float)dstFrameBuffer->GetWidth();
-				dstRect.w = (float)dstFrameBuffer->GetHeight();
-				glBlitFramebuffer(0, 0, (GLint)srcFrameBuffer->GetWidth(), (GLint)srcFrameBuffer->GetHeight(), 0, 0, (GLint)dstFrameBuffer->GetWidth(), (GLint)dstFrameBuffer->GetHeight(), mask, filter);
-			}
-		}
+	ShadowMap* m_ShadowMap;
+	Matrix4 m_Projection, m_View;
+	Vec3 m_CamPos;
 
-		Mesh sphereMesh;
-		float previousRadiusChange = 0;
-		std::unordered_map<std::string, FrameBuffer> g_frameBuffers;
-		std::unordered_map<std::string, CubemapTexture> g_cubemapTextures;
-		ShadowMap* m_ShadowMap;
-		glm::mat4 lightProjection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, 0.1f, 100.0f);
-		glm::mat4 lightView = glm::lookAt(glm::vec3(0, 2, 0), glm::vec3(0.0f), glm::vec3(0.0, 1.0, 0.0));
-		glm::mat4 lightSpaceMatrix;
-		Matrix4 m_Projection, m_View;
-		Vec3 m_CamPos;
+	Ref<Mesh> mLineMesh;
+	Ref<BoxGizmo> m_BoxGizmo;
 
-		Ref<Mesh> mLineMesh;
-		Ref<BoxGizmo> m_BoxGizmo;
+	void Init() {
 
-		struct DebugShape {
-			Vec3 Position;
-			Quat Rotation;
-			Color LineColor;
-			float Life;
-			float Width;
-			bool DepthTest = true;
-			//Ref<Physics::PhysicShape> Shape;
-		};
-
-		struct DebugLine {
-			Vec3 Start;
-			Vec3 End;
-			Color LineColor;
-			float Life;
-			float Width;
-			bool DepthTest = true;
-		};
-
-		std::vector<DebugLine> m_DebugLines;
-		std::vector<DebugShape> m_DebugShapes;
-	}
-
-	void SceneRenderer::Init() {
-
-		const auto defaultResolution = Vec2(1280, 720);
+		float resolutionScale = Engine::GetProject()->Settings.ResolutionScale;
+		Vec2 defaultResolution = Vec2(Engine::GetCurrentWindow()->viewportWidth, Engine::GetCurrentWindow()->viewportHeight);
+		Vec2 finalImageResolution = Vec2(Engine::GetCurrentWindow()->viewportWidth * resolutionScale, Engine::GetCurrentWindow()->viewportHeight * resolutionScale);
 		g_frameBuffers = std::unordered_map<std::string, FrameBuffer>();
 		g_frameBuffers["GBuffer"] = FrameBuffer("GBuffer", defaultResolution.x, defaultResolution.y);
 		g_frameBuffers["GBuffer"].CreateAttachment("BaseColor", GL_RGBA8);
 		g_frameBuffers["GBuffer"].CreateAttachment("Normal", GL_RGBA16F);
 		g_frameBuffers["GBuffer"].CreateAttachment("RMA", GL_RGBA8);
-		g_frameBuffers["GBuffer"].CreateAttachment("Lighting", GL_RGBA16F);
+		g_frameBuffers["GBuffer"].CreateAttachment("Lighting", GL_RGB16F);
 		g_frameBuffers["GBuffer"].CreateAttachment("WorldSpacePosition", GL_RGBA32F);
 		g_frameBuffers["GBuffer"].CreateAttachment("MousePick", GL_R32I);
 		g_frameBuffers["GBuffer"].CreateDepthAttachment(GL_DEPTH_COMPONENT32F);
-		
+
 		g_frameBuffers["Outline"] = FrameBuffer("Outline", defaultResolution.x, defaultResolution.y);
-		g_frameBuffers["Outline"].CreateAttachment("Mask", GL_R8);
-		g_frameBuffers["Outline"].CreateAttachment("Result", GL_R8);
-		
-		g_frameBuffers["FinalImage"] = FrameBuffer("FinalImage", defaultResolution.x, defaultResolution.y);
+		//g_frameBuffers["Outline"].CreateAttachment("Mask", GL_R8);
+		//g_frameBuffers["Outline"].CreateAttachment("Result", GL_R8);
+		g_frameBuffers["Outline"].CreateAttachment("Color", GL_RGB16F);
+
+		g_frameBuffers["FinalImage"] = FrameBuffer("FinalImage", finalImageResolution.x, finalImageResolution.y);
 		g_frameBuffers["FinalImage"].CreateAttachment("Color", GL_RGB16F);
 
-		//m_GBuffer = CreateScope<Framebuffer2>(false, defaultResolution);
-		//m_GBuffer->SetTexture(CreateRef<Texture>(defaultResolution, GL_DEPTH_COMPONENT), GL_DEPTH_ATTACHMENT); // Depth
-		//m_GBuffer->SetTexture(CreateRef<Texture>(defaultResolution, GL_RGB), GL_COLOR_ATTACHMENT0); // Albedo
-		//m_GBuffer->SetTexture(CreateRef<Texture>(defaultResolution, GL_RGB), GL_COLOR_ATTACHMENT1); // Normal
-		//m_GBuffer->SetTexture(CreateRef<Texture>(defaultResolution, GL_RGBA), GL_COLOR_ATTACHMENT2); // Material + unlit
-		
-		//auto entityTexture = CreateRef<Texture>(defaultResolution, GL_RED_INTEGER, GL_R32I, GL_INT);
-		//entityTexture->SetParameter(GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
-		//m_GBuffer->SetTexture(entityTexture, GL_COLOR_ATTACHMENT3); // Entity ID
-		//
-		//m_GBuffer->SetTexture(CreateRef<Texture>(defaultResolution, GL_RED, GL_R16F, GL_FLOAT), GL_COLOR_ATTACHMENT4); // Emissive
-		//m_GBuffer->SetTexture(CreateRef<Texture>(defaultResolution, GL_RG, GL_RG16F, GL_FLOAT), GL_COLOR_ATTACHMENT5); // Velocity
-		//m_GBuffer->SetTexture(CreateRef<Texture>(defaultResolution, GL_RG, GL_RG, GL_UNSIGNED_BYTE), GL_COLOR_ATTACHMENT6); // UV
-		//m_GBuffer->SetTexture(CreateRef<Texture>(defaultResolution, GL_RGBA, GL_RGBA32F, GL_UNSIGNED_BYTE), GL_COLOR_ATTACHMENT7); // World Space Position
-
-		//m_ShadingBuffer = CreateScope<Framebuffer2>(true, defaultResolution);
-		//m_ShadingBuffer->SetTexture(CreateRef<Texture>(defaultResolution, GL_RGB, GL_RGB16F, GL_FLOAT));
-		//m_ShadingBuffer->SetTexture(CreateRef<Texture>(defaultResolution, GL_DEPTH_COMPONENT), GL_DEPTH_ATTACHMENT); // Depth
-
-		//m_OutlineBuffer = CreateScope<Framebuffer2>(false, defaultResolution);
-		//m_OutlineBuffer->SetTexture(CreateRef<Texture>(defaultResolution, GL_RGB), GL_COLOR_ATTACHMENT0);
-
-		//g_cubemapTextures["NightSky"].Load("res/Textures/NightSky");
-		//g_cubemapTextures["NightSky"].Bake();
-		//cubeMesh = new Mesh();
-		//cubeMesh->AddSurface(Util::GenerateCubeVertices(), Util::GenerateCubeIndices());
-
-		//m_ShadowMap = new ShadowMap(1024, 1024);
+		m_ShadowMap = new ShadowMap(2048, 2048);
 
 		// Generate debug meshes
-		std::vector<Vertex> lineVertices
-		{
+		std::vector<Vertex> lineVertices{
 			{ Vec3(0, 0, 0), Vec3(0, 0, 0), Vec2(0, 0) },
 			{ Vec3(1, 1, 1), Vec3(0, 0, 0), Vec2(0, 0) }
 		};
-
-		std::vector<uint32_t> lineIndices
-		{
-			0, 1
-		};
+		std::vector<uint32_t> lineIndices{ 0, 1 };
 
 		// Debug shapes
 		mLineMesh = CreateRef<Mesh>();
@@ -177,63 +70,58 @@ namespace Faint {
 
 		m_BoxGizmo = CreateRef<BoxGizmo>();
 		m_BoxGizmo->CreateMesh();
-
-		m_DebugLines = std::vector<DebugLine>();
-		m_DebugShapes = std::vector<DebugShape>();
 	}
 
-	void SceneRenderer::Cleanup()
-	{
+	void Cleanup() {
 	}
 
-	void SceneRenderer::Update(const Time time) {
-
+	void Update(const Time time) {
 		// Delete debug shapes that are dead
-		if (m_DebugLines.size() > 0)
-		{
-			std::erase_if(m_DebugLines, [](const DebugLine& line)
-				{
-					return line.Life < 0.0f;
-				});
-
-			for (auto& line : m_DebugLines) {
-				line.Life -= time;
-			}
-		}
-
-		if (m_DebugShapes.size() > 0)
-		{
-			std::erase_if(m_DebugShapes, [](const DebugShape& shape)
-				{
-					return shape.Life < 0.0f;
-				});
-
-			for (auto& shape : m_DebugShapes)
-			{
-				shape.Life -= time;
-			}
-		}
-
+		//if (m_DebugLines.size() > 0)
+		//{
+		//	std::erase_if(m_DebugLines, [](const DebugLine& line)
+		//		{
+		//			return line.Life < 0.0f;
+		//		});
+		//
+		//	for (auto& line : m_DebugLines) {
+		//		line.Life -= time;
+		//	}
+		//}
+		//if (m_DebugShapes.size() > 0)
+		//{
+		//	std::erase_if(m_DebugShapes, [](const DebugShape& shape)
+		//		{
+		//			return shape.Life < 0.0f;
+		//		});
+		//
+		//	for (auto& shape : m_DebugShapes)
+		//	{
+		//		shape.Life -= time;
+		//	}
+		//}
 		if (Engine::IsPlayMode()) {
 			Renderer2D::Update();
 		}
 	}
 
-	void SceneRenderer::BeginRenderScene(const Matrix4& projection, const Matrix4& view, const Vec3& camPos) {
+	void BeginRenderScene(const Matrix4& projection, const Matrix4& view, const Vec3& camPos) {
 		m_Projection = projection;
 		m_View = view;
 		m_CamPos = camPos;
 	}
 
-	void SceneRenderer::RenderScene(Scene& scene, bool renderUI) {
+	void RenderScene(Scene& scene, bool renderUI) {
 
 		const Vec2 framebufferResolution = Vec2(Window::Get()->viewportWidth, Window::Get()->viewportHeight);
 
+		glDisable(GL_DITHER);
 		/* ^^^^^^ Clear All FrameBuffers ^^^^^^ */
 		{
 			FrameBuffer* gBuffer = &g_frameBuffers["GBuffer"];
 			// GBuffer
 			glDepthMask(GL_TRUE);
+			gBuffer->Bind();
 			gBuffer->ClearAttachment("BaseColor", 0, 0, 0, 0);
 			gBuffer->ClearAttachment("Normal", 0, 0, 0, 0);
 			gBuffer->ClearAttachment("RMA", 0, 0, 0, 0);
@@ -241,62 +129,75 @@ namespace Faint {
 			gBuffer->ClearDepthAttachment();
 		}
 
-		//ShadowPass(scene);
+		g_lightSpaceMatrix = lightProjection * lightView;
 		{
-			//glBindFramebuffer(GL_FRAMEBUFFER, m_ShadowMap->GetID());
-			//glClear(GL_DEPTH_BUFFER_BIT);
-			//glViewport(0, 0, 1280, 720);
-			//
-			//Shader* shadowMapShader = ShaderManager::GetShader("shadowMap");
-			//
-			//shadowMapShader->Use();
-			//
-			//lightSpaceMatrix = lightProjection * lightView;
-			//shadowMapShader->SetMat4("projectionView", lightSpaceMatrix);
-			//
-			//auto view = scene.Reg().view<TransformComponent, MeshRendererComponent, VisibilityComponent>();
-			//for (auto e : view) {
-			//	auto [transform, mesh, visiblity] = view.get<TransformComponent, MeshRendererComponent, VisibilityComponent>(e);
-			//
-			//	shadowMapShader->SetMat4("modelMatrix", transform.GetGlobalMatrix());
-			//	if (mesh._Model && visiblity.Visible) {
-			//		for (Ref<Mesh> m : mesh._Model->GetMeshes()) {
-			//			Renderer::SubmitMesh(m, transform.GetGlobalMatrix(), (uint32_t)e);
-			//		}
-			//	}
-			//}
-			//
-			//glBindFramebuffer(GL_FRAMEBUFFER, 0);
-		}
-
-		if (renderUI) {
-			g_frameBuffers["GBuffer"].Resize(framebufferResolution.x, framebufferResolution.y);
-		}
-
-		GBufferPass(scene);
-
-		// Save previous Matrix
-		auto modelView = scene.Reg().view<TransformComponent, MeshRendererComponent, VisibilityComponent>();
-		for (auto e : modelView) {
-			auto [transform, mesh, visibility] = modelView.get<TransformComponent, MeshRendererComponent, VisibilityComponent>(e);
-			Entity entity = { (entt::entity)e, Engine::GetCurrentScene().get() };
-			if (!entity.IsValid())
-				continue;
-
-			if (mesh._Model && visibility.Visible) {
-				transform.PreviousMatrix = m_Projection * m_View * transform.GetGlobalMatrix();
+			glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_ShadowMap->GetID());
+			Shader shadowMapShader = ShaderManager::GetShader("shadowMap");
+			shadowMapShader.Bind();
+			shadowMapShader.SetMat4("projectionView", g_lightSpaceMatrix);
+			
+			auto view = scene.Reg().view<TransformComponent, MeshRendererComponent, VisibilityComponent>();
+			for (auto e : view) {
+				auto [transform, mesh, visiblity] = view.get<TransformComponent, MeshRendererComponent, VisibilityComponent>(e);
+				shadowMapShader.SetMat4("modelMatrix", transform.GetGlobalMatrix());
+				if (mesh._Model && visiblity.Visible) {
+					for (Ref<Mesh> m : mesh._Model->GetMeshes()) {
+						m->Draw(&shadowMapShader, false);
+					}
+				}
 			}
+			glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		}
-
-		ShadingPass(scene);
 		//SkyboxPass();
 
-		BlitFrameBuffer(&g_frameBuffers["GBuffer"], &g_frameBuffers["FinalImage"], "Lighting", "Color", GL_COLOR_BUFFER_BIT, GL_LINEAR);
-		//BlitToDefaultFrameBuffer(&g_frameBuffers["FinalImage"], "Color", GL_COLOR_BUFFER_BIT, GL_NEAREST);
+		// Save previous Matrix
+		//auto modelView = scene.Reg().view<TransformComponent, MeshRendererComponent, VisibilityComponent>();
+		//for (auto e : modelView) {
+		//	auto [transform, mesh, visibility] = modelView.get<TransformComponent, MeshRendererComponent, VisibilityComponent>(e);
+		//	Entity entity = { (entt::entity)e, Engine::GetCurrentScene().get() };
+		//	if (!entity.IsValid())
+		//		continue;
+		//
+		//	if (mesh._Model && visibility.Visible) {
+		//		transform.PreviousMatrix = m_Projection * m_View * transform.GetGlobalMatrix();
+		//	}
+		//}
 
-		if (renderUI) {
-			DebugPass(scene);
-		}
+		if (renderUI)
+			g_frameBuffers["GBuffer"].Resize(framebufferResolution.x, framebufferResolution.y);
+		GBufferPass(scene);
+		ShadingPass(scene);
+		
+		//if (!renderUI) {
+			BlitFrameBuffer(&g_frameBuffers["GBuffer"], &g_frameBuffers["FinalImage"], "Lighting", "Color", GL_COLOR_BUFFER_BIT, GL_LINEAR);
+			BlitToDefaultFrameBuffer(&g_frameBuffers["FinalImage"], "Color", GL_COLOR_BUFFER_BIT, GL_NEAREST);
+		//}
+		//if (renderUI) {
+		//	DebugPass(scene);
+		//}
+
+		//g_frameBuffers["Outline"].Resize(framebufferResolution.x, framebufferResolution.y);
+		//{
+		//	FrameBuffer* gBuffer = GetFrameBuffer("GBuffer");
+		//	FrameBuffer* outlineBuffer = GetFrameBuffer("Outline");
+		//	//Shader maskShader = ShaderManager::GetShader("outlineMask");
+		//	Shader shader = ShaderManager::GetShader("outline");
+		//	
+		//	outlineBuffer->BindDepthAttachmentFrom(*gBuffer);
+		//	outlineBuffer->Bind();
+		//	//outlineBuffer->ClearAttachmentI("Mask", 0);
+		//	//outlineBuffer->ClearAttachmentI("Result", 0);
+		//	outlineBuffer->ClearAttachment("Color", 0, 0, 0);
+		//	glDisable(GL_DEPTH_TEST);
+		//	glDisable(GL_BLEND);
+		//	shader.Bind();
+		//
+		//	glViewport(0, 0, g_frameBuffers["Outline"].GetWidth(), g_frameBuffers["Outline"].GetHeight());
+		//	outlineBuffer->DrawBuffer("Color");
+		//	
+		//	Renderer::DrawQuad();
+		//	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		//}
 
 		//if (Engine::IsPlayMode()) {
 		//	framebuffer.Bind();
@@ -330,56 +231,56 @@ namespace Faint {
 		//	}
 		//}
 
-		RenderCommand::Enable(RendererEnum::DEPTH_TEST);
+		//RenderCommand::Enable(RendererEnum::DEPTH_TEST);
 	}
 
-	FrameBuffer* SceneRenderer::GetFrameBuffer(const std::string& name) {
-		return &g_frameBuffers[name];
+	FrameBuffer* GetFrameBuffer(const std::string& name) {
+		auto it = g_frameBuffers.find(name);
+		return (it != g_frameBuffers.end()) ? &it->second : nullptr;
 	}
 
-	void SceneRenderer::DrawDebugLine(const Vec3& start, const Vec3& end, const Color& color, float life, float width) {
+	void DrawDebugLine(const Vec3& start, const Vec3& end, const Color& color, float life, float width) {
 
-		DebugLine debugLine = {
-			start,
-			end,
-			color,
-			life,
-			width,
-			true
-		};
-
-		m_DebugLines.push_back(debugLine);
+		//DebugLine debugLine = {
+		//	start,
+		//	end,
+		//	color,
+		//	life,
+		//	width,
+		//	true
+		//};
+		//
+		//m_DebugLines.push_back(debugLine);
 	}
 
-	void SceneRenderer::DrawDebugShape(const Vec3& position, const Quat& rotation, PxShape* shape, const Color& color, float life, float width)
+	void DrawDebugShape(const Vec3& position, const Quat& rotation, PxShape* shape, const Color& color, float life, float width)
 	{
-		DebugShape debugShape{
-			.Position = position,
-			.Rotation = rotation,
-			.LineColor = color,
-			.Life = life,
-			.Width = width,
-			.DepthTest = true,
-			//.Shape = 
-		};
-
-		m_DebugShapes.push_back(debugShape);
+		//DebugShape debugShape{
+		//	.Position = position,
+		//	.Rotation = rotation,
+		//	.LineColor = color,
+		//	.Life = life,
+		//	.Width = width,
+		//	.DepthTest = true,
+		//	//.Shape = 
+		//};
+		//
+		//m_DebugShapes.push_back(debugShape);
 	}
 
-	void SceneRenderer::GBufferPass(Scene& scene) {
-
-		g_frameBuffers["GBuffer"].Bind();
-		g_frameBuffers["GBuffer"].DrawBuffers({ "BaseColor", "Normal", "RMA", "WorldSpacePosition", "MousePick" });
-		glViewport(0, 0, g_frameBuffers["GBuffer"].GetWidth(), g_frameBuffers["GBuffer"].GetHeight());
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	void GBufferPass(Scene& scene) {
+		FrameBuffer* gBuffer = GetFrameBuffer("GBuffer");
+		gBuffer->Bind();
+		gBuffer->DrawBuffers({ "BaseColor", "Normal", "RMA", "WorldSpacePosition", "MousePick" });
+		glViewport(0, 0, gBuffer->GetWidth(), gBuffer->GetHeight());
+		//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		{
 			// Init
 			RenderCommand::Enable(RendererEnum::DEPTH_TEST);
 			RenderCommand::Enable(RendererEnum::FACE_CULL);
 
-
 			Shader gBufferShader = ShaderManager::GetShader("gBuffer");
-			
+
 			gBufferShader.Bind();
 			gBufferShader.SetMat4("projection", m_Projection);
 			gBufferShader.SetMat4("view", m_View);
@@ -389,9 +290,9 @@ namespace Faint {
 				auto view = scene.Reg().view<TransformComponent, MeshRendererComponent, VisibilityComponent>();
 				for (auto e : view) {
 					auto [transform, mesh, visiblity] = view.get<TransformComponent, MeshRendererComponent, VisibilityComponent>(e);
-					
-					gBufferShader.SetMat4("model", transform.GetGlobalMatrix());
-					gBufferShader.SetInt("aEntityID", (int)e);
+
+					//gBufferShader.SetMat4("model", transform.GetGlobalMatrix());
+					//gBufferShader.SetInt("aEntityID", (int)e);
 					if (mesh._Model && visiblity.Visible) {
 						for (Ref<Mesh> m : mesh._Model->GetMeshes()) {
 							Renderer::SubmitMesh(m, transform.GetGlobalMatrix(), (uint32_t)e);
@@ -464,17 +365,17 @@ namespace Faint {
 				Renderer2D::DrawString(text.TextString, transform.GetGlobalMatrix(), text, (int)e);
 			}
 		}
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		//glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}
 
 	bool cubemapIsLoaded = false;
-	void SceneRenderer::ShadingPass(Scene& scene) {
+	void ShadingPass(Scene& scene) {
 
 		// ZoneScoped
 		g_frameBuffers["GBuffer"].Bind();
 		g_frameBuffers["GBuffer"].DrawBuffer("Lighting");
 		glViewport(0, 0, g_frameBuffers["GBuffer"].GetWidth(), g_frameBuffers["GBuffer"].GetHeight());
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		{
 			Ref<Environment> env = scene.GetEnvironment();
 
@@ -484,7 +385,7 @@ namespace Faint {
 			shader.SetMat4("view", m_View);
 			shader.SetVec3("CamPosition", m_CamPos);
 			shader.SetFloat("time", Engine::GetTime());
-			shader.SetMat4("lightProjectionView", lightSpaceMatrix);
+			shader.SetMat4("lightProjectionView", g_lightSpaceMatrix);
 
 			struct LightDistance {
 				TransformComponent transform;
@@ -527,11 +428,9 @@ namespace Faint {
 			}
 
 			std::sort(lightDistances.begin(), lightDistances.end(),
-				[](const LightDistance& a, const LightDistance& b)
-				{
+				[](const LightDistance& a, const LightDistance& b) {
 					return a.distance < b.distance;
-				}
-			);
+				});
 
 			for (const auto& l : lightDistances)
 				Renderer::RegisterLight(l.transform, l.light);
@@ -546,80 +445,20 @@ namespace Faint {
 			glBindTexture(GL_TEXTURE_2D, g_frameBuffers["GBuffer"].GetColorAttachmentHandleByName("RMA"));
 			glActiveTexture(GL_TEXTURE4);
 			glBindTexture(GL_TEXTURE_2D, g_frameBuffers["GBuffer"].GetColorAttachmentHandleByName("WorldSpacePosition"));
-			//glActiveTexture(GL_TEXTURE5);
-			//glBindTexture(GL_TEXTURE_2D, m_ShadowMap->GetID());
+			glActiveTexture(GL_TEXTURE5);
+			glBindTexture(GL_TEXTURE_2D, m_ShadowMap->GetID());
 
-			glDisable(GL_DEPTH_TEST);
 			Renderer::DrawQuad();
 		}
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		//glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}
 
-	void SceneRenderer::ShadowPass(Scene& scene)
+	void ShadowPass(Scene& scene)
 	{
-		RenderCommand::Enable(RendererEnum::DEPTH_TEST);
-
-		Shader shader = ShaderManager::GetShader("shadowMap");
-		shader.Bind();
-
-		RenderCommand::Enable(RendererEnum::FACE_CULL);
-		glCullFace(GL_BACK);
-
-		auto meshView = scene.Reg().view<TransformComponent, MeshRendererComponent, VisibilityComponent>();
-		auto quakeView = scene.Reg().view<TransformComponent, BSPBrushComponent, VisibilityComponent>();
-		auto view = scene.Reg().view<TransformComponent, LightComponent, VisibilityComponent>();
 		
-		for (auto l : view)
-		{
-			auto [transform, light, visibility] = view.get<TransformComponent, LightComponent, VisibilityComponent>(l);
-
-			if (!light.CastShadows || !visibility.Visible)
-				continue;
-
-			if (light.Type == LightType::Directional)
-			{
-				light.CalculateViewProjection(m_View, m_Projection);
-
-				//for (int i = 0; i < CSM_AMOUNT; i++)
-				//{
-				//	
-				//}
-			}
-			else if (light.Type == LightType::Point)
-			{
-				RenderCommand::Disable(RendererEnum::FACE_CULL);
-
-				//light.m_Framebuffers[0]->Bind();
-				//light.m_Framebuffers[0]->Clear();
-				//{
-				//	Matrix4 lightTransform = Matrix4(1.0f);
-				//
-				//	Vec3 pos = transform.GetGlobalPosition();
-				//	
-				//	for (int i = 0; i < CSM_AMOUNT; i++)
-				//	{
-				//		shader.SetMat4("projectionView", light.GetProjection() * glm::inverse(transform.GetGlobalMatrix()));
-				//	}
-				//	//lightSpaceMatrix = light.GetProjection() * glm::inverse(transform.GetGlobalMatrix());
-				//	
-				//	for (auto e : meshView)
-				//	{
-				//		auto [transform, mesh, visibility] = meshView.get<TransformComponent, MeshRendererComponent, VisibilityComponent>(e);
-				//		if (mesh._Model != nullptr && visibility.Visible) {
-				//
-				//			for (auto& m : mesh._Model->GetMeshes())
-				//				Renderer::SubmitMesh(m, transform.GetGlobalMatrix());
-				//		}
-				//	}
-				//
-				//	Renderer::Flush(&shader, true);
-				//}
-				//light.m_Framebuffers[0]->Unbind();
-			}
-		}
 	}
 
-	void SceneRenderer::SkyboxPass() {
+	void SkyboxPass() {
 
 		FrameBuffer* gBuffer = GetFrameBuffer("GBuffer");
 		Shader shader = ShaderManager::GetShader("skybox");
@@ -627,7 +466,7 @@ namespace Faint {
 		gBuffer->Bind();
 		gBuffer->DrawBuffer("BaseColor");
 		glViewport(0, 0, gBuffer->GetWidth(), gBuffer->GetHeight());
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		Transform2 skyboxTransform;
 		skyboxTransform.position = Engine::GetCurrentScene()->GetCurrentCamera()->GetPosition();
@@ -653,15 +492,15 @@ namespace Faint {
 			hasSky = true;
 		}
 
-		if (!hasSky && env->CurrentSkyType == SkyType::ProceduralSky) {
-			RenderCommand::Clear();
-			RenderCommand::SetClearColor(Color{ 0, 0, 0, 1 });
-			env->proceduralSkybox->Draw(m_Projection, m_View);
-		}
-		else if (!hasSky && env->CurrentSkyType == SkyType::ClearColor) {
-			RenderCommand::Clear();
-			RenderCommand::SetClearColor({ env->ColorClear.x, env->ColorClear.y, env->ColorClear.z, 1 });
-		}
+		//if (!hasSky && env->CurrentSkyType == SkyType::ProceduralSky) {
+		//	RenderCommand::Clear();
+		//	RenderCommand::SetClearColor(Color{ 0, 0, 0, 1 });
+		//	env->proceduralSkybox->Draw(m_Projection, m_View);
+		//}
+		//else if (!hasSky && env->CurrentSkyType == SkyType::ClearColor) {
+		//	RenderCommand::Clear();
+		//	RenderCommand::SetClearColor({ env->ColorClear.x, env->ColorClear.y, env->ColorClear.z, 1 });
+		//}
 
 		shader.Bind();
 		shader.SetMat4("projection", Engine::GetCurrentScene()->GetCurrentCamera()->GetProjectionMatrix());
@@ -672,20 +511,17 @@ namespace Faint {
 			glBindTexture(GL_TEXTURE_CUBE_MAP, g_cubemapTextures["NightSky"].GetID());
 			Renderer::DrawCube();
 		}
-		//shader->Stop();
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
-		//glDepthMask(GL_TRUE);
 	}
 
-	void SceneRenderer::OutlinePass(Scene& scene) {
+	void OutlinePass(Scene& scene) {
 
 		FrameBuffer* gBuffer = GetFrameBuffer("GBuffer");
 		FrameBuffer* outlineFBO = GetFrameBuffer("Outline");
 
 	}
 
-	void SceneRenderer::DebugPass(Scene& scene) {
+	void DebugPass(Scene& scene) {
 
 		//m_ShadingBuffer->Bind();
 		g_frameBuffers["GBuffer"].Bind();
@@ -700,15 +536,15 @@ namespace Faint {
 			shader.SetMat4("view", m_View);
 
 			//bool depthTestState = true;
-			for (auto& l : m_DebugLines) {
-
-				shader.SetVec4("color", l.LineColor);
-				shader.SetVec3("startPos", l.Start);
-				shader.SetVec3("endPos", l.End);
-
-				glLineWidth(l.Width);
-				RenderCommand::DrawLines(0, 2);
-			}
+			//for (auto& l : m_DebugLines) {
+			//
+			//	shader.SetVec4("color", l.LineColor);
+			//	shader.SetVec3("startPos", l.Start);
+			//	shader.SetVec3("endPos", l.End);
+			//
+			//	glLineWidth(l.Width);
+			//	RenderCommand::DrawLines(0, 2);
+			//}
 
 			//shader->Stop();
 
@@ -716,50 +552,50 @@ namespace Faint {
 			shader.Bind();
 			shader.SetMat4("projection", m_Projection);
 			shader.SetFloat("_Opacity", 0.5f);
-			
-			for (auto& shape : m_DebugShapes) {
-				if (shape.DepthTest) {
-					glEnable(GL_DEPTH_TEST);
-				}
-				else {
-					RenderCommand::Disable(RendererEnum::DEPTH_TEST);
-				}
 
-				shader.SetVec4("Color", shape.LineColor);
-
-				glLineWidth(shape.Width);
-				Matrix4 view = m_View;
-				//Physics::RigidbodyShapes shapeType = shape.Shape->GetType();
-				//switch (shapeType) {
-				//case Physics::RigidbodyShapes::BOX:
-				//{
-				//	const Quat& globalRotation = glm::normalize(shape.Rotation);
-				//	const Matrix4& rotationMatrix = glm::mat4_cast(globalRotation);
-				//
-				//	view = glm::translate(view, shape.Position) * rotationMatrix;
-				//	view = glm::scale(view, reinterpret_cast<Physics::Box*>(shape.Shape.get())->GetSize());
-				//
-				//	shader->SetMat4("view", view);
-				//
-				//	m_BoxGizmo->Bind();
-				//	RenderCommand::DrawLines(0, 26);
-				//	break;
-				//}
-				//case Physics::RigidbodyShapes::SPHERE:
-				//{
-				//	const Quat& globalRotation = glm::normalize(shape.Rotation);
-				//	const Matrix4& rotationMatrix = glm::mat4_cast(globalRotation);
-				//
-				//	view = glm::translate(view, shape.Position) * rotationMatrix;
-				//	view = glm::scale(view, Vec3(reinterpret_cast<Physics::Sphere*>(shape.Shape.get())->GetRadius()));
-				//	shader->SetMat4("view", view);
-				//
-				//	//m_SphereGizmo->Bind();
-				//	RenderCommand::DrawLines(0, 128);
-				//	break;
-				//}
-				//}
-			}
+			//for (auto& shape : m_DebugShapes) {
+			//	if (shape.DepthTest) {
+			//		glEnable(GL_DEPTH_TEST);
+			//	}
+			//	else {
+			//		RenderCommand::Disable(RendererEnum::DEPTH_TEST);
+			//	}
+			//
+			//	shader.SetVec4("Color", shape.LineColor);
+			//
+			//	glLineWidth(shape.Width);
+			//	Matrix4 view = m_View;
+			//	//Physics::RigidbodyShapes shapeType = shape.Shape->GetType();
+			//	//switch (shapeType) {
+			//	//case Physics::RigidbodyShapes::BOX:
+			//	//{
+			//	//	const Quat& globalRotation = glm::normalize(shape.Rotation);
+			//	//	const Matrix4& rotationMatrix = glm::mat4_cast(globalRotation);
+			//	//
+			//	//	view = glm::translate(view, shape.Position) * rotationMatrix;
+			//	//	view = glm::scale(view, reinterpret_cast<Physics::Box*>(shape.Shape.get())->GetSize());
+			//	//
+			//	//	shader->SetMat4("view", view);
+			//	//
+			//	//	m_BoxGizmo->Bind();
+			//	//	RenderCommand::DrawLines(0, 26);
+			//	//	break;
+			//	//}
+			//	//case Physics::RigidbodyShapes::SPHERE:
+			//	//{
+			//	//	const Quat& globalRotation = glm::normalize(shape.Rotation);
+			//	//	const Matrix4& rotationMatrix = glm::mat4_cast(globalRotation);
+			//	//
+			//	//	view = glm::translate(view, shape.Position) * rotationMatrix;
+			//	//	view = glm::scale(view, Vec3(reinterpret_cast<Physics::Sphere*>(shape.Shape.get())->GetRadius()));
+			//	//	shader->SetMat4("view", view);
+			//	//
+			//	//	//m_SphereGizmo->Bind();
+			//	//	RenderCommand::DrawLines(0, 128);
+			//	//	break;
+			//	//}
+			//	//}
+			//}
 
 			if (scene.selectedType == _CAMERA)
 			{
@@ -797,6 +633,5 @@ namespace Faint {
 			//}
 			//shader->Stop();
 		}
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}
 }

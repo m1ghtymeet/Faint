@@ -176,10 +176,11 @@ namespace Faint {
 			// Functions Addded?
 		});
 
-		glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
+		glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+		glClear(GL_COLOR_BUFFER_BIT);
+		glClipControl(GL_LOWER_LEFT, GL_ZERO_TO_ONE);
+		//glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
 		glEnable(GL_DEPTH_TEST);
-		//glEnable(GL_BLEND);
-		//glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 		InitImgui();
 	}
@@ -198,8 +199,7 @@ namespace Faint {
 	{
 		// ZoneScoped
 
-		if (!scene)
-			return;
+		if (!scene) return;
 
 		Ref<Camera> cam = scene->GetCurrentCamera();
 		//if (!cam) return;
@@ -208,12 +208,12 @@ namespace Faint {
 			scene->Draw();
 		}
 		else {
-			float resolutionScale = glm::clamp(Engine::GetProject()->Settings.ResolutionScale, 0.5f, 2.0f);
-			Engine::GetCurrentScene()->m_EditorCamera->SetViewportSize(viewportWidth * resolutionScale, viewportHeight * resolutionScale);
+			//float resolutionScale = glm::clamp(Engine::GetProject()->Settings.ResolutionScale, 0.5f, 2.0f);
+			Engine::GetCurrentScene()->m_EditorCamera->SetViewportSize(viewportWidth, viewportHeight);
 			scene->Draw(scene->m_EditorCamera->GetProjectionMatrix(), scene->m_EditorCamera->GetViewMatrix());
 		}
 
-		//glEnable(GL_DEPTH_TEST);
+		glEnable(GL_DEPTH_TEST);
 		Renderer::EndScene();
 	}
 

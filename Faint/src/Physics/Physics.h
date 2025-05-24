@@ -11,7 +11,6 @@
 #include <vector>
 
 namespace Faint::Physics {
-
 	void Init();
 	void BeginFrame();
 	void StepPhysics(float deltaTime);

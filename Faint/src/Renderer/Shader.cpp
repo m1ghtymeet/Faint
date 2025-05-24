@@ -260,6 +260,15 @@ namespace Faint {
         int lineNumber = 0;
         bool versionInserted = false;
         while (std::getline(file, line)) {
+            // Contains #shader
+            //if (line.find("#shader") != std::string::npos) {
+            //    if (line.find("vertex") != std::string::npos) {
+            //
+            //    }
+            //    else if (line.find("fragment") != std::string::npos) {
+            //
+            //    }
+            //}
             // Handle includes
             if (line.find("#include") != std::string::npos) {
                 size_t start = line.find("\"") + 1;

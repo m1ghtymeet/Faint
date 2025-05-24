@@ -11,10 +11,6 @@ namespace Faint {
 	class Scene;
 	class EngineSubsystem;
 	class EngineSubsystemScriptable;
-	
-	namespace Physics {
-		class PhysicsEngine;
-	}
 
 	enum GameState {
 		Loading,
