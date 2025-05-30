@@ -1,5 +1,5 @@
 #include "Physics.h"
-#include "Renderer/Renderer.h"
+#include "Renderer/SceneRenderer.h"
 
 namespace Faint::Physics {
 
@@ -51,7 +51,7 @@ namespace Faint::Physics {
                 default: color = WHITE; break;
             }
 
-            Renderer::DrawLine(Physics::PxVec3toGlmVec3(pxLine.pos0), Physics::PxVec3toGlmVec3(pxLine.pos1), color);
+            SceneRenderer::DrawLine(Physics::PxVec3toGlmVec3(pxLine.pos0), Physics::PxVec3toGlmVec3(pxLine.pos1), color);
         }
     }
 }

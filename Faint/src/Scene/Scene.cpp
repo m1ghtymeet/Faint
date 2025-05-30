@@ -7,8 +7,6 @@
 #include "Threading/JobSystem.h"
 #include "FileSystem/File.h"
 
-#include "Renderer/ShadersManager.h"
-
 #include "AssetManagment/Project.h"
 
 #include "Components.h"
@@ -42,6 +40,8 @@ namespace Faint {
 		m_systems.push_back(m_ScriptingSystem);
 		m_systems.push_back(CreateRef<TransformSystem>(this));
 		m_systems.push_back(CreateRef<AudioSystem>(this));
+
+		//SceneRenderer::Init();
 	}
 
 	Scene::~Scene() {

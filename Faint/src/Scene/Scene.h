@@ -4,7 +4,6 @@
 #include "Common/UUID.h"
 #include "Debug/MulticastDelegate.h"
 #include "Renderer/EditorCamera.h"
-#include "Renderer/Types/Framebuffer2.h"
 #include "Scene/Environment/Environment.h"
 
 #include "Scene/Systems/PhysicsSystem.h"

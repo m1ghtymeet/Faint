@@ -1,22 +1,11 @@
 #pragma once
-
 #include "Core/Base.h"
-
 #include "ini.h"
 
-namespace Faint {
+namespace Faint::Config {
+	mINI::INIFile Begin(const std::string& path, bool read = false);
+	void Write(mINI::INIFile, std::string& title, std::string& value);
+	inline mINI::INIStructure currentINI;
 
-	class Config {
-	public:
-
-		static mINI::INIFile Begin(const std::string& path, bool read = false);
-		static void Write(mINI::INIFile, std::string& title, std::string& value);
-
-		static mINI::INIStructure currentINI;
-
-	private:
-		static std::string currentPath;
-		
-		//static mINI::INIFile currentFile;
-	};
+	inline glm::ivec2 finalImageResolution = { 1920 / 2, 1080 / 2 };
 }

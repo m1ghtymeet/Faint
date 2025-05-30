@@ -7,8 +7,6 @@ uniform int EntityID;
 uniform vec4 OutlineColor;
 uniform float Radius;
 
-layout (binding = 0) uniform usampler2D u_EntityTexture;
-layout (binding = 1) uniform sampler2D u_Depth;
 layout (binding = 2) uniform sampler2D WorldPositionTexture;
 
 uniform float outline_thickness = .2;
@@ -17,7 +15,7 @@ uniform float outline_threshold = .5;
 
 void main()
 {
-    int target = EntityID;
+    /*int target = EntityID;
     const float TAU = 6.28318530;
 	const float steps = 32.0;
     
@@ -90,5 +88,6 @@ void main()
         if (sum / 9.0 >= 0.0001) {
             FragColor = vec4(outline_colour, 1);
         }
-    }
+    }*/
+	FragColor = vec4(1);
 }

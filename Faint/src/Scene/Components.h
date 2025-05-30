@@ -31,5 +31,6 @@ namespace Faint {
 		ComponentGroup<VisibilityComponent, TransformComponent, ParentComponent,
 		CameraComponent, NetScriptComponent, WrenScriptComponent, LuaScriptComponent,
 		BoxColliderComponent, SphereColliderComponent, CharacterControllerComponent, RigidBodyComponent,
-		AudioComponent, MeshRendererComponent, LightComponent, TextComponent, TextBlitterComponent>;
+		AudioComponent, MeshRendererComponent, LightComponent, TextComponent, TextBlitterComponent,
+		SkyComponent>;
 }

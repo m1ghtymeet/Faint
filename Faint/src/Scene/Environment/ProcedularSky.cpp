@@ -1,6 +1,5 @@
 #include "ProcedularSky.h"
 
-#include "Renderer/ShadersManager.h"
 #include <glad/glad.h>
 
 namespace Faint {
@@ -33,17 +32,17 @@ namespace Faint {
 
 	void ProcedularSky::Draw(Matrix4 projection, Matrix4 view)
 	{
-		Shader skyShader = ShaderManager::GetShader("atmospheric_sky");
-		skyShader.Bind();
-		skyShader.SetFloat("SurfaceRadius", SurfaceRadius);
-		skyShader.SetFloat("AtmosphereRadius", AtmosphereRadius);
-		skyShader.SetFloat("SunIntensity", SunIntensity);
-				 
-		skyShader.SetMat4("Projection", projection);
-		skyShader.SetMat4("View", view);
-
-		glBindVertexArray(VAO);
-		glDrawArrays(GL_TRIANGLES, 0, 6);
+		//Shader skyShader = ShaderManager::GetShader("atmospheric_sky");
+		//skyShader.Bind();
+		//skyShader.SetFloat("SurfaceRadius", SurfaceRadius);
+		//skyShader.SetFloat("AtmosphereRadius", AtmosphereRadius);
+		//skyShader.SetFloat("SunIntensity", SunIntensity);
+		//		 
+		//skyShader.SetMat4("Projection", projection);
+		//skyShader.SetMat4("View", view);
+		//
+		//glBindVertexArray(VAO);
+		//glDrawArrays(GL_TRIANGLES, 0, 6);
 	}
 
 	Vec3 ProcedularSky::GetSunDirection()

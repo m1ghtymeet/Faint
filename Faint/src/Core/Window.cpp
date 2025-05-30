@@ -5,7 +5,6 @@
 
 #include "Engine.h"
 #include "Renderer/Renderer.h"
-#include "Renderer/Types/Framebuffer2.h"
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
@@ -89,24 +88,20 @@ namespace Faint {
 		Renderer::Init();
 	}
 
-	Ref<Window> Window::Get()
-	{
+	Ref<Window> Window::Get() {
 		static Ref<Window> instance;
-		if (instance == nullptr)
-		{
+		if (instance == nullptr) {
 			instance = CreateRef<Window>();
 		}
 
 		return instance;
 	}
 
-	GLFWwindow* Window::GetWindow()
-	{
+	GLFWwindow* Window::GetWindow() {
 		return window;
 	}
 
-	bool Window::ShouldClose()
-	{
+	bool Window::ShouldClose() {
 		return !glfwWindowShouldClose(window);
 	}
 
@@ -114,8 +109,7 @@ namespace Faint {
 		HZ_CORE_ERROR("GLFW Error " + std::to_string(error) + ": " + description + "");
 	}
 
-	void Window::Init()
-	{
+	void Window::Init() {
 		if (!glfwInit()) {
 			HZ_CORE_ERROR("GLFW Initialization Failed!");
 		}
@@ -123,12 +117,10 @@ namespace Faint {
 		glfwSetErrorCallback(GLFWErrorCallback);
 
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
-		//glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE); // To make MacOS happy
+		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
 		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+		glfwWindowHint(GLFW_FOCUS_ON_SHOW, GL_TRUE);
 		glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, true);
-		//ProjectSettings ps = Engine::GetProject()->Settings;
-		//glfwWindowHint(GLFW_RESIZABLE, ps.resizable);
 
 		window = glfwCreateWindow(width, height, title.c_str(), NULL, NULL);
 		if (!window) {
@@ -176,13 +168,12 @@ namespace Faint {
 			// Functions Addded?
 		});
 
-		glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-		glClear(GL_COLOR_BUFFER_BIT);
-		glClipControl(GL_LOWER_LEFT, GL_ZERO_TO_ONE);
-		//glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
-		glEnable(GL_DEPTH_TEST);
+		//glClipControl(GL_LOWER_LEFT, GL_ZERO_TO_ONE);
 
 		InitImgui();
+
+		glClearColor(0, 0, 0, 1);
+		glEnable(GL_DEPTH_TEST);
 	}
 
 	void Window::Update(Time time)
@@ -198,6 +189,7 @@ namespace Faint {
 	void Window::Draw()
 	{
 		// ZoneScoped
+		glfwSwapBuffers(window);
 
 		if (!scene) return;
 
@@ -213,7 +205,7 @@ namespace Faint {
 			scene->Draw(scene->m_EditorCamera->GetProjectionMatrix(), scene->m_EditorCamera->GetViewMatrix());
 		}
 
-		glEnable(GL_DEPTH_TEST);
+		//glEnable(GL_DEPTH_TEST);
 		Renderer::EndScene();
 	}
 
@@ -232,18 +224,14 @@ namespace Faint {
 			glfwMakeContextCurrent(backup_current_context);
 		}
 
-		glfwSwapBuffers(window);
-
 		glfwPollEvents();
 	}
 
-	void Window::SetScene(Ref<Scene> scene)
-	{
+	void Window::SetScene(Ref<Scene> scene) {
 		this->scene = scene;
 	}
 
-	Ref<Scene> Window::GetScene()
-	{
+	Ref<Scene> Window::GetScene() {
 		return scene;
 	}
 

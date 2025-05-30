@@ -19,16 +19,16 @@ namespace Faint {
 			float padding2;
 			float padding3;
 			Vec3 m_AlbedoColor;
-			int u_HasMetalness;
-			float u_MetalnessValue;
-			int u_HasRoughness;
-			float u_RoughnessValue;
-			int u_HasAO;
-			float u_AOValue;
-			int u_HasNormal;
-			int u_HasDisplacement;
+			int u_HasMetalness = 0;
+			float u_MetalnessValue = 0.0f;
+			int u_HasRoughness = 0;
+			float u_RoughnessValue = 0.0f;
+			int u_HasAO = 0;
+			float u_AOValue = 0.0f;
+			int u_HasNormal = 0;
+			int u_HasDisplacement = 0;
 			int u_Unlit;
-			float u_Emissive;
+			float u_Emissive = 0.0f;
 		};
 	private:
 		std::string m_Name;
@@ -91,19 +91,23 @@ namespace Faint {
 
 			SERIALIZE_VAL_LBL("Emissive", data.u_Emissive);
 			SERIALIZE_VAL_LBL("AOValue", data.u_AOValue);
-			SERIALIZE_VAL_LBL("MetalnessValue", data.u_MetalnessValue);
-			SERIALIZE_VAL_LBL("RoughnessValue", data.u_RoughnessValue);
 			SERIALIZE_VAL_LBL("Unlit", data.u_Unlit);
 
-			//j["HasAO"] = this->HasAO();
-			
+			j["HasNormal"] = this->HasNormal();
+			if (HasNormal())
+				j["Normal"] = this->m_Normal->Serialize();
+
 			j["HasMetalness"] = this->HasMetalness();
-			if (HasMetalness())
-				j["Roughness"] = m_Metalness->Serialize();
+			if (HasMetalness()) {
+				j["Metalness"] = m_Metalness->Serialize();
+				j["Metalness"]["Value"] = data.u_MetalnessValue;
+			}
 
 			j["HasRoughness"] = this->HasRoughness();
-			if (HasRoughness())
+			if (HasRoughness()) {
 				j["Roughness"] = m_Roughness->Serialize();
+				j["Roughness"]["Value"] = data.u_RoughnessValue;
+			}
 
 			END_SERIALIZE();
 		}
@@ -116,11 +120,23 @@ namespace Faint {
 				Ref<Texture> albedoTexture = TextureManager::Get()->GetTexture(texturePath);
 				SetAlbedo(albedoTexture);
 			}
+			if (j.contains("Normal")) {
+				const auto& texturePath = j["Normal"]["Path"];
+				const std::string absolutePath = FileSystem::RelativeToAbsolute(texturePath);
+				Ref<Texture> texture = TextureManager::Get()->GetTexture(texturePath);
+				SetNormal(texture);
+			}
 			if (j.contains("Roughness")) {
 				const auto& texturePath = j["Roughness"]["Path"];
 				const std::string absolutePath = FileSystem::RelativeToAbsolute(texturePath);
 				Ref<Texture> roughnessTexture = TextureManager::Get()->GetTexture(texturePath);
 				SetRoughness(roughnessTexture);
+			}
+			if (j.contains("Metalness")) {
+				const auto& texturePath = j["Metalness"]["Path"];
+				const std::string absolutePath = FileSystem::RelativeToAbsolute(texturePath);
+				Ref<Texture> roughnessTexture = TextureManager::Get()->GetTexture(texturePath);
+				SetMetalness(roughnessTexture);
 			}
 			return true;
 		}

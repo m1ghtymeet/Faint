@@ -1,7 +1,5 @@
 #include "TextureManager.h"
 
-#include "Renderer/Types/Texture.h"
-
 namespace Faint {
 
 	std::map<std::string, Ref<Texture>> TextureManager::m_Registry;
@@ -18,7 +16,7 @@ namespace Faint {
 
 	TextureManager::TextureManager() {
 
-		m_Registry.emplace("data/textures/Default.png", CreateRef<Texture>("data/textures/Default.png"));
+		//m_Registry.emplace("data/textures/Default.png", CreateRef<Texture>("data/textures/Default.png"));
 	}
 
 	Ref<Texture> TextureManager::GetTexture(const std::string path) {

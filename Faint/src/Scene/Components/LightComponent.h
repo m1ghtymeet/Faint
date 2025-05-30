@@ -4,7 +4,6 @@
 #include "AssetManagment/Serializable.h"
 
 #include "Renderer/Light.h"
-#include "Renderer/Types/Framebuffer2.h"
 
 namespace Faint {
 

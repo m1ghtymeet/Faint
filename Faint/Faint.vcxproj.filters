@@ -52,9 +52,6 @@
     <Filter Include="src\Renderer\Manager">
       <UniqueIdentifier>{9DD0A38C-895F-2D56-327E-41511EEC3DFC}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\Renderer\Shapes">
-      <UniqueIdentifier>{C6B47B1A-3216-5928-BB83-9FDA27E48FE7}</UniqueIdentifier>
-    </Filter>
     <Filter Include="src\Renderer\Types">
       <UniqueIdentifier>{579FF83E-4383-B994-ACE3-B3E798E6A316}</UniqueIdentifier>
     </Filter>
@@ -303,22 +300,19 @@
     <ClInclude Include="src\Renderer\Shader.h">
       <Filter>src\Renderer</Filter>
     </ClInclude>
-    <ClInclude Include="src\Renderer\ShadersManager.h">
-      <Filter>src\Renderer</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Renderer\Shapes\BoxGizmo.h">
-      <Filter>src\Renderer\Shapes</Filter>
-    </ClInclude>
     <ClInclude Include="src\Renderer\Types\Buffer.h">
       <Filter>src\Renderer\Types</Filter>
     </ClInclude>
     <ClInclude Include="src\Renderer\Types\CubemapTexture.h">
       <Filter>src\Renderer\Types</Filter>
     </ClInclude>
+    <ClInclude Include="src\Renderer\Types\Debug.h">
+      <Filter>src\Renderer\Types</Filter>
+    </ClInclude>
     <ClInclude Include="src\Renderer\Types\FrameBuffer.h">
       <Filter>src\Renderer\Types</Filter>
     </ClInclude>
-    <ClInclude Include="src\Renderer\Types\Framebuffer2.h">
+    <ClInclude Include="src\Renderer\Types\GL_debug_mesh.hpp">
       <Filter>src\Renderer\Types</Filter>
     </ClInclude>
     <ClInclude Include="src\Renderer\Types\Material.h">
@@ -334,6 +328,9 @@
       <Filter>src\Renderer\Types</Filter>
     </ClInclude>
     <ClInclude Include="src\Renderer\Types\OpenGLVertexArray.h">
+      <Filter>src\Renderer\Types</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Renderer\Types\SSBO.hpp">
       <Filter>src\Renderer\Types</Filter>
     </ClInclude>
     <ClInclude Include="src\Renderer\Types\ShadowMap.h">
@@ -707,12 +704,6 @@
     <ClCompile Include="src\Renderer\Shader.cpp">
       <Filter>src\Renderer</Filter>
     </ClCompile>
-    <ClCompile Include="src\Renderer\ShadersManager.cpp">
-      <Filter>src\Renderer</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Renderer\Shapes\BoxGizmo.cpp">
-      <Filter>src\Renderer\Shapes</Filter>
-    </ClCompile>
     <ClCompile Include="src\Renderer\Types\Buffer.cpp">
       <Filter>src\Renderer\Types</Filter>
     </ClCompile>
@@ -720,9 +711,6 @@
       <Filter>src\Renderer\Types</Filter>
     </ClCompile>
     <ClCompile Include="src\Renderer\Types\FrameBuffer.cpp">
-      <Filter>src\Renderer\Types</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Renderer\Types\Framebuffer2.cpp">
       <Filter>src\Renderer\Types</Filter>
     </ClCompile>
     <ClCompile Include="src\Renderer\Types\Material.cpp">

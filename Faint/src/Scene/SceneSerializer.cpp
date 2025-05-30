@@ -5,21 +5,48 @@
 #include "Physics/Physics.h"
 #include <Hazel.h>
 
-#include <fstream>
 #include <yaml-cpp/yaml.h>
+#include <fstream>
 
 #include "Scene/Components/ParentComponent.h"
 
 #include "AssetManagment/Serializable.h"
 
+namespace YAML {
+	template<>
+	struct convert<glm::quat> {
+		static Node encode(const glm::quat& rhs) {
+			Node node;
+			node.push_back(rhs.x);
+			node.push_back(rhs.y);
+			node.push_back(rhs.z);
+			node.push_back(rhs.w);
+			return node;
+		}
+		static bool decode(const Node& node, glm::quat& rhs) {
+			if (!node.IsSequence() || node.size() != 4)
+				return false;
+			rhs.x = node[0].as<float>();
+			rhs.y = node[1].as<float>();
+			rhs.z = node[2].as<float>();
+			rhs.w = node[3].as<float>();
+			return true;
+		}
+	};
+}
+
+YAML::Emitter& operator<<(YAML::Emitter& out, const glm::vec3& v) {
+	out << YAML::Flow;
+	out << YAML::BeginSeq << v.x << v.y << v.z << YAML::EndSeq;
+	return out;
+}
+YAML::Emitter& operator<<(YAML::Emitter& out, const glm::quat& v) {
+	out << YAML::Flow;
+	out << YAML::BeginSeq << v.x << v.y << v.z << v.w << YAML::EndSeq;
+	return out;
+}
+
 namespace Faint {
-
-	YAML::Emitter& operator<<(YAML::Emitter& out, const glm::vec3& v) {
-		out << YAML::Flow;
-		out << YAML::BeginSeq << v.x << v.y << v.z << YAML::EndSeq;
-		return out;
-	}
-
 	SceneSerializer::SceneSerializer(const Ref<Scene>& scene)
 		: _scene(scene) {
 		
@@ -59,7 +86,7 @@ namespace Faint {
 
 			auto& transform = entity.GetComponent<TransformComponent>();
 			out << YAML::Key << "Position" << YAML::Value << transform.GetGlobalPosition();
-			out << YAML::Key << "Rotation" << YAML::Value << Vec3(transform.GetGlobalRotation().x, transform.GetGlobalRotation().y, transform.GetGlobalRotation().z);
+			out << YAML::Key << "Rotation" << YAML::Value << transform.GetLocalRotation();
 			out << YAML::Key << "Scale" << YAML::Value << transform.GetGlobalScale();
 
 			out << YAML::EndMap; // TransformComponent
@@ -216,7 +243,7 @@ namespace Faint {
 					// Gameobjects always have Transforms
 					auto& transform = deserializedEntity.GetComponent<TransformComponent>();
 					transform.SetLocalPosition(transformComponent["Position"].as<glm::vec3>());
-					transform.SetLocalRotation(Quat(transformComponent["Rotation"].as<glm::vec3>()));
+					transform.SetLocalRotation(transformComponent["Rotation"].as<glm::quat>());
 					transform.SetLocalScale(transformComponent["Scale"].as<glm::vec3>());
 				}
 				

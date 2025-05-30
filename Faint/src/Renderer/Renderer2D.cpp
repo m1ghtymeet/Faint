@@ -1,6 +1,5 @@
 #include "hzpch.h"
 #include "Renderer2D.h"
-#include "ShadersManager.h"
 #include "UI/Font/Font.h"
 #include "UI/TextBlitting/TextBlitter.h"
 #include <glad/glad.h>
@@ -26,7 +25,7 @@ namespace Faint {
     void Renderer2D::Init() {
 
         HZ_CORE_INFO("Renderer 2D initializing");
-        UIShader = ShaderManager::GetShader("ui");
+        //UIShader = SceneRenderer::("ui");
 
         float quad_Vertices[] = {
             // positions      texture Coords
@@ -82,15 +81,15 @@ namespace Faint {
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-        Shader textShader = ShaderManager::GetShader("gl_text_blitter");
-        textShader.Bind();
-        // Render text
-        FaintUI::FontMesh* fontMesh = FaintUI::TextBlitter::GetGLFontMesh("StandardFont");
-        if (fontMesh) {
-            g_fontTexture->Bind(0);
-            glBindVertexArray(fontMesh->GetVAO());
-            glDrawElements(GL_TRIANGLES, fontMesh->GetIndexCount(), GL_UNSIGNED_INT, 0);
-        }
+        //Shader textShader = ShaderManager::GetShader("gl_text_blitter");
+        //textShader.Bind();
+        //// Render text
+        //FaintUI::FontMesh* fontMesh = FaintUI::TextBlitter::GetGLFontMesh("StandardFont");
+        //if (fontMesh) {
+        //    g_fontTexture->Bind(0);
+        //    glBindVertexArray(fontMesh->GetVAO());
+        //    glDrawElements(GL_TRIANGLES, fontMesh->GetIndexCount(), GL_UNSIGNED_INT, 0);
+        //}
     }
 
     void Renderer2D::DrawRect() {

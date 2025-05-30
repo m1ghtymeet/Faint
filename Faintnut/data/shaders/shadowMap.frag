@@ -1,6 +1,5 @@
-#version 460 core
-out vec4 FragColor;
+#version 440 core
 
 void main() {
-	gl_FragDepth = gl_FragCoord.z;
+	// gl_FragDepth = gl_FragCoord.z;
 }

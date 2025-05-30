@@ -14,20 +14,11 @@ namespace Faint
 
 	bool PhysicsSystem::Init()
 	{
-		//Logger::Log("Initializing the physic system");
 		HZ_CORE_TRACE("Initializing the physic system");
 
 		//Physics::Init();
 
-		// We need to initialize shapes first, then bodies...
-		//InitializeShapes();
-		//
-		//InitializeRigidbodies();
-		//InitializeCharacterControllers();
-		//InitializeQuakeMap();
-
 		HZ_CORE_TRACE("Physic system initialized successfully");
-		//Logger::Log("Physic system initialized successfully");
 		return true;
 	}
 
@@ -36,35 +27,7 @@ namespace Faint
 		if (!Engine::IsPlayMode()) {
 			return;
 		}
-		
-		//InitializeShapes();
-		//InitializeRigidbodies();
-		//InitializeCharacterControllers();
-		//
-		//ApplyForces();
-		//
-		//PhysicsManager::Get().Step(ts);
-		//
-		//auto brushes = m_scene->Reg().view<TransformComponent, BSPBrushComponent>();
-		//for (auto e : brushes)
-		//{
-		//	auto [transform, brush] = brushes.get<TransformComponent, BSPBrushComponent>(e);
-		//
-		//	if (!brush.IsFunc)
-		//		continue;
-		//
-		//	brush.Targets.clear();
-		//	auto targetnameView = m_scene->Reg().view<TransformComponent, NameComponent>();
-		//	for (auto e2 : targetnameView)
-		//	{
-		//		auto [ttransform, name] = targetnameView.get<TransformComponent, NameComponent>(e2);
-		//
-		//		if (name.name == brush.target)
-		//		{
-		//			brush.Targets.push_back(Entity{ e2, m_scene });
-		//		}
-		//	}
-		//}
+	
 	}
 
 	void PhysicsSystem::FixedUpdate(Time ts)
@@ -89,13 +52,12 @@ namespace Faint
 				rigidBody.dynamicActor = Physics::GetPxPhysics()->createRigidDynamic(trans);
 				rigidBody.dynamicActor->attachShape(*shape);
 
-				PxRigidBodyExt::updateMassAndInertia(*rigidBody.dynamicActor, box.density);
+				//PxRigidBodyExt::updateMassAndInertia(*rigidBody.dynamicActor, box.density);
 				Physics::GetPxScene()->addActor(*rigidBody.dynamicActor);
 			}
 		}
 
 		Physics::StepPhysics(ts);
-		Physics::SubmitDebugLinesToRenderer(DebugRenderMode::PHYSX_ALL);
 
 		Engine::GetCurrentScene()->Reg().view<RigidBodyComponent, TransformComponent>().each([](auto entity, RigidBodyComponent& rb, TransformComponent& transform) {
 			if (rb.dynamicActor) {

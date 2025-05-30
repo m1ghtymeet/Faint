@@ -1,13 +1,8 @@
 #include "Config.h"
 
+namespace Faint::Config {
 
-
-namespace Faint {
-
-	
-	std::string Config::currentPath;
-	mINI::INIStructure Config::currentINI;
-	//mINI::INIFile Config::currentFile;
+	std::string currentPath;
 
 	mINI::INIFile Config::Begin(const std::string& path, bool read)
 	{

@@ -32,28 +32,28 @@ namespace Faint {
 
 		data.m_AlbedoColor = Vec3(1, 1, 1);
 
-		glGenBuffers(1, &UBO);
-		glBindBuffer(GL_UNIFORM_BUFFER, UBO);
-		glBufferData(GL_UNIFORM_BUFFER, sizeof(UBOStructure), NULL, GL_STATIC_DRAW);
-		glBindBuffer(GL_UNIFORM_BUFFER, 0);
+		//glGenBuffers(1, &UBO);
+		//glBindBuffer(GL_UNIFORM_BUFFER, UBO);
+		//glBufferData(GL_UNIFORM_BUFFER, sizeof(UBOStructure), NULL, GL_STATIC_DRAW);
+		//glBindBuffer(GL_UNIFORM_BUFFER, 0);
 	}
 
 	Material::Material(const std::string albedo) {
 
-		glGenBuffers(1, &UBO);
-		glBindBuffer(GL_UNIFORM_BUFFER, UBO);
-		glBufferData(GL_UNIFORM_BUFFER, sizeof(UBOStructure), NULL, GL_STATIC_DRAW);
-		glBindBuffer(GL_UNIFORM_BUFFER, 0);
+		//glGenBuffers(1, &UBO);
+		//glBindBuffer(GL_UNIFORM_BUFFER, UBO);
+		//glBufferData(GL_UNIFORM_BUFFER, sizeof(UBOStructure), NULL, GL_STATIC_DRAW);
+		//glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
 		m_Albedo = TextureManager::Get()->GetTexture(albedo);
 		m_Name = albedo;
 	}
 	Material::Material(const Vec3 albedoColor) {
 
-		glGenBuffers(1, &UBO);
-		glBindBuffer(GL_UNIFORM_BUFFER, UBO);
-		glBufferData(GL_UNIFORM_BUFFER, sizeof(UBOStructure), NULL, GL_STATIC_DRAW);
-		glBindBuffer(GL_UNIFORM_BUFFER, 0);
+		//glGenBuffers(1, &UBO);
+		//glBindBuffer(GL_UNIFORM_BUFFER, UBO);
+		//glBufferData(GL_UNIFORM_BUFFER, sizeof(UBOStructure), NULL, GL_STATIC_DRAW);
+		//glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
 		data.m_AlbedoColor = Vec3{ albedoColor.r, albedoColor.g, albedoColor.b };
 
@@ -91,11 +91,11 @@ namespace Faint {
 			m_Normal->Bind(4);
 		}
 
-		glBindBuffer(GL_UNIFORM_BUFFER, UBO);
-		
-		glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(UBOStructure), &data);
-		glBindBuffer(GL_UNIFORM_BUFFER, 0);
-		glBindBufferBase(GL_UNIFORM_BUFFER, 32, UBO);
+		//glBindBuffer(GL_UNIFORM_BUFFER, UBO);
+		//
+		//glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(UBOStructure), &data);
+		//glBindBuffer(GL_UNIFORM_BUFFER, 0);
+		//glBindBufferBase(GL_UNIFORM_BUFFER, 32, UBO);
 	}
 
 	void Material::SetName(const std::string name) {

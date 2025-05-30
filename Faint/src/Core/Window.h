@@ -46,8 +46,8 @@ namespace Faint {
 		void Maximize();
 		void ShowWindow(bool show);
 
-		float viewportWidth = 1280;
-		float viewportHeight = 720;
+		float viewportWidth = 536;
+		float viewportHeight = 342;
 
 	private:
 		GLFWwindow* window;

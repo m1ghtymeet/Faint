@@ -1,4 +1,4 @@
-#version 440 core
+#version 460 core
 layout (location = 0) in vec3 aPos;
 layout (location = 1) in vec3 aNormal;
 layout (location = 2) in vec2 aTexCoord;
@@ -13,18 +13,16 @@ out vec3 BiTangent;
 
 uniform mat4 projection;
 uniform mat4 view;
-uniform mat4 model;
+uniform mat4 modelMatrix;
 uniform int aEntityID;
 
 void main() {
-
 	TexCoord = aTexCoord;
-	mat4 modelMatrix = model;
 	mat4 inverseModelMatrix = inverse(modelMatrix);
 	mat4 normalMatrix = transpose(inverseModelMatrix);
 	
-	Normal = normalize(model * vec4(aNormal, 0.0f)).xyz;
-	Tangent = normalize(model * vec4(aTangent, 0.0f)).xyz;
+	Normal = normalize(modelMatrix * vec4(aNormal, 0.0f)).xyz;
+	Tangent = normalize(modelMatrix * vec4(aTangent, 0.0f)).xyz;
 	BiTangent = normalize(cross(Normal, Tangent));
 	
 	WorldPos = modelMatrix * vec4(aPos, 1.0f);

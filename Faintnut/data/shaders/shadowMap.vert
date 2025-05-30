@@ -1,5 +1,5 @@
-#version 460 core
-layout(location = 0) in vec3 aPos;
+#version 440 core
+layout (location = 0) in vec3 aPos;
 uniform mat4 projectionView;
 uniform mat4 modelMatrix;
 
