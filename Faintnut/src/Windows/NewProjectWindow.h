@@ -1,14 +1,11 @@
 #pragma once
-
 #include "Core/Base.h"
 #include "Core/Time.h"
 #include "Core/Window.h"
 
-class NewProjectWindow {
-private:
-	uint32_t m_SelectedTemplate = 0;
-	bool m_HasCreatedProject = false;
+namespace Faint { class Texture; }
 
+class NewProjectWindow {
 public:
 	NewProjectWindow() = default;
 
@@ -19,4 +16,11 @@ public:
 	bool HasCreatedProject() const {
 		return m_HasCreatedProject;
 	}
+
+private:
+	void DrawProjectsPanel();
+	void DrawProjectSetupPanel();
+
+	uint32_t m_SelectedTemplate = 0;
+	bool m_HasCreatedProject = false;
 };

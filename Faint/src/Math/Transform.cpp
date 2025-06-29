@@ -5,6 +5,7 @@ Faint::Transform::Transform(Vec3 localPosition, Quat localRotation, Vec3 localSc
 	: m_parent(nullptr)
 {
 	GenerateMatricesLocal(localPosition, localRotation, localScale);
+	//GenerateMatricesWorld(localPosition, localRotation, localScale);
 }
 
 Faint::Transform::~Transform()
@@ -64,7 +65,7 @@ void Faint::Transform::GenerateMatricesWorld(Vec3 position, Quat rotation, Vec3 
 	m_worldRotation = rotation;
 	m_worldScale = scale;
 
-	UpdateWorldMatrix();
+	UpdateLocalMatrix();
 }
 
 void Faint::Transform::GenerateMatricesLocal(Vec3 position, Quat rotation, Vec3 scale)
@@ -72,29 +73,56 @@ void Faint::Transform::GenerateMatricesLocal(Vec3 position, Quat rotation, Vec3 
 	glm::mat4 m = glm::translate(glm::mat4(1), position);
 	m *= glm::mat4_cast(rotation);
 	m = glm::scale(m, scale);
-
+	
 	m_localMatrix = m;
 	m_localPosition = position;
 	m_localRotation = rotation;
 	m_localScale = scale;
 
-	UpdateLocalMatrix();
+	UpdateWorldMatrix();
 }
 
 void Faint::Transform::UpdateWorldMatrix()
 {
 	m_worldMatrix = HasParent() ? m_parent->m_worldMatrix * m_localMatrix : m_localMatrix;
 	
-	Vec3 outPosition;
-	Quat outRotation;
-	Vec3 outScale;
-	Math::DecomposeTransform(m_worldMatrix, outPosition, outRotation, outScale);
-	
-	//m_worldPosition = outPosition;
-	//m_worldRotation = outRotation;
-	//m_worldScale = outScale;
+	//Vec3 outPosition;
+	//Quat outRotation;
+	//Vec3 outScale;
+	//Math::DecomposeTransform(m_worldMatrix, outPosition, outRotation, outScale);
+	m_worldPosition.x = m_worldMatrix[0][3];
+	m_worldPosition.y = m_worldMatrix[1][3];
+	m_worldPosition.z = m_worldMatrix[2][3];
 
-	//UpdateWorldMatrix();
+	glm::vec3 columns[3] =
+	{
+		{ m_worldMatrix[0][0], m_worldMatrix[1][0], m_worldMatrix[2][0] },
+		{ m_worldMatrix[0][1], m_worldMatrix[1][1], m_worldMatrix[2][1] },
+		{ m_worldMatrix[0][2], m_worldMatrix[1][2], m_worldMatrix[2][2] },
+	};
+
+	m_worldScale.x = glm::length(columns[0]);
+	m_worldScale.y = glm::length(columns[1]);
+	m_worldScale.z = glm::length(columns[2]);
+
+	if (m_worldScale.x) {
+		columns[0] /= m_worldScale.x;
+	}
+	if (m_worldScale.y) {
+		columns[1] /= m_worldScale.y;
+	}
+	if (m_worldScale.z) {
+		columns[2] /= m_worldScale.z;
+	}
+
+	glm::mat3 rotationMatrix
+	(
+		columns[0].x, columns[1].x, columns[2].x,
+		columns[0].y, columns[1].y, columns[2].y,
+		columns[0].z, columns[1].z, columns[2].z
+	);
+
+	m_worldRotation = glm::quat(rotationMatrix);
 }
 
 void Faint::Transform::UpdateLocalMatrix()

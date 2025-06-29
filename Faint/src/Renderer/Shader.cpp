@@ -329,6 +329,7 @@ namespace Faint {
             while (std::getline(logStream, line)) {
                 result = "  " + line + "\n";
             }
+            std::cout << infoLog << "\n";
         }
         return result;
     }

@@ -55,7 +55,8 @@ project "Faintnut"
 		externalincludedirs { "%{prj.name}/../Faint/vendor/Coral/Coral.Native/Include/" }
 		postbuildcommands {
 			--'{COPYFILE} "%{wks.location}/bin/Debug-windows-x86_64/FaintRuntime/FNGame.exe" "%{wks.location}/%{prj.name}/Builder/Development/"',
-			"xcopy \"bin\\"..outputdir.."\\FaintRuntime\\FaintRuntime.exe\" \"%{builddir}%{cfg.buildcfg}\\development\" /y /i /c",
+			--"xcopy \"bin\\Debug-windows-x86_64\\FaintGame\\FaintGame.exe\" \"bin\\Debug-windows-x86_64\\Faintnut\builder\\development\\\" /y /i /c",
+			--"xcopy \"bin\\Debug-windows-x86_64\\FaintGame\\FaintGame.exe\" \"Faintnut\\builder\\development\\\" /y /i /c",
 			'{COPYFILE} "%{wks.location}/Faint/vendor/Coral/Coral.Managed/bin/%{cfg.buildcfg}/Coral.Managed.dll" "%{wks.location}/%{prj.name}"',
 			'{COPYFILE} "%{wks.location}/Faint/vendor/Coral/Coral.Managed/Coral.Managed.runtimeconfig.json" "%{wks.location}/%{prj.name}"',
 		}

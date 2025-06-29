@@ -1,10 +1,11 @@
 #pragma once
-#include <Hazel.h>
+#include <Faint.h>
 #include "imgui.h"
 
-#include "Panel/SceneHierarchyPanel.h"
-#include "Panel/ContentBrowserPanel.h"
-#include "Panel/FileSystemUI.h"
+#include "Panels/SceneHierarchyPanel.h"
+#include "Panels/ProjectSettingsPanel.h"
+#include "Panels/FileSystemUI.h"
+#include "Panels/HardwareInfo.h"
 #include "Windows/NewProjectWindow.h"
 
 #include "Scripting/ScriptingEngineNet.h"
@@ -44,14 +45,17 @@ namespace Faint {
         //Ref<Framebuffer2> m_framebuffer;
         Ref<Scene> SceneSnapshot;
         Ref<Scene> m_editorScene, m_runtimeScene;
-        Entity m_hoveredEntity, m_selectedEntity;
+        Entity* m_hoveredEntity = nullptr;
+        Entity* m_selectedEntity = nullptr;
         NewProjectWindow* _NewProjectWindow;
 
         //EditorCamera m_editorCamera;
         std::vector<CompilationError> errors;
 
-        bool _viewportFocused = false, _viewportHovered = false;
+        bool m_sceneViewportFocused = false, m_sceneViewportHovered = false;
+        bool m_gameViewportFocused = false, m_gameViewportHovered = false;
         glm::vec2 _viewportSize = glm::vec2(0);
+        glm::vec2 m_gameViewportSize = glm::vec2(0);
         glm::vec2 m_viewportBounds[2];
 
         int m_gizmoType = -1;
@@ -63,8 +67,9 @@ namespace Faint {
 
         // Panels
         SceneHierarchyPanel m_sceneHierarchyPanel;
-        //ContentBrowserPanel m_contentBrowserPanel;
         FileSystemUI m_fileBrowserPanel;
+        ProjectSettingsPanel m_projectSettingsPanel;
+        HardwareInfo m_hardwareInfo;
 
         // Editor resource
         Ref<Texture> m_iconPlay, m_iconStop, m_iconSimulate;

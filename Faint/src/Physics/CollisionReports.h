@@ -3,7 +3,9 @@
 #include "PxPhysicsAPI.h"
 #include "geometry/PxGeometryHelpers.h"
 #pragma warning(pop)
+//#include "Physics.h"
 #include <glm/vec3.hpp>
+#include <iostream>
 
 using namespace physx;
 
@@ -42,6 +44,9 @@ public:
         CollisionReport report;
         report.rigidA = pairHeader.actors[0];
         report.rigidB = pairHeader.actors[1];
+        auto entityA = reinterpret_cast<uintptr_t>(report.rigidA->userData);
+        auto entityB = reinterpret_cast<uintptr_t>(report.rigidB->userData);
+        std::cout << "Collision detected between " << entityA << " and " << entityB << "\n";
         //Faint::Physics::AddCollisionReport(report);
     }
 };

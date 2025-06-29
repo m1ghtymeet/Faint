@@ -3,7 +3,6 @@
 #include "Core/String.h"
 
 #include "Engine.h"
-#include "Renderer/RenderCommand.h"
 #include "Renderer/Renderer.h"
 #include "Renderer/Types/Material.h"
 #include "Scene/Scene.h"
@@ -59,13 +58,13 @@ Ref<Faint::Texture> ThumbnailManager::GetThumbnail(const std::string& path)
 	}
 
 	// Generate Thumbnail
-	Ref<Texture> thumbnail = CreateRef<Texture>(m_ThumbnailSize, GL_RGB, GL_RGB16F, GL_FLOAT);
-	GenerateThumbnail(path, thumbnail);
+	//Ref<Texture> thumbnail = CreateRef<Texture>(m_ThumbnailSize, GL_RGB, GL_RGB16F, GL_FLOAT);
+	//GenerateThumbnail(path, thumbnail);
 
-	m_Thumbnails[path] = thumbnail;
+	//m_Thumbnails[path] = thumbnail;
 
 	m_ThumbnailGeneratedThisFrame++;
-	return thumbnail;
+	return Ref<Faint::Texture>();
 }
 
 void ThumbnailManager::MarkThumbnailAsDirty(const std::string& path)

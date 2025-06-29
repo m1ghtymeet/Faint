@@ -1,5 +1,6 @@
 #pragma once
 #include "Core/Base.h"
+#include "Math/Math.h"
 #include "Renderer/Types/Texture.h"
 
 class ThumbnailManager {

@@ -17,7 +17,7 @@ void main() {
 	TexCoord = aTexCoord;
 	InvProjection = inverse(projection);
 	InvView = inverse(view);
-	lightSpacePos = lightProjectionView * vec4(aPos, 1.0);
+	lightSpacePos = lightProjectionView * vec4(aPos, 1);
 
 	gl_Position = vec4(aPos, 1.0f);
 }

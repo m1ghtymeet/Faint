@@ -10,11 +10,16 @@ namespace Faint {
 	class ScriptEngine {
 	public:
 		static void Init();
+		static void Shutdown();
 
+		static sol::state& GetLuaState() { return *luaState; }
+
+	private:
 		static std::unique_ptr<sol::state> luaState;
 
-		static void RunScript(const std::string& filepath) {
-			luaState->script_file(filepath);
-		}
+		static void BindCoreTypes();
+		static void BindInput();
+		static void BindEntity();
+		static void BindComponents();
 	};
 }

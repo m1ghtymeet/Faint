@@ -1,6 +1,6 @@
 #pragma once
 #include "Core/Base.h"
-#include "Scene/Entity.h"
+#include "Scene/Scene.h"
 #include "Scripting/NetModules/NetAPIModule.h"
 
 // For some reason HostInstance.hpp doesn't include filesystem but it needs it.
@@ -94,7 +94,7 @@ namespace Faint {
 		Coral::ManagedAssembly ReloadEngineAPI(Coral::AssemblyLoadContext& context);
 
 		void GenerateSolution(const std::string& path, const std::string& projectName);
-		void CopyNuakeNETAssemblies(const std::string& path);
+		void CopyFaintNETAssemblies(const std::string& path);
 		std::vector<CompilationError> BuildProjectAssembly(Ref<Project> project);
 		void LoadProjectAssembly(Ref<Project> project);
 
@@ -105,7 +105,7 @@ namespace Faint {
 		std::string FindClassNameInScript(const std::string& filePath);
 
 		void UpdateEntityWithExposedVar(Entity entity);
-		std::vector<ExposedVar> GetExposedVarForTypes(Entity entity);
+		std::vector<ExposedVar> GetExposedVarForTypes(Entity& entity);
 
 		bool HasUIWidget(const std::string& widgetName);
 		UIWidgetObject& GetUIWidget(const std::string& widgetName);

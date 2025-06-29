@@ -2,7 +2,7 @@
 #include "Math/Math.h"
 
 namespace Faint {
-	enum LightType { Point, Directional, Spot, Area };
+	enum LightType { Point, Directional, Spot };
 	struct Light {
 		float posX;
 		float posY;

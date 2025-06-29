@@ -7,9 +7,7 @@
 struct GLFWwindow;
 
 namespace Faint {
-
 	class Scene;
-	class Framebuffer2;
 
 	class Window {
 	public:
@@ -48,6 +46,8 @@ namespace Faint {
 
 		float viewportWidth = 536;
 		float viewportHeight = 342;
+		float lastViewportWidth = 536;
+		float lastViewportHeight = 342;
 
 	private:
 		GLFWwindow* window;
@@ -56,7 +56,6 @@ namespace Faint {
 		uint32_t width;
 		uint32_t height;
 
-		Ref<Framebuffer2> framebuffer;
 		Ref<Scene> scene;
 
 		static Ref<Window> instance;

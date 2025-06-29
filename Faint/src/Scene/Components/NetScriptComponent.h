@@ -1,13 +1,12 @@
 #pragma once
 
-#include "Component.h"
+#include "AComponent.h"
 
 #include "Core/Base.h"
 #include "Math/Math.h"
 #include "AssetManagment/Serializable.h"
 
 namespace Faint {
-
 	enum class NetScriptExposedVarType {
 		Bool,
 		Float,
@@ -19,7 +18,6 @@ namespace Faint {
 		Vec3,
 		Vec4
 	};
-
 	struct NetScriptExposedVar {
 		std::string Name;
 		std::any Value;
@@ -27,13 +25,13 @@ namespace Faint {
 		NetScriptExposedVarType Type;
 	};
 
-	class NetScriptComponent : public Component
-	{
-		//HAZELCOMPONENT(BoxColliderComponent, "Box Collider");
-
+	class NetScriptComponent : public AComponent {
 	public:
 		std::string ScriptPath;
 		std::string Class;
+		NetScriptComponent(Entity& p_owner) : AComponent(p_owner) {}
+
+		std::string GetName() override { return "NetScript"; }
 
 		bool Initialized = false;
 
@@ -41,8 +39,8 @@ namespace Faint {
 
 		json Serialize() {
 			BEGIN_SERIALIZE();
-
-			
+			j["Path"] = ScriptPath;
+			j["Class"] = Class;
 			END_SERIALIZE();
 		}
 		bool Deserialize(const json& j) {

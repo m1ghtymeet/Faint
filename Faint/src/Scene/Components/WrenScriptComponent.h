@@ -1,13 +1,13 @@
 #pragma once
 
-#include "Component.h"
+#include "AComponent.h"
 #include "AssetManagment/Serializable.h"
 #include "FileSystem/FileSystem.h"
 #include "Scripting/WrenScript.h"
 
 namespace Faint {
 
-	class WrenScriptComponent : public Component {
+	class WrenScriptComponent : public AComponent {
 	public:
 		std::string Path;
 

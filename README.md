@@ -8,6 +8,12 @@
 - [5. Dependencies](#5-dependencies)
 - [6. Requirements](#6-system-requirements)
 
+## News
+Faint stopped in 2025/5/17 Sunday Because for Exams :)
+and After Exams Started for Complate
+
+---
+
 ### 1. What's Faint?
 Faint is a 3D game engine developed in C++, with support for C# scripting via Coral.
 Development began in 2024 by MightyMeet with the goal of creating a flexible and powerful engine for indie and hobbyist developers.
@@ -32,6 +38,9 @@ git clone https://github.com/m1ghtymeet/Faint
 - Custom/Handeling Shaders
 - Lua Scripting
 - Custom Windows Theme
+- Complate Physics
+- FIX Bugs
+- Add ShadowMap
 
 ### 5. Dependencies
 Faint relies on the following libraries/tools:

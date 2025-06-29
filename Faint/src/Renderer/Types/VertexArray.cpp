@@ -1,9 +1,9 @@
 #include "hzpch.h"
 #include "VertexArray.h"
 
-#include "../Renderer.h"
+#include "Renderer/Renderer.h"
 
-#include "OpenGLVertexArray.h"
+#include "Renderer/OpenGL/Types/OpenGLVertexArray.h"
 
 namespace Faint {
 	VertexArray::~VertexArray() {

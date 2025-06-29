@@ -1,20 +1,16 @@
 #pragma once
 
 //#include "Physics/PhysicsShapes.h"
-#include "Component.h"
+#include "AComponent.h"
 
 namespace Faint {
 
-	class SphereColliderComponent : public Component {
-		
-		//HAZELCOMPONENT(BoxColliderComponent, "Box Collider");
-
-		static void InitializeComponentClass() {
-			//BindComponentField<&BoxColliderComponent::IsTrigger>("IsTrigger", "Is Trigger");
-			//BindComponentFieldProperty<&BoxColliderComponent::SetSize>("IsTrigger", "Is Trigger");
-		}
+	class SphereColliderComponent : public AComponent {
 	public:
-		//Ref<Physics::Sphere> Sphere;
+		SphereColliderComponent(Entity& p_owner) : AComponent(p_owner) {}
+
+		std::string GetName() override { return "SphereCollider"; }
+
 		float Radius = 0.5f;
 		bool IsTrigger = false;
 

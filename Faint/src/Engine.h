@@ -9,14 +9,12 @@ namespace Faint {
 
 	class Project;
 	class Scene;
-	class EngineSubsystem;
-	class EngineSubsystemScriptable;
 
 	enum GameState {
 		Loading,
 		Playing,
 		Paused,
-		Stopped,
+		Stopped
 	};
 
 	class Engine {
@@ -51,8 +49,8 @@ namespace Faint {
 		// Window
 		static Ref<Window> GetCurrentWindow();
 
-		static Ref<EngineSubsystemScriptable> GetScriptedSubsystem(const std::string& subsystemName);
-		static Ref<EngineSubsystemScriptable> GetScriptedSubsystem(const int subsystemId);
+		//static Ref<EngineSubsystemScriptable> GetScriptedSubsystem(const std::string& subsystemName);
+		//static Ref<EngineSubsystemScriptable> GetScriptedSubsystem(const int subsystemId);
 
 	protected:
 		static void OnWindowSetScene(Ref<Scene> oldScene, Ref<Scene> newScene);
@@ -69,8 +67,8 @@ namespace Faint {
 		static std::string queuedScene;
 		static float time;
 
-		static inline std::vector<Ref<EngineSubsystem>> subsystems;
-		static inline std::unordered_map<std::string, Ref<EngineSubsystemScriptable>> scriptedSubsystemMap;
+		//static inline std::vector<Ref<EngineSubsystem>> subsystems;
+		//static inline std::unordered_map<std::string, Ref<EngineSubsystemScriptable>> scriptedSubsystemMap;
 
 		//static Ref<Physics::PhysicsEngine> m_physicsEngine;
 

@@ -212,7 +212,7 @@ namespace Faint.Net
     }
     public class CharacterControllerComponent : IComponent
     {
-        internal static unsafe delegate*<int, float, float, float, void> MoveAndSlideIcall;
+        internal static unsafe delegate*<int, float, float, float, void> MoveIcall;
         internal static unsafe delegate*<int, bool> IsOnGroundedIcall;
 
         public CharacterControllerComponent(int entityId)
@@ -222,12 +222,7 @@ namespace Faint.Net
 
         public void Move(Vector3 velocity)
         {
-            unsafe { MoveAndSlideIcall(EntityID, velocity.x, velocity.y, velocity.z); }
-        }
-
-        public bool IsOnGrounded()
-        {
-            unsafe { return IsOnGroundedIcall(EntityID); }
+            unsafe { MoveIcall(EntityID, velocity.x, velocity.y, velocity.z); }
         }
     }
 

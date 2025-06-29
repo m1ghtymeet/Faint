@@ -1,6 +1,5 @@
 ﻿using Coral.Managed.Interop;
 using Faint.Net;
-using Faint.Net.Shapes;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -20,7 +19,6 @@ namespace Faint.Net
     {
         internal static unsafe delegate*<NativeString, void> LoggerLogIcall;
         internal static unsafe delegate*<NativeString, void> LoadSceneIcall;
-        internal static unsafe delegate*<NativeString, NativeInstance<EngineSubsystem>> GetSubsystemByNameIcall;
 
         public Engine() { }
 
@@ -36,14 +34,6 @@ namespace Faint.Net
         public static void Log(string input)
         {
             unsafe { LoggerLogIcall(input); }
-        }
-
-        public static T? GetSubsystem<T>() where T : EngineSubsystem
-        {
-            unsafe
-            {
-                return (T?)GetSubsystemByNameIcall(typeof(T).FullName);
-            }
         }
     }
 
@@ -148,86 +138,18 @@ namespace Faint.Net
 
     public class Debug
     {
-        internal static unsafe delegate*</* start */ float, float, float,
-                                         /* end */   float, float, float,
-                                         /* color */ float, float, float, float,
-                                        /* life */   float,
-                                                     float,
-                                                     void> DrawLineIcall;
-
-        internal static unsafe delegate*</* position */ Vector3,
-                                         /* rotation */ Quaternion,
-                                         /* shape */    Vector3,
-                                         /* color */    Vector4,
-                                         /* life */     float,
-                                                        float,
-                                                        void> DrawShapeBoxIcall;
-
-        internal static unsafe delegate*</* position */ Vector3,
-                                         /* rotation */ Quaternion,
-                                         /* shape */    float,
-                                         /* color */    Vector4,
-                                         /* life */     float,
-                                                        float,
-                                                        void> DrawShapeSphereIcall;
-
-        internal static unsafe delegate*</* position */ Vector3,
-                                         /* rotation */ Quaternion,
-                                         /* shape */    float, float,
-                                         /* color */    Vector4,
-                                         /* life */     float,
-                                                        float,
-                                                        void> DrawShapeCylinderIcall;
-
-        internal static unsafe delegate*</* position */ Vector3,
-                                         /* rotation */ Quaternion,
-                                         /* shape */    float, float,
-                                         /* color */    Vector4,
-                                         /* life */     float,
-                                                        float,
-                                                        void> DrawShapeCapsuleIcall;
-
-
+        internal static unsafe delegate*<float, float, float,
+                                         float, float, float,
+                                         float, float, float,
+                                         void> DrawLineIcall;
 
         public Debug() { }
 
-        public static void DrawLine(Vector3 start, Vector3 end, Vector4 color, float life = 0.0f, float width = 1.0f)
+        public static void DrawLine(Vector3 start, Vector3 end, Vector3 color)
         {
             unsafe
             {
-                DrawLineIcall(start.x, start.y, start.z, end.x, end.y, end.z, color.X, color.Y, color.Z, color.W, life, width);
-            }
-        }
-
-        public static void DrawShape(Vector3 position, Quaternion rotation, Shapes.Box shape, Vector4 color, float life = 0.0f, float width = 1.0f)
-        {
-            unsafe
-            {
-                DrawShapeBoxIcall(position, rotation, new Vector3(shape.Width, shape.Height, shape.Depth), color, life, width);
-            }
-        }
-
-        public static void DrawShape(Vector3 position, Quaternion rotation, Shapes.Sphere shape, Vector4 color, float life = 0.0f, float width = 1.0f)
-        {
-            unsafe
-            {
-                DrawShapeSphereIcall(position, rotation, shape.Radius, color, life, width);
-            }
-        }
-
-        public static void DrawShape(Vector3 position, Quaternion rotation, Shapes.Cylinder shape, Vector4 color, float life = 0.0f, float width = 1.0f)
-        {
-            unsafe
-            {
-                DrawShapeCylinderIcall(position, rotation, shape.Radius, shape.Height, color, life, width);
-            }
-        }
-
-        public static void DrawShape(Vector3 position, Quaternion rotation, Shapes.Capsule shape, Vector4 color, float life = 0.0f, float width = 1.0f)
-        {
-            unsafe
-            {
-                DrawShapeCapsuleIcall(position, rotation, shape.Radius, shape.Height, color, life, width);
+                DrawLineIcall(start.x, start.y, start.z, end.x, end.y, end.z, color.x, color.y, color.z);
             }
         }
     }

@@ -16,6 +16,7 @@ layout (binding = 5) uniform sampler2D ShadowMapTexture;
 uniform vec3 CamPosition;
 uniform float time;
 uniform int lightCount;
+uniform mat4 view;
 
 struct Light {
 	float posX;
@@ -100,6 +101,36 @@ vec3 microfacetBRDF(in vec3 L, in vec3 V, vec3 N, in vec3 baseColor, in float me
     float NdotL = max(dot(N, L), 0.0);        
     return (kD * baseColor / PI + specular);
 }
+float ShadowCalculation(vec4 fragPosLightSpace, vec3 normal, vec3 lightDir) {
+    // Perspective divide
+    vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
+    projCoords = projCoords * 0.5 + 0.5;
+    
+    // اگر خارج از shadow map باشه، سایه نداره
+    if(projCoords.z > 1.0)
+        return 0.0;
+        
+    // Shadow bias بر اساس زاویه نور
+    float bias = max(0.05 * (1.0 - dot(normal, lightDir)), 0.005);
+    
+    // PCF بهبود یافته
+    float shadow = 0.0;
+    vec2 texelSize = 1.0 / textureSize(ShadowMapTexture, 0);
+    int pcfRange = 2; // 5x5 PCF
+    
+    for(int x = -pcfRange; x <= pcfRange; ++x) {
+        for(int y = -pcfRange; y <= pcfRange; ++y) {
+            float pcfDepth = texture(ShadowMapTexture, projCoords.xy + vec2(x, y) * texelSize).r;
+            shadow += projCoords.z - bias > pcfDepth ? 1.0 : 0.0;
+        }    
+    }
+    
+    int totalSamples = (pcfRange * 2 + 1) * (pcfRange * 2 + 1);
+    shadow /= float(totalSamples);
+    
+    return shadow;
+}
+
 vec3 GetDirectLighting(vec3 lightPos, vec3 lightColor, float radius, float strength, vec3 Normal, vec3 WorldPos, vec3 baseColor, float roughness, float metallic, vec3 viewPos) {       
     float fresnelReflect = 1.0;
 	vec3 viewDir = normalize(viewPos - WorldPos);
@@ -181,25 +212,6 @@ vec3 filmPixel(vec2 uv) {
     return fract(sin(uvs * vec2(12.9898, 78.233) * time) * 43758.5453);
 }
 
-
-float ShadowCalculation(vec3 worldPos)
-{
-    vec4 fragPosLightSpace = lightSpacePos * vec4(worldPos, 1.0);
-    vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
-    projCoords = projCoords * 0.5 + 0.5;
-
-    // خارج از بافت
-    if(projCoords.z > 1.0) return 0.0;
-
-    float closestDepth = texture(ShadowMapTexture, projCoords.xy).r;
-    float currentDepth = projCoords.z;
-
-    float bias = 0.005;
-    float shadow = currentDepth - bias > closestDepth ? 1.0 : 0.0;
-
-    return shadow;
-}
-
 void main() {
 
 	vec3 viewPos = InvView[3].xyz;
@@ -208,8 +220,8 @@ void main() {
 	float clipSpaceYMin = 0.0f;
 	float clipSpaceYMax = 1.0f;
 	
-	vec3 albedo = texture(m_Albedo, TexCoord).rgb;
-	albedo.rgb = pow(albedo.rgb, vec3(2.2f)); // Gamma Added!!!!!
+	vec4 baseColor = texture(m_Albedo, TexCoord);
+	baseColor.rgb = pow(baseColor.rgb, vec3(2.2f));
 	vec3 normal = texture(m_Normal, TexCoord).rgb * 2.0 - 1.0;
 	vec4 materialSample = texture(m_Material, TexCoord);
 	float metallic = materialSample.r;
@@ -219,6 +231,11 @@ void main() {
 	
 	vec3 WorldPos = texture(WorldPositionTexture, TexCoord).rgb;
 	
+	//FragColor.rgb = vec3(1.0 - ShadowCalculation(lightSpacePos * vec4(WorldPos, 1), normal, normalize(vec3(10.0f, 15.0f, 10.0f) - WorldPos)));
+	//FragColor.rgb = WorldPos;
+	//
+	//return;
+	
     vec3 directLighting = vec3(0);
 	for (int i = 0; i < lightCount; i++) {
 		Light light = lights[i];
@@ -227,12 +244,13 @@ void main() {
 		float radius = light.radius;
 		float strength = light.strength;
 		
-		float shadow = 1.0f;
-		//if (light.CastShadow > 0 && light.ShadowMapID >= 0) {
-			//shadow *= ShadowCalculation(WorldPos);
-		//}
+		float shadow = ShadowCalculation(lightSpacePos * vec4(WorldPos, 1), normal, normalize(lightPos - WorldPos));
+		
 		if (light.type == 0) { // Point
-			directLighting += GetDirectLighting(lightPos, lightColor, radius, strength, normal, WorldPos, albedo, roughness, metallic, viewPos) /* (1.0 - shadow)*/;
+			directLighting += GetDirectLighting(lightPos, lightColor, radius, strength, normal, WorldPos, baseColor.rgb, roughness, metallic, viewPos) /* (1.0 - shadow)*/;
+		}
+		if (light.type == 1) { // Directional
+			
 		}
 		else if (light.type == 2) { // Spot
 		//	vec3 forward = -normalize(vec3(InvView[2].xyz));
@@ -284,7 +302,50 @@ void main() {
 	
 	// Brightness
     FragColor.rgb -= vec3(0.020);
-	// FragColor = texture(ShadowMapTexture, TexCoord);
-	// FragColor.rgb = vec3(ShadowCalculation(WorldPos));
-	//FragColor.rgb = albedo;
+	
+	vec3 lightVec = vec3(1, 1, 1) - WorldPos;
+	
+	float dist = length(lightVec);
+	float a = 3.0;
+	float b = 0.7;
+	float inten = 1.0f / (a * dist * dist + b * dist + 1.0f);
+	
+	float ambient = 0.20f;
+	
+	vec3 lightDir = normalize(vec3(10.0f, 15.0f, 10.0f));
+	float diffuse = max(dot(normal, lightDir), 0.0f);
+	
+	float specular = 0.0f;
+	if (diffuse != 0.0f) {
+		float specularLight = 0.50f;
+		vec3 viewDir = normalize(CamPosition - WorldPos);
+		vec3 halfwayVec = normalize(viewDir + lightDir);
+		float specAmount = pow(max(dot(normal, halfwayVec), 0.0f), 16);
+		specular = specAmount * specularLight;
+	}
+	
+	float shadow = 0.0f;
+	vec4 fragPosLight = lightSpacePos * vec4(WorldPos, 1.0f);
+	vec3 lightCoords = fragPosLight.xyz / fragPosLight.w;
+	if (lightCoords.z <= 1.0f) {
+		lightCoords = (lightCoords + 1.0f) / 2.0f;
+		float currentDepth = lightCoords.z;
+		float bias = max(0.025f * (1.0f - dot(normal, lightDir)), 0.0005f);
+	
+		int sampleRadius = 2;
+		vec2 pixelSize = 1.0 / textureSize(ShadowMapTexture, 0);
+		for (int y = -sampleRadius; y <= sampleRadius; y++) {
+			for (int x = -sampleRadius; x <= sampleRadius; x++) {
+				float closestDepth = texture(ShadowMapTexture, lightCoords.xy + vec2(x, y) * pixelSize).r;
+				if (currentDepth > closestDepth + bias)
+					shadow += 1.0f;
+			}
+		}
+		shadow /= pow((sampleRadius * 2 + 1), 2);
+	}
+	
+	vec4 result = (baseColor * (diffuse * (1.0f - shadow) + ambient) + roughness * specular * (1.0f - shadow)) * vec4(1, 1, 1, 1);
+	//FragColor = result;
+	//FragColor = texture(ShadowMapTexture, TexCoord);
+	//FragColor = fragPosLight;
 }

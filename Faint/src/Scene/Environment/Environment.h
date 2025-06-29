@@ -2,12 +2,11 @@
 
 #include "AssetManagment/Serializable.h"
 #include "Scene/Environment/ProcedularSky.h"
-#include "Renderer/Types/CubemapTexture.h"
+#include "Renderer/OpenGL/Types/CubemapTexture.h"
 
 namespace Faint {
 
-	enum class SkyType
-	{
+	enum class SkyType {
 		ProceduralSky = 0,
 		ClearColor = 1
 	};
@@ -23,6 +22,6 @@ namespace Faint {
 		Vec3 ColorClear;
 
 		json Serialize() override;
-		bool Deserialize(const json& j) override;
+		void Deserialize(const json& j) override;
 	};
 }

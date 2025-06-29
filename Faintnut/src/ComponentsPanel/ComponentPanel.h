@@ -5,7 +5,7 @@
 #include "imgui/imgui.h"
 
 #define MenuItemComponent(label, component) \
-	if (entity.HasComponent<component>())   \
+	if (entity.GetComponent<component>())   \
 		ImGui::Text(label)					\
 	else if (ImGui::MenuItem(label))		\
 		entity.AddComponent<component>();
@@ -58,7 +58,7 @@
 
 #define ComponentDropDown(arrayData, enumData, value)			\
 	const char* current_item = arrayData[(int)value];			\
-	if (ImGui::BeginCombo("Type", current_item)) {				\
+	if (ImGui::BeginCombo("##Type", current_item)) {			\
 		for (int n = 0; n < IM_ARRAYSIZE(arrayData); n++) {		\
 			bool is_selected = (current_item == arrayData[n]);	\
 			if (ImGui::Selectable(arrayData[n], is_selected)) { \

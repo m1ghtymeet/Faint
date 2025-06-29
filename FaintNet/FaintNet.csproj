@@ -49,7 +49,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="src\Components.cs" />
-    <Compile Include="src\EngineSubsystem.cs" />
     <Compile Include="src\Entity.cs" />
     <Compile Include="src\Input.cs" />
     <Compile Include="src\Math.cs" />

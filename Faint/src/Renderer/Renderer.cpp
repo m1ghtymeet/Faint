@@ -3,8 +3,8 @@
 #include "Types/Material.h"
 #include "Util/Util.h"
 
-#include "RenderCommand.h"
 #include <glad/glad.h>
+#include "Renderer.h"
 
 namespace Faint::Renderer {
 
@@ -20,13 +20,15 @@ namespace Faint::Renderer {
         {{-1.0f,  1.0f, 0.0f},    {0.0f, 0.0f, 1.0f},  {0.0f, 1.0f}, {1.0f, 0.0f, 0.0f}}  // Top-left
     };
 
+    void SetAPI(RendererAPI api) {
+        m_api = api;
+    }
+
     RendererAPI GetAPI() {
-        return RendererAPI::OPENGL;
+        return m_api;
     }
 
     void Init() {
-        m_DefaultFont = AssetManager::LoadFont("data/editor/fonts/FBBB.ttf");
-
         Ref<Material> defaultMaterial = CreateRef<Material>(Vec3(1, 1, 1));
         defaultMaterial->SetName("white");
 
@@ -43,37 +45,27 @@ namespace Faint::Renderer {
         SphereMesh->SetMaterial(CreateRef<Material>());
     }
 
-    void SetViewport(float x, float y, float width, float height) {
-        glViewport((GLint)x, (GLint)y, (GLint)width, (GLint)height);
-    }
-
     void BeginScene() {
     }
 
     void EndScene() {
     }
 
-    void SubmitMesh(Ref<Mesh> mesh, const Matrix4& transform, const int32_t entityID) {
-        m_RenderList.AddToRenderList(mesh, transform, entityID);
-    }
+    //void SubmitMesh(Ref<Mesh> mesh, const Matrix4& transform, const int32_t entityID) {
+    //    m_RenderList.AddToRenderList(mesh, transform, entityID);
+    //}
+    //
+    //void Flush(Shader* shader, bool depthOnly) {
+    //    m_RenderList.Flush(shader, depthOnly);
+    //}
 
-    void Flush(Shader* shader, bool depthOnly) {
-        m_RenderList.Flush(shader, depthOnly);
-    }
-
-    void OnWindowResize(uint32_t width, uint32_t height) {
-        SetViewport(0, 0, (float)width, (float)height);
-    }
-
-    void DrawQuad(Matrix4 transform)
-    {
-        //ZoneScoped;
+    void DrawQuad(Matrix4 transform) {
+        HZ_PROFILE_FUNCTION();
         QuadMesh->Draw(nullptr, false);
     }
 
-    void DrawCube(Matrix4 transform)
-    {
-        //ZoneScoped;
+    void DrawCube(Matrix4 transform) {
+        HZ_PROFILE_FUNCTION();
         CubeMesh->Draw(nullptr, false);
     }
 }

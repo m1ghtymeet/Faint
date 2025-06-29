@@ -1,4 +1,4 @@
-#include <Hazel.h>
+#include <Faint.h>
 #include <Core/EntryPoint.h>
 
 #include "EditorLayer.h"

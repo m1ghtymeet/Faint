@@ -7,48 +7,66 @@ namespace Faint {
 	sol::object GetComponent(sol::this_state s, const std::string& name) {
 		sol::state_view lua(s);
 	
-		for (Entity& entity : Engine::GetCurrentScene()->GetAllEntities()) {
-			if (name == "Transform" && entity.HasComponent<TransformComponent>())
-				return sol::make_object(lua, std::ref(entity.GetComponent<TransformComponent>()));
+		for (Entity* entity : Engine::GetCurrentScene()->GetAllEntities()) {
+			if (name == "Transform" && entity->GetComponent<TransformComponent>())
+				return sol::make_object(lua, std::ref(*entity->GetComponent<TransformComponent>()));
 		}
 	
 		return sol::nil;
 	}
 
-	bool HasTransform(Entity& e) { return e.HasComponent<TransformComponent>(); }
+	bool HasTransform(Entity& e) { return e.GetComponent<TransformComponent>(); }
 	//bool HasRigidBody(Entity& e) { return e.HasComponent<TransformComponent>(); }
+	TransformComponent GetTransform(Entity& e) { return *e.GetComponent<TransformComponent>(); }
 
 	void ScriptEngine::Init() {
 		luaState = std::make_unique<sol::state>();
-		luaState->open_libraries(sol::lib::base, sol::lib::package, sol::lib::math, sol::lib::os);
+		luaState->open_libraries(
+			sol::lib::base,
+			sol::lib::package,
+			sol::lib::math,
+			sol::lib::string,
+			sol::lib::table,
+			sol::lib::debug
+		);
 
-		luaState->set_function("createEntity", [](const std::string& name) {
-			Entity newEntity = Engine::GetCurrentScene()->CreateEntity(name);
-			std::cout << "[Lua] Created Entity '" << name << "' With ID: " << newEntity.GetID() << "\n";
-		});
+		BindCoreTypes();
+		BindInput();
+		BindEntity();
+		BindComponents();
+	}
+	void ScriptEngine::Shutdown() {
+		luaState.reset();
+	}
+	void ScriptEngine::BindCoreTypes() {
 
+	}
+	void ScriptEngine::BindInput() {
 		luaState->set_function("keyDown", [](int key) {
 			return Input::KeyDown(key);
-		});
+			});
 		luaState->set_function("keyPress", [](int key) {
 			return Input::KeyPressed(key);
-		});
-
-		/* ^^^ Binding Entity ^^^ */
+			});
+	}
+	void ScriptEngine::BindEntity() {
 		luaState->new_usertype<Entity>("Entity",
 			sol::no_constructor,
 			/* Methods */
-			"GetName", &Entity::GetName,
-			//"GetTransform", &Entity::GetComponent<TransformComponent>,
-			"HasTransform", &HasTransform
-		);
+			"getID", &Entity::GetID,
+			"getName", &Entity::GetName,
+			"addComponent", [](Entity& self, const std::string& type) {
 
-		/* ^^^ Binding Components ^^^ */
-		luaState->new_usertype<Component>("Component");
-		
-		luaState->new_usertype<TransformComponent>("Transform",
-			sol::base_classes, sol::bases<Component>(),
-			"SetPosition", &TransformComponent::SetLocalPosition
+			},
+			"getComponent", [](Entity& self, const std::string& type) -> sol::object {
+				return sol::nil;
+			},
+			"hasComponent", [](Entity& self, const std::string& type) {
+				return false;
+			}
 		);
+	}
+	void ScriptEngine::BindComponents() {
+
 	}
 }

@@ -15,16 +15,17 @@ namespace Faint {
 		std::string Description;
 		std::string Path;
 		std::vector<Entity> Entities;
-		Entity Root;
+		//Entity Root;
 
 		static Ref<Prefab> CreatePrefabFromEntity(Entity entity);
 		static Ref<Prefab> New(const std::string& path);
 		static Ref<Prefab> InstanceInScene();
 
-		Prefab() {
-			Path = "";
-			Entities = std::vector<Entity>();
-		}
+		Prefab() = default;
+		//Prefab() {
+		//	Path = "";
+		//	Entities = std::vector<Entity>();
+		//}
 
 		void AddEntity(Entity& entity) {
 			Entities.push_back(entity);
@@ -47,22 +48,22 @@ namespace Faint {
 			SERIALIZE_VAL(Description);
 
 			auto entities = std::vector<json>();
-			for (Entity e : Entities) {
-				entities.push_back(e.Serialize());
-			}
+			//for (Entity e : Entities) {
+			//	entities.push_back(e.Serialize());
+			//}
 
-			j["Root"] = Root.GetComponent<NameComponent>().name;
+			//j["Root"] = Root.GetName();
 			SERIALIZE_VAL_LBL("Entities", entities);
 
-			for (auto& e : j["Entities"]) {
-				if (e["NameComponent"]["ID"] == (int)Root.GetComponent<NameComponent>().id)
-					e["ParentComponent"]["HasParent"] = false;
-			}
+			//for (auto& e : j["Entities"]) {
+			//	if (e["NameComponent"]["ID"] == Root.GetID())
+			//		e["ParentComponent"]["HasParent"] = false;
+			//}
 
 			END_SERIALIZE();
 		}
-		bool Deserialize(const json& j) {
-			return true;
+		void Deserialize(const json& j) {
+
 		}
 	private:
 		void EntityWalker(Entity entity);

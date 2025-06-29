@@ -1,7 +1,6 @@
 #include "Util.h"
 
 namespace Util {
-
 	std::string Lowercase(std::string& str) {
 		std::string result = "";
         for (auto& c : str) {

@@ -24,6 +24,7 @@ namespace Faint {
 		static bool MouseWheelDown();
 		static int GetMouseX();
 		static int GetMouseY();
+		static void LockMouse(bool lock);
 
 	private:
 		static bool _keyPressed[372];

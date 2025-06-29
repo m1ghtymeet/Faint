@@ -39,3 +39,20 @@ Faint::Hardware::GPUInfo::GPUInfo()
 		}
 	}
 }
+
+float Faint::Hardware::GPUInfo::CalculateGPULoad() {
+	if (!m_NvAPIReady || m_gpuCount == 0)
+		return 0.0f;
+
+	// Reset usage structure
+	memset(m_gpuUsages, 0, sizeof(m_gpuUsages));
+	m_gpuUsages[0] = 136 | 0x10000; // header with version
+
+	// Call the API to fill usage data
+	if ((*m_NvAPI_GPU_GetUsages)(m_gpuHandles[0], m_gpuUsages) == 0) {
+		int usage = m_gpuUsages[3];
+		return static_cast<float>(usage);
+	}
+
+	return 0.0f;
+}

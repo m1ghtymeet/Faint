@@ -1,128 +1,105 @@
-#include "hzpch.h"
 #include "Texture.h"
-#include "../Renderer.h"
-
+#include "Renderer/Renderer.h"
 #include "FileSystem/FileSystem.h"
 
 #include <stb_image.h>
 
 namespace Faint {
-
-	Texture::Texture(const std::string& path, bool flip)
-		: m_path(path) {
-
-		_ID = 0;
-
-		int width, height, channels;
-		stbi_set_flip_vertically_on_load(flip);
-		void* data = stbi_load(path.c_str(), &width, &height, &channels, 0);
-		HZ_CORE_ASSERT(data, "Failed to load image!");
-		m_width = width;
-		m_height = height;
-
-		glGenTextures(1, &_ID);
-		glBindTexture(GL_TEXTURE_2D, _ID);
-
-		GLint format = GL_RGB;
-		if (channels == 4)
-			format = GL_RGBA;
-		if (channels == 1)
-			format = GL_RED;
-		HZ_CORE_ASSERT(format, "Format not supported!");
-
-		glTextureParameteri(_ID, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_LINEAR);
-		glTextureParameteri(_ID, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-		glTextureParameteri(_ID, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-		glTextureParameteri(_ID, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, format, GL_UNSIGNED_BYTE, data);
-
-		// glTextureSubImage2D(_ID, 0, 0, 0, width, height, GL_RGB, GL_UNSIGNED_BYTE, data);
-		glGenerateMipmap(GL_TEXTURE_2D);
-		glBindTexture(GL_TEXTURE_2D, 0);
-
-		stbi_image_free(data);
+	GLint GetFormatFromChannelCount(int channelCount) {
+		switch (channelCount) {
+		case 4: return GL_RGBA;
+		case 3: return GL_RGB;
+		case 1: return GL_RED;
+		default:
+			HZ_CORE_ASSERT("Unsupported channel count: " + channelCount);
+			return -1;
+		}
 	}
 
-	Texture::Texture(Vec2 size, GLenum format, GLenum format2, GLenum format3, void* data)
-	{
-		_ID = 0;
-		m_Format = format;
-
-		m_Format2 = format;
-		if (format2 != 0)
-			m_Format2 = format2;
-
-		m_Filtering = GL_LINEAR;
-
-		m_Format3 = GL_UNSIGNED_BYTE;
-		if (format3 != 0)
-			m_Format3 = format3;
-
-		m_width = size.x;
-		m_height = size.y;
-
-		glGenTextures(1, &_ID);
-		glBindTexture(GL_TEXTURE_2D, _ID);
-		glTexImage2D(GL_TEXTURE_2D, 0, format2, size.x, size.y, 0, format, format3, data);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
-
-		glBindTexture(GL_TEXTURE_2D, 0);
+	GLint GetInternalFormatFromChannelCount(int channelCount) {
+		switch (channelCount) {
+		case 4: return GL_RGBA8;
+		case 3: return GL_RGB8;
+		case 1: return GL_R8;
+		default:
+			HZ_CORE_ASSERT("Unsupported channel count: " + channelCount);
+			return -1;
+		}
 	}
 
-	Texture::~Texture() {
-		glBindTexture(GL_TEXTURE_2D, 0);
-		glDeleteTextures(1, &_ID);
-	}
-	void Texture::Bind(int slot) const {
-		//glBindTextureUnit(slot, _ID);
-		glActiveTexture(GL_TEXTURE0 + slot);
-		glBindTexture(GL_TEXTURE_2D, _ID);
-	}
-	void Texture::UnBind() const {
-		//glBindTextureUnit(0, 0);
-		glBindTexture(GL_TEXTURE_2D, 0);
-	}
-	void Texture::AttachToFramebuffer(GLenum attachment)
-	{
-		glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, attachment, GL_TEXTURE_2D, _ID, 0);
-	}
-	void Texture::Resize(Vec2 size)
-	{
-		glDeleteTextures(1, &_ID);
-		m_width = size.x;
-		m_height = size.y;
-		glGenTextures(1, &_ID);
-		glBindTexture(GL_TEXTURE_2D, _ID);
-		glTexImage2D(GL_TEXTURE_2D, 0, m_Format2, size.x, size.y, 0, m_Format, m_Format3, NULL);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, m_Filtering);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, m_Filtering);
-	}
-	void Texture::SetParameter(const GLenum& param, const GLenum& value)
-	{
-		if (param == GL_TEXTURE_MIN_FILTER) {
-			m_Filtering = value;
+	TextureData LoadUncompressedTextureData(const std::string& filepath) {
+		stbi_set_flip_vertically_on_load(true);
+		TextureData textureData;
+		uint8_t* imageData = stbi_load(filepath.c_str(), &textureData.m_width, &textureData.m_height, &textureData.m_numChannels, 0);
+		textureData.m_imageDataType = ImageDataType::UNCOMPRESSED;
+		if (!imageData || filepath == "") {
+			imageData = stbi_load("data/textures/CheckerBoard.png", &textureData.m_width, &textureData.m_height, &textureData.m_numChannels, 0);
+		}
+		if (textureData.m_numChannels == 3) {
+			size_t newSize = textureData.m_width * textureData.m_height * 4;
+			uint8_t* rgbaData = new uint8_t[newSize];
+			for (size_t i = 0, j = 0; i < newSize; i += 4, j += 3) {
+				rgbaData[i] = imageData[j];			// R
+				rgbaData[i + 1] = imageData[j + 1]; // G
+				rgbaData[i + 2] = imageData[j + 2]; // B
+				rgbaData[i + 3] = 255; // A
+			}
+			stbi_image_free(imageData);
+			textureData.m_data = rgbaData;
+			textureData.m_numChannels = 4;
+		}
+		else {
+			textureData.m_data = imageData;
 		}
 
-		Bind();
-		glTexParameteri(GL_TEXTURE_2D, param, value);
-		UnBind();
+		// If mipmaps are requested, allocate space for them
+		if (textureData.m_numChannels == 4 && textureData.m_width != textureData.m_height) {
+			textureData.m_dataSize = textureData.m_width * textureData.m_height * 4;
+		}
+		else {
+			textureData.m_dataSize = textureData.m_width * textureData.m_height * textureData.m_numChannels;
+		}
+		textureData.m_format = GetFormatFromChannelCount(textureData.m_numChannels);
+		textureData.m_internalFormat = GetInternalFormatFromChannelCount(textureData.m_numChannels);
+
+		return textureData;
 	}
 
-	json Texture::Serialize()
-	{
+	Texture::Texture(const std::string& filepath) {
+		Load(filepath);
+	}
+
+	void Texture::Load(const std::string& filepath) {
+		m_path = filepath;
+
+		TextureData data = LoadUncompressedTextureData(filepath);
+		if (Renderer::GetAPI() == RendererAPI::OPENGL) {
+			m_texture.Create(data.m_width, data.m_height, data.m_format, data.m_internalFormat, 1 + static_cast<int>(std::log2(std::max(data.m_width, data.m_height))), data.m_data);
+			m_texture.SetMagFilter(TextureFilter::LINEAR);
+			m_texture.SetMinFilter(TextureFilter::LINEAR_MIPMAP);
+			m_texture.SetWrapMode(TextureWrapMode::CLAMP_TO_EDGE);
+			glGenerateMipmap(GL_TEXTURE_2D);
+		}
+		else {
+			HZ_CORE_ERROR("API IS NULL!");
+		}
+	}
+
+	void Texture::FreeCPUMemory() {
+		
+	}
+
+	OpenGLTexture& Texture::GetTexture() {
+		return m_texture;
+	}
+
+	json Texture::Serialize() {
 		BEGIN_SERIALIZE();
-		const std::string& relativePath = FileSystem::AbsoluteToRelative(m_path);
-		j["Path"] = relativePath;
+		j["Path"] = FileSystem::AbsoluteToRelative(m_path);
 		END_SERIALIZE();
 	}
 
-	bool Texture::Deserialize(const json& j)
-	{
-		if (j.contains("Path"))
-			return false;
-		return true;
+	void Texture::Deserialize(const json& j) {
+
 	}
 }

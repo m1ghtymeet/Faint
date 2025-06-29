@@ -1,12 +1,19 @@
 #include "hzpch.h"
 #include "Project.h"
 #include "Scripting/ScriptingEngineNet.h"
+#include "Engine.h"
+#include "FileSystem/FileSystem.h"
 
 #include <filesystem>
 #include <fstream>
 #include <streambuf>
 
 namespace Faint {
+	YAML::Emitter& operator<<(YAML::Emitter& out, const glm::vec3& v) {
+		out << YAML::Flow;
+		out << YAML::BeginSeq << v.x << v.y << v.z << YAML::EndSeq;
+		return out;
+	}
 
 	Project::Project(const std::string& name, const std::string& description, const std::string& fullPath, const std::string& defaultScenePath) {
 		
@@ -16,7 +23,10 @@ namespace Faint {
 
 		if (defaultScenePath != "") {
 			DefaultScene = CreateRef<Scene>();
-			DefaultScene = Scene::Copy(defaultScenePath);
+			//DefaultScene = Scene::Copy(defaultScenePath);
+		}
+		else {
+			DefaultScene = CreateRef<Scene>();
 		}
 
 		SaveAs(fullPath);
@@ -50,23 +60,19 @@ namespace Faint {
 		//projectFile.close();
 	}
 
-	bool Project::FileExist()
-	{
+	bool Project::FileExist() {
 		return std::filesystem::exists(this->FullPath.c_str());
 	}
 
-	Ref<Project> Project::New()
-	{
+	Ref<Project> Project::New() {
 		return CreateRef<Project>();
 	}
 
-	Ref<Project> Project::New(const std::string& name, const std::string& description, const std::string& fullPath)
-	{
+	Ref<Project> Project::New(const std::string& name, const std::string& description, const std::string& fullPath) {
 		return CreateRef<Project>(name, description, fullPath);
 	}
 
 	Ref<Project> Project::Load(const std::string& path) {
-
 		// Validation
 		YAML::Node data;
 		try
@@ -87,35 +93,36 @@ namespace Faint {
 		m_ActiveProject->Name = projectNode["Name"].as<std::string>();
 		m_ActiveProject->Description = projectNode["Description"].as<std::string>();
 		m_ActiveProject->FullPath = path;
-		m_ActiveProject->AssetDirectory = projectNode["AssetDirectory"].as<std::string>();
-		m_ActiveProject->DefaultScene->FullPath = projectNode["StartScene"].as<std::string>();
+		m_ActiveProject->AssetDirectory = FileSystem::RelativeToAbsolute(projectNode["AssetDirectory"].as<std::string>());
+		if (projectNode["StartScene"])
+			m_ActiveProject->DefaultScene->FullPath = FileSystem::RelativeToAbsolute(projectNode["StartScene"].as<std::string>());
 
 		m_ActiveProject->Settings = ProjectSettings();
+		m_ActiveProject->cameraSettings.position = data["Project"]["CameraSettings"]["Position"].as<glm::vec3>();
+		m_ActiveProject->cameraSettings.rotation = data["Project"]["CameraSettings"]["Rotation"].as<glm::vec3>();
+		if (data["Project"]["CameraSettings"]) {
+			//Engine::GetCurrentScene()->m_EditorCamera->SetPosition(Engine::GetProject()->cameraSettings.position);
+			//Engine::GetCurrentScene()->m_EditorCamera->SetRotation(Engine::GetProject()->cameraSettings.rotation);
+		}
 
 		return m_ActiveProject;
 	}
 
-	void Project::ExportEntitiesToTrenchbroom()
-	{
-		
-		for (auto& [name, type] : ScriptingEngineNet::Get().GetBrushEntities())
-		{
+	void Project::ExportEntitiesToTrenchbroom() {
+		for (auto& [name, type] : ScriptingEngineNet::Get().GetBrushEntities()) {
 			std::cout << name << "\n";
 		}
 	}
 
-	json Project::Serialize()
-	{
+	json Project::Serialize() {
 		return json();
 	}
 
-	bool Project::Deserialize(const json& j)
-	{
-		return false;
+	void Project::Deserialize(const json& j) {
+
 	}
 
-	bool Project::SerializeYaml(const std::string& path)
-	{
+	bool Project::SerializeYaml(const std::string& path) {
 		YAML::Emitter out;
 		out << YAML::BeginMap;
 		{
@@ -124,9 +131,8 @@ namespace Faint {
 			{
 				out << YAML::Key << "Name" << YAML::Value << Name;
 				out << YAML::Key << "Description" << YAML::Value << Description;
-				out << YAML::Key << "AssetDirectory" << YAML::Value << AssetDirectory;
-				//out << YAML::Key << "ScriptModulePath" << YAML::Value << Description;
-				out << YAML::Key << "StartScene" << YAML::Value << DefaultScene->FullPath;
+				out << YAML::Key << "AssetDirectory" << YAML::Value << FileSystem::AbsoluteToRelative(AssetDirectory);
+				out << YAML::Key << "StartScene" << YAML::Value << FileSystem::AbsoluteToRelative(DefaultScene->FullPath);
 				{
 					out << YAML::Key << "Settings" << YAML::Value;
 					out << YAML::BeginMap;
@@ -135,13 +141,23 @@ namespace Faint {
 						out << YAML::Key << "ShowGizmos" << YAML::Value << Settings.ShowGizmos;
 						out << YAML::Key << "ShowAxis" << YAML::Value << Settings.ShowAxis;
 						out << YAML::Key << "ResolutionScale" << YAML::Value << Settings.ResolutionScale;
-						out << YAML::Key << "PhysicsStep" << YAML::Value << Settings.PhysicsStep;
-						out << YAML::Key << "MaxPhysicsSubStep" << YAML::Value << Settings.MaxPhysicsSubStep;
-						out << YAML::Key << "MaxPhysicsBodies" << YAML::Value << Settings.MaxPhysicsBodies;
-						out << YAML::Key << "MaxPhysicsBodyPair" << YAML::Value << Settings.MaxPhysicsBodyPair;
+						out << YAML::Key << "Gravity" << YAML::Value << Settings.Gravity;
 					}
 					out << YAML::EndMap;
 				}
+				{
+					{
+						out << YAML::Key << "CameraSettings" << YAML::Value;
+						out << YAML::BeginMap;
+						{
+							out << YAML::Key << "Position" << YAML::Value << Engine::GetCurrentScene()->m_EditorCamera->GetPosition();
+							out << YAML::Key << "Rotation" << YAML::Value << Engine::GetCurrentScene()->m_EditorCamera->GetRotation();
+						}
+						out << YAML::EndMap;
+					}
+					out << YAML::EndMap;
+				}
+
 				out << YAML::EndMap;
 			}
 			out << YAML::EndMap;
@@ -185,10 +201,7 @@ namespace Faint {
 				out << YAML::Key << "ShowGizmos" << YAML::Value << ShowGizmos;
 				out << YAML::Key << "ShowAxis" << YAML::Value << ShowAxis;
 				out << YAML::Key << "ResolutionScale" << YAML::Value << ResolutionScale;
-				out << YAML::Key << "PhysicsStep" << YAML::Value << PhysicsStep;
-				out << YAML::Key << "MaxPhysicsSubStep" << YAML::Value << MaxPhysicsSubStep;
-				out << YAML::Key << "MaxPhysicsBodies" << YAML::Value << MaxPhysicsBodies;
-				out << YAML::Key << "MaxPhysicsBodyPair" << YAML::Value << MaxPhysicsBodyPair;
+				out << YAML::Key << "Gravity" << YAML::Value << Gravity;
 			}
 			out << YAML::EndMap;
 		}
@@ -198,8 +211,7 @@ namespace Faint {
 		return out;
 	}
 
-	bool ProjectSettings::DeserializeYaml(const std::string& path)
-	{
+	bool ProjectSettings::DeserializeYaml(const std::string& path) {
 		YAML::Node data;
 		try
 		{

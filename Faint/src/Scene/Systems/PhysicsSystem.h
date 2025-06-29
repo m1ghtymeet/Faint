@@ -12,13 +12,6 @@ namespace Faint {
 		void FixedUpdate(Time ts) override;
 		void Exit() override;
 	
-		void InitializeNewBodies();
-	private:
-		void InitializeShapes();
-		void InitializeQuakeMap();
-		void InitializeRigidbodies();
-		void InitializeCharacterControllers();
-	
-		void ApplyForces();
+		void SyncTransformsOnly();
 	};
 }

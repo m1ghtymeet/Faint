@@ -17,8 +17,7 @@ namespace Faint {
 		END_SERIALIZE();
 	}
 
-	bool Environment::Deserialize(const json& j)
+	void Environment::Deserialize(const json& j)
 	{
-		return true;
 	}
 }

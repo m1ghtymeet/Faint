@@ -5,16 +5,10 @@
 #include "Physics/Physics.h"
 
 #include "FileSystem/FileSystem.h"
-#include "Renderer/Renderer2D.h"
-#include "Renderer/RenderCommand.h"
 #include "Renderer/SceneRenderer.h"
 #include "Scripting/ScriptingEngineNet.h"
 #include "Scene/Scene.h"
-#include "Scene/SceneSerializer.h"
 #include "Input/Input.h"
-
-#include "Subsystems/EngineSubsystem.h"
-#include "Subsystems/EngineSubsystemScriptable.h"
 
 #include "Threading/JobSystem.h"
 #include "Modules/Modules.h"
@@ -37,10 +31,9 @@ namespace Faint {
     float fixedUpdateDifference = 0.0f;
 
     void Engine::Init() {
-        ScriptingEngineNet::Get().OnGameAssemblyLoaded().AddStatic(&Engine::OnScriptingEngineGameAssemblyLoaded);
+        //ScriptingEngineNet::Get().OnGameAssemblyLoaded().AddStatic(&Engine::OnScriptingEngineGameAssemblyLoaded);
 
         AudioManager::Get().Initialize();
-        //PhysicsManager::Get().Init();
         Physics::Init();
 
         // Create a window
@@ -48,7 +41,6 @@ namespace Faint {
         SceneRenderer::Init();
 
         Input::Init();
-        Renderer2D::Init();
         HZ_CORE_INFO("Engine Initialized!");
 
         Modules::StartupModules();
@@ -59,11 +51,11 @@ namespace Faint {
 
         if (Engine::IsPlayMode()) {
             if (!queuedScene.empty()) {
-                Ref<Scene> nextScene = Scene::New();
+                Ref<Scene> nextScene = CreateRef<Scene>();
                 if (FileSystem::FileExists(queuedScene)) {
                     const std::string& fileContent = FileSystem::ReadFile(queuedScene);
-                    SceneSerializer serializer(nextScene);
-                    serializer.Deserialize(queuedScene);
+                    //SceneSerializer serializer(nextScene);
+                    //serializer.Deserialize(queuedScene);
 
                     GetCurrentScene()->OnExit();
 
@@ -79,18 +71,6 @@ namespace Faint {
 
         float scaledDeltatime = time * 1.0f;
 
-        if (Engine::IsPlayMode()) {
-
-            for (auto subsystem : subsystems)
-            {
-                if (subsystem == nullptr)
-                    continue;
-
-                if (subsystem->CanEverTick())
-                    subsystem->Update(scaledDeltatime);
-            }
-        }
-
         if (currentWindow->GetScene()) {
 
             currentWindow->Update(scaledDeltatime);
@@ -102,7 +82,6 @@ namespace Faint {
 
             while (fixedUpdateDifference >= fixedUpdateRate) {
                 currentWindow->FixedUpdate(fixedUpdateRate);
-                //Physics::StepPhysics(fixedUpdateRate);
                 fixedUpdateDifference -= fixedUpdateRate;
             }
 
@@ -134,63 +113,47 @@ namespace Faint {
         }
     }
 
-    void Engine::ExitPlayMode()
-    {
+    void Engine::ExitPlayMode() {
         // Don't trigger exit if already not in play mode
         if (GetGameState() != GameState::Stopped) {
             GetCurrentScene()->OnExit();
-            Input::ShowCursor();
+            //Input::ShowCursor();
             SetGameState(GameState::Stopped);
         }
     }
 
-    void Engine::Draw()
-    {
-        // ZoneScoped
-
-        //RenderCommand::Clear();
-
-        {
-            ImGui_ImplOpenGL3_NewFrame();
-            ImGui_ImplGlfw_NewFrame();
-            ImGui::NewFrame();
-        }
-
+    void Engine::Draw() {
+        HZ_PROFILE_FUNCTION();
+        ImGui_ImplOpenGL3_NewFrame();
+        ImGui_ImplGlfw_NewFrame();
+        ImGui::NewFrame();
         Window::Get()->Draw();
     }
 
-    void Engine::EndDraw()
-    {
+    void Engine::EndDraw() {
         Window::Get()->EndDraw();
     }
 
     bool Engine::LoadProject(Ref<Project> project) {
-
         currentProject = project;
         /*if (!Engine::SetCurrentScene(currentProject->defaultScene))
             return false;*/
-
         FileSystem::SetRootDirectory(FileSystem::GetParentPath(project->FullPath));
         ScriptingEngineNet::Get().Uninitialize();
         ScriptingEngineNet::Get().Initialize();
         ScriptingEngineNet::Get().LoadProjectAssembly(project);
-
         return true;
     }
 
     bool Engine::SetCurrentScene(Ref<Scene> scene) {
-
         currentWindow->SetScene(scene);
-
         return true;
     }
 
     bool Engine::QueueSceneSwitch(const std::string& scene) {
-
         if (!Engine::IsPlayMode()) {
             return false;
         }
-
         queuedScene = scene;
         return true;
     }
@@ -198,48 +161,28 @@ namespace Faint {
     Ref<Project> Engine::GetProject() {
         return currentProject;
     }
-    Ref<Scene> Engine::GetCurrentScene() {
 
+    Ref<Scene> Engine::GetCurrentScene() {
         if (currentWindow)
             return currentWindow->GetScene();
         return nullptr;
     }
 
-    Ref<Window> Engine::GetCurrentWindow()
-    {
+    Ref<Window> Engine::GetCurrentWindow() {
         return currentWindow;
     }
 
-    bool Engine::LoadScene(Ref<Scene> scene)
-    {
+    bool Engine::LoadScene(Ref<Scene> scene) {
         currentWindow->SetScene(scene);
-        //SceneSerializer serializer(scene);
-        //return serializer.Deserialize(scene->FullPath);
         return true;
     }
 
     Ref<Scene> Engine::LoadScene(const std::string& path)
     {
         Ref<Scene> scene = CreateRef<Scene>();
-        SceneSerializer serializer(scene);
-        serializer.Deserialize(path);
+        //SceneSerializer serializer(scene);
+        //serializer.Deserialize(path);
         return scene;
-    }
-
-    Ref<EngineSubsystemScriptable> Engine::GetScriptedSubsystem(const std::string& subsystemName)
-    {
-        if (scriptedSubsystemMap.contains(subsystemName))
-            return scriptedSubsystemMap[subsystemName];
-
-        return nullptr;
-    }
-
-    Ref<EngineSubsystemScriptable> Engine::GetScriptedSubsystem(const int subsystemId)
-    {
-        if (subsystemId >= subsystems.size()) {
-            return nullptr;
-        }
-        return std::reinterpret_pointer_cast<EngineSubsystemScriptable>(subsystems[subsystemId]);
     }
 
     void Engine::OnScriptingEngineGameAssemblyLoaded() {
@@ -247,32 +190,32 @@ namespace Faint {
         if (!Engine::IsPlayMode())
             return;
 
-        subsystems.clear();
-        scriptedSubsystemMap.clear();
+        //subsystems.clear();
+        //scriptedSubsystemMap.clear();
 
         const Coral::ManagedAssembly& gameAssembly = ScriptingEngineNet::Get().GetGameAssembly();
 
         const auto scriptTypeEngineSubsystem = gameAssembly.GetType("Faint.Net.EngineSubsystem");
         
-        const auto& types = gameAssembly.GetTypes();
-        for (const auto& type : types) {
-
-            // Initialize all subsystems
-            if (type->IsSubclassOf(scriptTypeEngineSubsystem))
-            {
-                const std::string typeName = std::string(type->GetFullName());
-                HZ_CORE_INFO("Creating Scripted Subsystem {0}", typeName);
-
-                Coral::ManagedObject scriptedSubsystem = type->CreateInstance();
-                scriptedSubsystem.SetPropertyValue("EngineSubsystemID", subsystems.size());
-                Ref<EngineSubsystemScriptable> subsystemScript = CreateRef<EngineSubsystemScriptable>(scriptedSubsystem);
-                subsystems.push_back(subsystemScript);
-
-                scriptedSubsystemMap[typeName] = subsystemScript;
-
-                subsystemScript->Initialize();
-            }
-        }
+        //const auto& types = gameAssembly.GetTypes();
+        //for (const auto& type : types) {
+        //
+        //    // Initialize all subsystems
+        //    if (type->IsSubclassOf(scriptTypeEngineSubsystem))
+        //    {
+        //        const std::string typeName = std::string(type->GetFullName());
+        //        HZ_CORE_INFO("Creating Scripted Subsystem {0}", typeName);
+        //
+        //        Coral::ManagedObject scriptedSubsystem = type->CreateInstance();
+        //        scriptedSubsystem.SetPropertyValue("EngineSubsystemID", subsystems.size());
+        //        Ref<EngineSubsystemScriptable> subsystemScript = CreateRef<EngineSubsystemScriptable>(scriptedSubsystem);
+        //        subsystems.push_back(subsystemScript);
+        //
+        //        scriptedSubsystemMap[typeName] = subsystemScript;
+        //
+        //        subsystemScript->Initialize();
+        //    }
+        //}
     }
     void Engine::OnScenePreInitialize(Ref<Scene> scene)
     {

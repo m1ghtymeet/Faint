@@ -56,14 +56,14 @@ namespace Faint {
     bool FileSystem::BeginWriteFile(const std::string path, bool absolute) {
         fileWriter = std::ofstream();
         fileWriter.open(absolute ? path : FileSystem::Root + path);
+#ifdef FT_DEBUG
         HZ_CORE_TRACE("File Writed: \n" + absolute ? path : FileSystem::Root + path);
-
+#endif
         return true;
     }
 
     bool FileSystem::WriteLine(const std::string line) {
         fileWriter << line.c_str();
-
         return true;
     }
 

@@ -39,6 +39,8 @@ namespace Faint {
 
 	void Input::Init()
 	{
+        ShowCursor();
+
 		double xpos, ypos;
 		glfwSetScrollCallback(Engine::GetCurrentWindow()->GetWindow(), scroll_callback);
 		glfwGetCursorPos(Engine::GetCurrentWindow()->GetWindow(), &xpos, &ypos);
@@ -158,6 +160,16 @@ namespace Faint {
 
     int Input::GetMouseY() {
         return _mouseY;
+    }
+
+    float lastMouseX = 0;
+    float lastMouseY = 0;
+    void Input::LockMouse(bool lock) {
+        if (lock) {
+            POINT staticPos = { 1280 / 2, 720 / 2 };
+            ClientToScreen(nullptr, &staticPos);
+            SetCursorPos(staticPos.x, staticPos.y);
+        }
     }
 
     /*int Input::GetViewportMappedMouseX(int viewportWidth) {

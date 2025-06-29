@@ -1,7 +1,5 @@
 #include "Material.h"
 
-#include "Renderer/Manager/TextureManager.h"
-
 #include <glad/glad.h>
 
 namespace Faint {
@@ -30,32 +28,16 @@ namespace Faint {
 		//m_Metalness = m_DefaultMetalness;
 		//m_Roughness = m_DefaultRoughness;
 
-		data.m_AlbedoColor = Vec3(1, 1, 1);
-
-		//glGenBuffers(1, &UBO);
-		//glBindBuffer(GL_UNIFORM_BUFFER, UBO);
-		//glBufferData(GL_UNIFORM_BUFFER, sizeof(UBOStructure), NULL, GL_STATIC_DRAW);
-		//glBindBuffer(GL_UNIFORM_BUFFER, 0);
+		//data.m_AlbedoColor = Vec3(1, 1, 1);
 	}
 
 	Material::Material(const std::string albedo) {
 
-		//glGenBuffers(1, &UBO);
-		//glBindBuffer(GL_UNIFORM_BUFFER, UBO);
-		//glBufferData(GL_UNIFORM_BUFFER, sizeof(UBOStructure), NULL, GL_STATIC_DRAW);
-		//glBindBuffer(GL_UNIFORM_BUFFER, 0);
-
-		m_Albedo = TextureManager::Get()->GetTexture(albedo);
+		m_Albedo = CreateRef<Texture>(albedo);
 		m_Name = albedo;
 	}
 	Material::Material(const Vec3 albedoColor) {
-
-		//glGenBuffers(1, &UBO);
-		//glBindBuffer(GL_UNIFORM_BUFFER, UBO);
-		//glBufferData(GL_UNIFORM_BUFFER, sizeof(UBOStructure), NULL, GL_STATIC_DRAW);
-		//glBindBuffer(GL_UNIFORM_BUFFER, 0);
-
-		data.m_AlbedoColor = Vec3{ albedoColor.r, albedoColor.g, albedoColor.b };
+		//data.m_AlbedoColor = Vec3{ albedoColor.r, albedoColor.g, albedoColor.b };
 
 		m_Name = "default";
 	}
@@ -63,39 +45,38 @@ namespace Faint {
 
 		// Albedo
 		if (m_Albedo != nullptr) {
-			data.u_HasAlbedo = 1;
-			m_Albedo->Bind(0);
+			data.hasAlbedo = 1;
+			//m_Albedo->Bind(0);
+			glActiveTexture(GL_TEXTURE0);
+			glBindTexture(GL_TEXTURE_2D, m_Albedo->GetID());
 		}
 
 		// Metalness
 		if (m_Metalness != nullptr) {
-			data.u_HasMetalness = 1;
-			m_Metalness->Bind(1);
+			data.hasMetalness = 1;
+			glActiveTexture(GL_TEXTURE1);
+			glBindTexture(GL_TEXTURE_2D, m_Metalness->GetID());
 		}
 
 		// Roughness
 		if (m_Roughness != nullptr) {
-			data.u_HasRoughness = 1;
-			m_Roughness->Bind(2);
+			data.hasRoughness = 1;
+			glActiveTexture(GL_TEXTURE2);
+			glBindTexture(GL_TEXTURE_2D, m_Roughness->GetID());
 		}
 
 		// AO
-		if (m_AO != nullptr) {
-			data.u_HasAO = 1;
-			m_Albedo->Bind(3);
-		}
+		//if (m_AO != nullptr) {
+		//	data.u_HasAO = 1;
+		//	m_Albedo->Bind(3);
+		//}
 
 		// Normal
 		if (m_Normal != nullptr) {
-			data.u_HasNormal = 1;
-			m_Normal->Bind(4);
+			data.hasNormal = 1;
+			glActiveTexture(GL_TEXTURE4);
+			glBindTexture(GL_TEXTURE_2D, m_Normal->GetID());
 		}
-
-		//glBindBuffer(GL_UNIFORM_BUFFER, UBO);
-		//
-		//glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(UBOStructure), &data);
-		//glBindBuffer(GL_UNIFORM_BUFFER, 0);
-		//glBindBufferBase(GL_UNIFORM_BUFFER, 32, UBO);
 	}
 
 	void Material::SetName(const std::string name) {

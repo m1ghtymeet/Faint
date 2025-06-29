@@ -99,8 +99,7 @@
       <AdditionalDependencies>..\Faint\vendor\assimp\lib\assimp-vc143-mtd.lib;..\Faint\vendor\freetype\freetype.lib;..\Faint\vendor\lua\lib\lua-5.4.4.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy "bin\Debug-windows-x86_64\FaintRuntime\FaintRuntime.exe" "$(SolutionDir)Faintnut/builder/Debug\development" /y /i /c
-copy /B /Y "$(SolutionDir)\Faint\vendor\Coral\Coral.Managed\bin\Debug\Coral.Managed.dll" "$(SolutionDir)\$(ProjectName)"
+      <Command>copy /B /Y "$(SolutionDir)\Faint\vendor\Coral\Coral.Managed\bin\Debug\Coral.Managed.dll" "$(SolutionDir)\$(ProjectName)"
 copy /B /Y "$(SolutionDir)\Faint\vendor\Coral\Coral.Managed\Coral.Managed.runtimeconfig.json" "$(SolutionDir)\$(ProjectName)"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
@@ -126,8 +125,7 @@ copy /B /Y "$(SolutionDir)\Faint\vendor\Coral\Coral.Managed\Coral.Managed.runtim
       <AdditionalDependencies>..\Faint\vendor\assimp\lib\assimp-vc143-mtd.lib;..\Faint\vendor\freetype\freetype.lib;..\Faint\vendor\lua\lib\lua-5.4.4.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy "bin\Release-windows-x86_64\FaintRuntime\FaintRuntime.exe" "$(SolutionDir)Faintnut/builder/Release\development" /y /i /c
-copy /B /Y "$(SolutionDir)\Faint\vendor\Coral\Coral.Managed\bin\Release\Coral.Managed.dll" "$(SolutionDir)\$(ProjectName)"
+      <Command>copy /B /Y "$(SolutionDir)\Faint\vendor\Coral\Coral.Managed\bin\Release\Coral.Managed.dll" "$(SolutionDir)\$(ProjectName)"
 copy /B /Y "$(SolutionDir)\Faint\vendor\Coral\Coral.Managed\Coral.Managed.runtimeconfig.json" "$(SolutionDir)\$(ProjectName)"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
@@ -152,25 +150,26 @@ copy /B /Y "$(SolutionDir)\Faint\vendor\Coral\Coral.Managed\Coral.Managed.runtim
       <AdditionalDependencies>..\Faint\vendor\assimp\lib\assimp-vc143-mtd.lib;..\Faint\vendor\freetype\freetype.lib;..\Faint\vendor\lua\lib\lua-5.4.4.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy "bin\Dist-windows-x86_64\FaintRuntime\FaintRuntime.exe" "$(SolutionDir)Faintnut/builder/Dist\development" /y /i /c
-copy /B /Y "$(SolutionDir)\Faint\vendor\Coral\Coral.Managed\bin\Dist\Coral.Managed.dll" "$(SolutionDir)\$(ProjectName)"
+      <Command>copy /B /Y "$(SolutionDir)\Faint\vendor\Coral\Coral.Managed\bin\Dist\Coral.Managed.dll" "$(SolutionDir)\$(ProjectName)"
 copy /B /Y "$(SolutionDir)\Faint\vendor\Coral\Coral.Managed\Coral.Managed.runtimeconfig.json" "$(SolutionDir)\$(ProjectName)"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="src\ComponentsPanel\ComponentPanel.h" />
     <ClInclude Include="src\ComponentsPanel\MaterialEditor.h" />
-    <ClInclude Include="src\ComponentsPanel\MeshPanel.h" />
     <ClInclude Include="src\ComponentsPanel\ModelResourceInspector.h" />
     <ClInclude Include="src\ComponentsPanel\NetScriptPanel.h" />
     <ClInclude Include="src\ComponentsPanel\WrenScriptPanel.h" />
     <ClInclude Include="src\EditorLayer.h" />
+    <ClInclude Include="src\Helpers\ImGuiHelper.h" />
+    <ClInclude Include="src\Helpers\PopupHelper.h" />
     <ClInclude Include="src\Misc\ThumbnailManager.h" />
-    <ClInclude Include="src\Panel\ContentBrowserPanel.h" />
-    <ClInclude Include="src\Panel\FileSystemUI.h" />
-    <ClInclude Include="src\Panel\Panel.h" />
-    <ClInclude Include="src\Panel\ProjectSettingsPanel.h" />
-    <ClInclude Include="src\Panel\SceneHierarchyPanel.h" />
+    <ClInclude Include="src\Panels\AssetView.h" />
+    <ClInclude Include="src\Panels\Console.h" />
+    <ClInclude Include="src\Panels\FileSystemUI.h" />
+    <ClInclude Include="src\Panels\HardwareInfo.h" />
+    <ClInclude Include="src\Panels\ProjectSettingsPanel.h" />
+    <ClInclude Include="src\Panels\SceneHierarchyPanel.h" />
     <ClInclude Include="src\Windows\NewProjectWindow.h" />
   </ItemGroup>
   <ItemGroup>
@@ -180,10 +179,12 @@ copy /B /Y "$(SolutionDir)\Faint\vendor\Coral\Coral.Managed\Coral.Managed.runtim
     <ClCompile Include="src\ComponentsPanel\WrenScriptPanel.cpp" />
     <ClCompile Include="src\EditorLayer.cpp" />
     <ClCompile Include="src\HazelnutApp.cpp" />
+    <ClCompile Include="src\Helpers\PopupHelper.cpp" />
     <ClCompile Include="src\Misc\ThumbnailManager.cpp" />
-    <ClCompile Include="src\Panel\ContentBrowserPanel.cpp" />
-    <ClCompile Include="src\Panel\FileSystemUI.cpp" />
-    <ClCompile Include="src\Panel\SceneHierarchyPanel.cpp" />
+    <ClCompile Include="src\Panels\FileSystemUI.cpp" />
+    <ClCompile Include="src\Panels\HardwareInfo.cpp" />
+    <ClCompile Include="src\Panels\ProjectSettingsPanel.cpp" />
+    <ClCompile Include="src\Panels\SceneHierarchyPanel.cpp" />
     <ClCompile Include="src\Windows\NewProjectWindow.cpp" />
   </ItemGroup>
   <ItemGroup>

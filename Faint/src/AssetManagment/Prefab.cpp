@@ -1,19 +1,17 @@
 #include "hzpch.h"
 #include "Prefab.h"
 
-#include "Scene/Components/ParentComponent.h"
-
 namespace Faint {
 
     Ref<Prefab> Prefab::CreatePrefabFromEntity(Entity entity) {
         
-        auto& name = entity.GetComponent<NameComponent>().name;
+        auto& name = entity.GetName();
     
         Ref<Prefab> prefab = CreateRef<Prefab>();
         prefab->DisplayName = name;
-        prefab->EntityWalker(entity);
-        entity.GetComponent<TransformComponent>() = TransformComponent();
-        prefab->Root = entity;
+        //prefab->EntityWalker(entity);
+        //entity.GetComponent<TransformComponent>() = TransformComponent();
+        //prefab->Root = entity;
         return prefab;
     }
 
@@ -36,12 +34,12 @@ namespace Faint {
 
     void Prefab::EntityWalker(Entity entity) {
 
-        Root = entity;
-        entity.GetComponent<NameComponent>().isPrefab = true;
+        //Root = entity;
+        //entity.GetComponent<NameComponent>().isPrefab = true;
         Entities.push_back(entity);
 
-        for (const Entity& e : entity.GetComponent<ParentComponent>().Children) {
-            EntityWalker(e);
-        }
+        //for (const Entity& e : entity.GetComponent<ParentComponent>().Children) {
+        //    EntityWalker(e);
+        //}
     }
 }

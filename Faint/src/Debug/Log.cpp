@@ -32,6 +32,7 @@ namespace Faint {
 			buff,
 			log,
 			logName,
+			logType,
 			0
 		};
 
@@ -57,5 +58,13 @@ namespace Faint {
 			m_logs.erase(m_logs.begin());
 
 		m_logs.push_back(newLog);
+	}
+
+	std::vector<LogEntry> Log::GetLogs() {
+		return m_logs;
+	}
+
+	void Log::ClearLogs() {
+		m_logs.clear();
 	}
 }

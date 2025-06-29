@@ -82,25 +82,31 @@ namespace Faint::Physics {
 		PxRigidStatic* groundPlane = NULL;
 		PxShape* groundShape = NULL;
 
-		groundPlane = PxCreatePlane(*g_physics, PxPlane(0, 1, 0, 0.0f), *g_defaultMaterial);
-		g_scene->addActor(*groundPlane);
-		groundPlane->getShapes(&groundShape, 1);
-		PxFilterData filterData;
-		filterData.word0 = RaycastGroup::RAYCAST_ENABLED; // must be disabled or it causes crash in scene::update when it tries to retrieve rigid body flags from this actor
-		filterData.word1 = CollisionGroup::ENVIROMENT_OBSTACLE;
-		filterData.word2 = CollisionGroup::GENERIC_BOUNCEABLE | CollisionGroup::PLAYER;
-		groundShape->setQueryFilterData(filterData);
-		groundShape->setSimulationFilterData(filterData); // sim is for ragz
+		//groundPlane = PxCreatePlane(*g_physics, PxPlane(0, 1, 0, 0.0f), *g_defaultMaterial);
+		//g_scene->addActor(*groundPlane);
+		//groundPlane->getShapes(&groundShape, 1);
+		//PxFilterData filterData;
+		//filterData.word0 = RaycastGroup::RAYCAST_ENABLED; // must be disabled or it causes crash in scene::update when it tries to retrieve rigid body flags from this actor
+		//filterData.word1 = CollisionGroup::ENVIROMENT_OBSTACLE;
+		//filterData.word2 = CollisionGroup::GENERIC_BOUNCEABLE | CollisionGroup::PLAYER;
+		//groundShape->setQueryFilterData(filterData);
+		//groundShape->setSimulationFilterData(filterData); // sim is for ragz
 	}
 
 	void BeginFrame() {
 
 	}
 
-	void StepPhysics(float deltaTime) {
+	void StepPhysics(float deltaTime, bool isEditor) {
 		ClearCollisionReports();
-		g_scene->simulate(deltaTime);
-		g_scene->fetchResults(true);
+		if (!isEditor) {
+			g_scene->simulate(deltaTime);
+			g_scene->fetchResults(true);
+		}
+		else {
+			g_scene->simulate(0.0f);
+			g_scene->fetchResults(true);
+		}
 	}
 
 	void AddCollisionReport(CollisionReport& collisionReport) {
@@ -158,7 +164,6 @@ namespace Faint::Physics {
 	}
 
 	PxRigidDynamic* CreateRigidDynamic(Transform transform, PhysicsFilterData filterData, PxShape* shape, Transform shapeOffset) {
-		
 		PxQuat quat = GlmQuatToPxQuat(transform.GetLocalRotation());
 		PxTransform trans = PxTransform(PxVec3(transform.GetLocalPosition().x, transform.GetLocalPosition().y, transform.GetLocalPosition().z), quat);
 		PxRigidDynamic* body = Physics::GetPxPhysics()->createRigidDynamic(trans);
@@ -174,9 +179,8 @@ namespace Faint::Physics {
 		//shape->setLocalPose(localShapeTransform);
 
 		body->attachShape(*shape);
-		PxRigidBodyExt::updateMassAndInertia(*body, 10.0f);
+		//PxRigidBodyExt::updateMassAndInertia(*body, 10.0f);
 		Physics::GetPxScene()->addActor(*body);
-
 		return body;
 	}
 
@@ -211,6 +215,59 @@ namespace Faint::Physics {
 
 		PxShape* pxShape = pxPhysics->createShape(geometry, *defaultMaterial);
 		return pxShape;
+	}
+
+	void Physics::Destroy(PxRigidDynamic*& rigidDynamic) {
+		if (rigidDynamic) {
+			if (rigidDynamic->userData) {
+				//delete static_cast<PhysicsObjectData*>(rigidDynamic->userData);
+				rigidDynamic->userData = nullptr;
+			}
+			Physics::GetPxScene()->removeActor(*rigidDynamic);
+			rigidDynamic->release();
+			rigidDynamic = nullptr;
+		}
+	}
+
+	void Physics::Destroy(PxRigidStatic*& rigidStatic) {
+		if (rigidStatic) {
+			if (rigidStatic->userData) {
+				//delete static_cast<PhysicsObjectData*>(rigidStatic->userData);
+				rigidStatic->userData = nullptr;
+			}
+			Physics::GetPxScene()->removeActor(*rigidStatic);
+			rigidStatic->release();
+			rigidStatic = nullptr;
+		}
+	}
+
+	void Physics::Destroy(PxShape*& shape) {
+		if (shape) {
+			if (shape->userData) {
+				//delete static_cast<PhysicsObjectData*>(shape->userData);
+				shape->userData = nullptr;
+			}
+			shape->release();
+			shape = nullptr;
+		}
+	}
+
+	void Physics::Destroy(PxRigidBody*& rigidBody) {
+		if (rigidBody) {
+			if (rigidBody->userData) {
+				//delete static_cast<PhysicsObjectData*>(rigidBody->userData);
+				rigidBody->userData = nullptr;
+			}
+			Physics::GetPxScene()->removeActor(*rigidBody);
+			rigidBody->release();
+			rigidBody = nullptr;
+		}
+	}
+
+	void Physics::Destroy(PxTriangleMesh*& triangleMesh) {
+		if (triangleMesh) {
+			triangleMesh = nullptr;
+		}
 	}
 }
 

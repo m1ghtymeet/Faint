@@ -9,7 +9,6 @@ namespace YAML {
 }
 
 namespace Faint {
-
 	struct ProjectSettings {
 		bool ShowGizmos = true;
 		bool ShowAxis = false;
@@ -18,16 +17,17 @@ namespace Faint {
 		float ResolutionScale = 1.0f;
 		float OutlineRadius = 4.0f;
 		float GizmoSize = 0.25f;
-		int PhysicsStep = 90;
-		int MaxPhysicsSubStep = 32;
-		int MaxPhysicsBodies = 4096;
-		int MaxPhysicsContactConstraints = 2048;
-		int MaxPhysicsBodyPair = 2048;
+		float Gravity = -9.81f;
 		Vec4 PrimaryColor = Vec4(0.1f, 0.1f, 0.1f, 1);
 		std::string Configuration = "development";
 
 		YAML::Emitter& SerializeYaml(const std::string& path);
 		bool DeserializeYaml(const std::string& path);
+	};
+
+	struct EditorCameraSettings {
+		Vec3 position = Vec3(0);
+		Vec3 rotation = Vec3(0);
 	};
 
 	class Project : public ISerializable {
@@ -39,10 +39,10 @@ namespace Faint {
 		std::string FullPath;
 		std::string AssetDirectory;
 		std::string ScriptDirectory;
-
 		Ref<Scene> DefaultScene;
 
 		ProjectSettings Settings;
+		EditorCameraSettings cameraSettings;
 
 		Project(const std::string& name, const std::string& description, const std::string& fullPath, const std::string& defaultScenePath = "");
 		Project();
@@ -61,6 +61,6 @@ namespace Faint {
 		void ExportEntitiesToTrenchbroom();
 
 		json Serialize() override;
-		bool Deserialize(const json& j) override;
+		void Deserialize(const json& j) override;
 	};
 }

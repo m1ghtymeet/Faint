@@ -1,4 +1,4 @@
-#include "Camera2.h"
+#include "Camera.h"
 #include <glm/gtc/type_ptr.hpp>
 #include <algorithm>
 #include "Core/Window.h"
@@ -60,6 +60,10 @@ namespace Faint {
 
 	const glm::vec3& Camera::GetPosition() const {
 		return m_position;
+	}
+
+	const glm::vec3& Camera::GetRotation() const {
+		return m_rotation;
 	}
 
 	const glm::quat& Camera::GetEulerRotation() const {

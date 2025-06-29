@@ -1,40 +1,57 @@
 #pragma once
 
-#include "Component.h"
+#include "AComponent.h"
+#include "CTransform.h"
 
-#include "TransformComponent.h"
 #include "Physics/Physics.h"
 #include "Core/Base.h"
 
 namespace Faint {
-	struct RigidBodyComponent : public Component {
-		//FAINTCOMPONENT(RigidBodyComponent, "Rigid Body")
-		
-		//static void InitializeComponentClass()
-		//{
-		//	BindComponentField<&RigidBodyComponent::Mass>("Mass", "Mass");
-		//	BindComponentField<&RigidBodyComponent::LockX>("LockX", "Lock X");
-		//	BindComponentField<&RigidBodyComponent::LockY>("LockY", "Lock Y");
-		//	BindComponentField<&RigidBodyComponent::LockZ>("LockZ", "Lock Z");
-		//}
+	/**
+		- Mass * Float
+		- Drag * Float
+		- Angular Drag * Float
+		- Use Gravity * Bool
+		- Is Kinematic * Bool
+		- Collision Detection * Layer
+		Constraints:
+			- Freez Position * Vec3
+			- Freez Rotation * Vec3
+	*/
+	struct RigidBodyComponent : public AComponent {
 	public:
-		PxRigidDynamic* dynamicActor = nullptr;
+		PxRigidActor* actor = nullptr;
+		bool useGravity = true;
 		bool isKinematic = false;
 		float mass;
+		bool LockPosX = false; bool LockPosY = false; bool LockPosZ = false;
+		bool LockRotX = false; bool LockRotY = false; bool LockRotZ = false;
 
-		RigidBodyComponent();
-		PxRigidDynamic* GetRigidBody() const;
+		RigidBodyComponent(Entity& p_owner);
 
-		json Serialize()
-		{
-			BEGIN_SERIALIZE();
+		std::string GetName() override { return "RigidBody"; }
 
-			END_SERIALIZE();
+		PxRigidDynamic* GetDynamicBody() const {
+			if (actor && actor->is<PxRigidDynamic>()) {
+				return static_cast<PxRigidDynamic*>(actor);
+			}
+			return nullptr;
+		}
+		PxRigidStatic* GetStaticBody() const {
+			if (actor && actor->is<PxRigidStatic>()) {
+				return static_cast<PxRigidStatic*>(actor);
+			}
+			return nullptr;
 		}
 
-		bool Deserialize(const json& j)
-		{
-
+		json Serialize() {
+			BEGIN_SERIALIZE();
+			SERIALIZE_VAL(useGravity);
+			SERIALIZE_VAL(isKinematic);
+			SERIALIZE_VAL(mass);
+			END_SERIALIZE();
+		}
+		bool Deserialize(const json& j) {
 			return true;
 		}
 	};

@@ -1,5 +1,6 @@
 #pragma once
 #include "Core/Base.h"
+#include <glm/glm.hpp>
 #include "ini.h"
 
 namespace Faint::Config {
@@ -7,5 +8,5 @@ namespace Faint::Config {
 	void Write(mINI::INIFile, std::string& title, std::string& value);
 	inline mINI::INIStructure currentINI;
 
-	inline glm::ivec2 finalImageResolution = { 1920 / 2, 1080 / 2 };
+	inline glm::ivec2 finalImageResolution = { 1280, 720 };
 }

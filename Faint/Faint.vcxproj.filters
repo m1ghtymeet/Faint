@@ -49,8 +49,11 @@
     <Filter Include="src\Renderer">
       <UniqueIdentifier>{73D1DFBF-5F34-6F64-08BA-A71AF4FB3AE7}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\Renderer\Manager">
-      <UniqueIdentifier>{9DD0A38C-895F-2D56-327E-41511EEC3DFC}</UniqueIdentifier>
+    <Filter Include="src\Renderer\OpenGL">
+      <UniqueIdentifier>{47FBB911-B35C-971F-3CCA-DDD1A82ACEDE}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Renderer\OpenGL\Types">
+      <UniqueIdentifier>{2BD847DF-979A-7B69-E04A-0AF64C4C5447}</UniqueIdentifier>
     </Filter>
     <Filter Include="src\Renderer\Types">
       <UniqueIdentifier>{579FF83E-4383-B994-ACE3-B3E798E6A316}</UniqueIdentifier>
@@ -76,20 +79,20 @@
     <Filter Include="src\Scripting\NetModules">
       <UniqueIdentifier>{DEBAD4DF-CADF-2360-F32A-09F0DFAE227E}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\Subsystems">
-      <UniqueIdentifier>{1E864021-0A54-3427-F3E7-A44DDF54108C}</UniqueIdentifier>
-    </Filter>
     <Filter Include="src\Threading">
       <UniqueIdentifier>{B27D869F-1E3E-02D6-E778-4B5353F846B2}</UniqueIdentifier>
     </Filter>
     <Filter Include="src\UI">
       <UniqueIdentifier>{3A4B661C-26ED-90F2-0FA8-A446FBE81743}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\UI\Font">
-      <UniqueIdentifier>{8028D349-ECDD-4B3F-75D2-4516E1864243}</UniqueIdentifier>
+    <Filter Include="src\UI\Panels">
+      <UniqueIdentifier>{4C569521-B816-1158-8151-5AD5EDD05534}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\UI\TextBlitting">
-      <UniqueIdentifier>{AB0BBA1C-176D-972A-A0DA-DDDC0C3BCEE9}</UniqueIdentifier>
+    <Filter Include="src\UI\Plugins">
+      <UniqueIdentifier>{0B96686E-F763-5C74-E0F7-CC9ACC6438D9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\UI\Widgets">
+      <UniqueIdentifier>{A0140D81-8CE2-0087-7576-71AD61E3DCEB}</UniqueIdentifier>
     </Filter>
     <Filter Include="src\Util">
       <UniqueIdentifier>{9AC626CF-8693-81DA-AFAC-6F829BD8B668}</UniqueIdentifier>
@@ -141,9 +144,6 @@
     <ClInclude Include="src\AssetManagment\FontAwesome5.h">
       <Filter>src\AssetManagment</Filter>
     </ClInclude>
-    <ClInclude Include="src\AssetManagment\ModelLoader.h">
-      <Filter>src\AssetManagment</Filter>
-    </ClInclude>
     <ClInclude Include="src\AssetManagment\Prefab.h">
       <Filter>src\AssetManagment</Filter>
     </ClInclude>
@@ -158,6 +158,9 @@
     </ClInclude>
     <ClInclude Include="src\AssetManagment\ini.h">
       <Filter>src\AssetManagment</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Common\Enums.h">
+      <Filter>src\Common</Filter>
     </ClInclude>
     <ClInclude Include="src\Common\Types.h">
       <Filter>src\Common</Filter>
@@ -219,6 +222,9 @@
     <ClInclude Include="src\Event\Event.inl">
       <Filter>src\Event</Filter>
     </ClInclude>
+    <ClInclude Include="src\Faint.h">
+      <Filter>src</Filter>
+    </ClInclude>
     <ClInclude Include="src\File\File.h">
       <Filter>src\File</Filter>
     </ClInclude>
@@ -233,9 +239,6 @@
     </ClInclude>
     <ClInclude Include="src\FileSystem\FileSystem.h">
       <Filter>src\FileSystem</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Hazel.h">
-      <Filter>src</Filter>
     </ClInclude>
     <ClInclude Include="src\Input\Input.h">
       <Filter>src\Input</Filter>
@@ -270,28 +273,52 @@
     <ClInclude Include="src\Renderer\Light.h">
       <Filter>src\Renderer</Filter>
     </ClInclude>
-    <ClInclude Include="src\Renderer\Manager\MaterialManager.h">
-      <Filter>src\Renderer\Manager</Filter>
+    <ClInclude Include="src\Renderer\OpenGL\OpenGLRenderer.h">
+      <Filter>src\Renderer\OpenGL</Filter>
     </ClInclude>
-    <ClInclude Include="src\Renderer\Manager\TextureManager.h">
-      <Filter>src\Renderer\Manager</Filter>
+    <ClInclude Include="src\Renderer\OpenGL\Types\CubemapTexture.h">
+      <Filter>src\Renderer\OpenGL\Types</Filter>
     </ClInclude>
-    <ClInclude Include="src\Renderer\RenderCommand.h">
-      <Filter>src\Renderer</Filter>
+    <ClInclude Include="src\Renderer\OpenGL\Types\CubemapView.h">
+      <Filter>src\Renderer\OpenGL\Types</Filter>
     </ClInclude>
-    <ClInclude Include="src\Renderer\RenderData.h">
-      <Filter>src\Renderer</Filter>
+    <ClInclude Include="src\Renderer\OpenGL\Types\GL_SSBO.hpp">
+      <Filter>src\Renderer\OpenGL\Types</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Renderer\OpenGL\Types\GL_debug_mesh.hpp">
+      <Filter>src\Renderer\OpenGL\Types</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Renderer\OpenGL\Types\GL_frameBuffer.h">
+      <Filter>src\Renderer\OpenGL\Types</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Renderer\OpenGL\Types\GL_texture.h">
+      <Filter>src\Renderer\OpenGL\Types</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Renderer\OpenGL\Types\Mesh.h">
+      <Filter>src\Renderer\OpenGL\Types</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Renderer\OpenGL\Types\Model.h">
+      <Filter>src\Renderer\OpenGL\Types</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Renderer\OpenGL\Types\OpenGLBuffer.h">
+      <Filter>src\Renderer\OpenGL\Types</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Renderer\OpenGL\Types\OpenGLVertexArray.h">
+      <Filter>src\Renderer\OpenGL\Types</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Renderer\OpenGL\Types\ShadowMap.h">
+      <Filter>src\Renderer\OpenGL\Types</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Renderer\OpenGL\Types\SkinnedMesh.h">
+      <Filter>src\Renderer\OpenGL\Types</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Renderer\OpenGL\Types\SkinnedModel.h">
+      <Filter>src\Renderer\OpenGL\Types</Filter>
     </ClInclude>
     <ClInclude Include="src\Renderer\RenderList.h">
       <Filter>src\Renderer</Filter>
     </ClInclude>
     <ClInclude Include="src\Renderer\Renderer.h">
-      <Filter>src\Renderer</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Renderer\Renderer2D.h">
-      <Filter>src\Renderer</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Renderer\RendererCommon.h">
       <Filter>src\Renderer</Filter>
     </ClInclude>
     <ClInclude Include="src\Renderer\SceneRenderer.h">
@@ -303,40 +330,7 @@
     <ClInclude Include="src\Renderer\Types\Buffer.h">
       <Filter>src\Renderer\Types</Filter>
     </ClInclude>
-    <ClInclude Include="src\Renderer\Types\CubemapTexture.h">
-      <Filter>src\Renderer\Types</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Renderer\Types\Debug.h">
-      <Filter>src\Renderer\Types</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Renderer\Types\FrameBuffer.h">
-      <Filter>src\Renderer\Types</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Renderer\Types\GL_debug_mesh.hpp">
-      <Filter>src\Renderer\Types</Filter>
-    </ClInclude>
     <ClInclude Include="src\Renderer\Types\Material.h">
-      <Filter>src\Renderer\Types</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Renderer\Types\Mesh.h">
-      <Filter>src\Renderer\Types</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Renderer\Types\Model.h">
-      <Filter>src\Renderer\Types</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Renderer\Types\OpenGLBuffer.h">
-      <Filter>src\Renderer\Types</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Renderer\Types\OpenGLVertexArray.h">
-      <Filter>src\Renderer\Types</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Renderer\Types\SSBO.hpp">
-      <Filter>src\Renderer\Types</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Renderer\Types\ShadowMap.h">
-      <Filter>src\Renderer\Types</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Renderer\Types\SkinnedMesh.h">
       <Filter>src\Renderer\Types</Filter>
     </ClInclude>
     <ClInclude Include="src\Renderer\Types\Texture.h">
@@ -348,49 +342,43 @@
     <ClInclude Include="src\Renderer\Types\VertexArray.h">
       <Filter>src\Renderer\Types</Filter>
     </ClInclude>
-    <ClInclude Include="src\Scene\Camera2.h">
+    <ClInclude Include="src\Scene\Camera.h">
       <Filter>src\Scene</Filter>
     </ClInclude>
     <ClInclude Include="src\Scene\Components.h">
       <Filter>src\Scene</Filter>
     </ClInclude>
-    <ClInclude Include="src\Scene\Components\AudioComponent.h">
+    <ClInclude Include="src\Scene\Components\AComponent.h">
       <Filter>src\Scene\Components</Filter>
     </ClInclude>
-    <ClInclude Include="src\Scene\Components\BSPBrushComponent.h">
+    <ClInclude Include="src\Scene\Components\CAudio.h">
       <Filter>src\Scene\Components</Filter>
     </ClInclude>
-    <ClInclude Include="src\Scene\Components\BoxColliderComponent.h">
+    <ClInclude Include="src\Scene\Components\CBoxCollider.h">
       <Filter>src\Scene\Components</Filter>
     </ClInclude>
-    <ClInclude Include="src\Scene\Components\CameraComponent.h">
+    <ClInclude Include="src\Scene\Components\CCamera.h">
       <Filter>src\Scene\Components</Filter>
     </ClInclude>
-    <ClInclude Include="src\Scene\Components\CapsuleColliderComponent.h">
+    <ClInclude Include="src\Scene\Components\CCapsuleCollider.h">
+      <Filter>src\Scene\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Scene\Components\CLight.h">
+      <Filter>src\Scene\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Scene\Components\CModelRenderer.h">
+      <Filter>src\Scene\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Scene\Components\CTransform.h">
       <Filter>src\Scene\Components</Filter>
     </ClInclude>
     <ClInclude Include="src\Scene\Components\CharacterControllerComponent.h">
       <Filter>src\Scene\Components</Filter>
     </ClInclude>
-    <ClInclude Include="src\Scene\Components\Component.h">
-      <Filter>src\Scene\Components</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Scene\Components\LightComponent.h">
-      <Filter>src\Scene\Components</Filter>
-    </ClInclude>
     <ClInclude Include="src\Scene\Components\LuaScriptComponent.h">
       <Filter>src\Scene\Components</Filter>
     </ClInclude>
-    <ClInclude Include="src\Scene\Components\MeshRendererComponent.h">
-      <Filter>src\Scene\Components</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Scene\Components\NameComponent.h">
-      <Filter>src\Scene\Components</Filter>
-    </ClInclude>
     <ClInclude Include="src\Scene\Components\NetScriptComponent.h">
-      <Filter>src\Scene\Components</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Scene\Components\ParentComponent.h">
       <Filter>src\Scene\Components</Filter>
     </ClInclude>
     <ClInclude Include="src\Scene\Components\PrefabComponent.h">
@@ -399,31 +387,22 @@
     <ClInclude Include="src\Scene\Components\RigidBodyComponent.h">
       <Filter>src\Scene\Components</Filter>
     </ClInclude>
+    <ClInclude Include="src\Scene\Components\SkinnedMeshRendererComponent.h">
+      <Filter>src\Scene\Components</Filter>
+    </ClInclude>
     <ClInclude Include="src\Scene\Components\SkyComponent.h">
       <Filter>src\Scene\Components</Filter>
     </ClInclude>
     <ClInclude Include="src\Scene\Components\SphereColliderComponent.h">
       <Filter>src\Scene\Components</Filter>
     </ClInclude>
-    <ClInclude Include="src\Scene\Components\SpriteComponent.h">
-      <Filter>src\Scene\Components</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Scene\Components\TextBlitterComponent.h">
-      <Filter>src\Scene\Components</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Scene\Components\TextComponent.h">
-      <Filter>src\Scene\Components</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Scene\Components\TransformComponent.h">
-      <Filter>src\Scene\Components</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Scene\Components\VisibilityComponent.h">
-      <Filter>src\Scene\Components</Filter>
-    </ClInclude>
     <ClInclude Include="src\Scene\Components\WrenScriptComponent.h">
       <Filter>src\Scene\Components</Filter>
     </ClInclude>
     <ClInclude Include="src\Scene\Entity.h">
+      <Filter>src\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Scene\Entity.inl">
       <Filter>src\Scene</Filter>
     </ClInclude>
     <ClInclude Include="src\Scene\Environment\Environment.h">
@@ -433,9 +412,6 @@
       <Filter>src\Scene\Environment</Filter>
     </ClInclude>
     <ClInclude Include="src\Scene\Scene.h">
-      <Filter>src\Scene</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Scene\SceneSerializer.h">
       <Filter>src\Scene</Filter>
     </ClInclude>
     <ClInclude Include="src\Scene\Systems\AudioSystem.h">
@@ -465,9 +441,6 @@
     <ClInclude Include="src\Scripting\NetModules\EngineNetAPI.h">
       <Filter>src\Scripting\NetModules</Filter>
     </ClInclude>
-    <ClInclude Include="src\Scripting\NetModules\EngineSubsystemNetAPI.h">
-      <Filter>src\Scripting\NetModules</Filter>
-    </ClInclude>
     <ClInclude Include="src\Scripting\NetModules\InputNetAPI.h">
       <Filter>src\Scripting\NetModules</Filter>
     </ClInclude>
@@ -492,38 +465,29 @@
     <ClInclude Include="src\Subprocess.hpp">
       <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="src\Subsystems\EngineSubsystem.h">
-      <Filter>src\Subsystems</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Subsystems\EngineSubsystemScriptable.h">
-      <Filter>src\Subsystems</Filter>
-    </ClInclude>
     <ClInclude Include="src\Threading\Job.h">
       <Filter>src\Threading</Filter>
     </ClInclude>
     <ClInclude Include="src\Threading\JobSystem.h">
       <Filter>src\Threading</Filter>
     </ClInclude>
-    <ClInclude Include="src\UI\Font\Font.h">
-      <Filter>src\UI\Font</Filter>
-    </ClInclude>
-    <ClInclude Include="src\UI\Font\FontLoader.h">
-      <Filter>src\UI\Font</Filter>
-    </ClInclude>
     <ClInclude Include="src\UI\ImUI.h">
       <Filter>src\UI</Filter>
     </ClInclude>
-    <ClInclude Include="src\UI\PopupHelper.h">
-      <Filter>src\UI</Filter>
+    <ClInclude Include="src\UI\Panels\APanel.h">
+      <Filter>src\UI\Panels</Filter>
     </ClInclude>
-    <ClInclude Include="src\UI\TextBlitting\FontMesh.h">
-      <Filter>src\UI\TextBlitting</Filter>
+    <ClInclude Include="src\UI\Plugins\IPlugin.h">
+      <Filter>src\UI\Plugins</Filter>
     </ClInclude>
-    <ClInclude Include="src\UI\TextBlitting\FontSpriteSheet.h">
-      <Filter>src\UI\TextBlitting</Filter>
+    <ClInclude Include="src\UI\Plugins\Pluginable.h">
+      <Filter>src\UI\Plugins</Filter>
     </ClInclude>
-    <ClInclude Include="src\UI\TextBlitting\TextBlitter.h">
-      <Filter>src\UI\TextBlitting</Filter>
+    <ClInclude Include="src\UI\Widgets\AWidget.h">
+      <Filter>src\UI\Widgets</Filter>
+    </ClInclude>
+    <ClInclude Include="src\UI\Widgets\WidgetContainer.h">
+      <Filter>src\UI\Widgets</Filter>
     </ClInclude>
     <ClInclude Include="src\Util\PlatformUtil.h">
       <Filter>src\Util</Filter>
@@ -602,9 +566,6 @@
     <ClCompile Include="src\AssetManagment\Config.cpp">
       <Filter>src\AssetManagment</Filter>
     </ClCompile>
-    <ClCompile Include="src\AssetManagment\ModelLoader.cpp">
-      <Filter>src\AssetManagment</Filter>
-    </ClCompile>
     <ClCompile Include="src\AssetManagment\Prefab.cpp">
       <Filter>src\AssetManagment</Filter>
     </ClCompile>
@@ -680,19 +641,46 @@
     <ClCompile Include="src\Renderer\Light.cpp">
       <Filter>src\Renderer</Filter>
     </ClCompile>
-    <ClCompile Include="src\Renderer\Manager\MaterialManager.cpp">
-      <Filter>src\Renderer\Manager</Filter>
+    <ClCompile Include="src\Renderer\OpenGL\OpenGLRenderer.cpp">
+      <Filter>src\Renderer\OpenGL</Filter>
     </ClCompile>
-    <ClCompile Include="src\Renderer\Manager\TextureManager.cpp">
-      <Filter>src\Renderer\Manager</Filter>
+    <ClCompile Include="src\Renderer\OpenGL\OpenGLRenderer_util.cpp">
+      <Filter>src\Renderer\OpenGL</Filter>
     </ClCompile>
-    <ClCompile Include="src\Renderer\RenderCommand.cpp">
-      <Filter>src\Renderer</Filter>
+    <ClCompile Include="src\Renderer\OpenGL\Types\CubemapTexture.cpp">
+      <Filter>src\Renderer\OpenGL\Types</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Renderer\OpenGL\Types\CubemapView.cpp">
+      <Filter>src\Renderer\OpenGL\Types</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Renderer\OpenGL\Types\GL_frameBuffer.cpp">
+      <Filter>src\Renderer\OpenGL\Types</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Renderer\OpenGL\Types\GL_texture.cpp">
+      <Filter>src\Renderer\OpenGL\Types</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Renderer\OpenGL\Types\Mesh.cpp">
+      <Filter>src\Renderer\OpenGL\Types</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Renderer\OpenGL\Types\Model.cpp">
+      <Filter>src\Renderer\OpenGL\Types</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Renderer\OpenGL\Types\OpenGLBuffer.cpp">
+      <Filter>src\Renderer\OpenGL\Types</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Renderer\OpenGL\Types\OpenGLVertexArray.cpp">
+      <Filter>src\Renderer\OpenGL\Types</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Renderer\OpenGL\Types\ShadowMap.cpp">
+      <Filter>src\Renderer\OpenGL\Types</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Renderer\OpenGL\Types\SkinnedMesh.cpp">
+      <Filter>src\Renderer\OpenGL\Types</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Renderer\OpenGL\Types\SkinnedModel.cpp">
+      <Filter>src\Renderer\OpenGL\Types</Filter>
     </ClCompile>
     <ClCompile Include="src\Renderer\Renderer.cpp">
-      <Filter>src\Renderer</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Renderer\Renderer2D.cpp">
       <Filter>src\Renderer</Filter>
     </ClCompile>
     <ClCompile Include="src\Renderer\SceneRenderer.cpp">
@@ -707,28 +695,7 @@
     <ClCompile Include="src\Renderer\Types\Buffer.cpp">
       <Filter>src\Renderer\Types</Filter>
     </ClCompile>
-    <ClCompile Include="src\Renderer\Types\CubemapTexture.cpp">
-      <Filter>src\Renderer\Types</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Renderer\Types\FrameBuffer.cpp">
-      <Filter>src\Renderer\Types</Filter>
-    </ClCompile>
     <ClCompile Include="src\Renderer\Types\Material.cpp">
-      <Filter>src\Renderer\Types</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Renderer\Types\Mesh.cpp">
-      <Filter>src\Renderer\Types</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Renderer\Types\Model.cpp">
-      <Filter>src\Renderer\Types</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Renderer\Types\OpenGLBuffer.cpp">
-      <Filter>src\Renderer\Types</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Renderer\Types\OpenGLVertexArray.cpp">
-      <Filter>src\Renderer\Types</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Renderer\Types\ShadowMap.cpp">
       <Filter>src\Renderer\Types</Filter>
     </ClCompile>
     <ClCompile Include="src\Renderer\Types\Texture.cpp">
@@ -743,16 +710,22 @@
     <ClCompile Include="src\Scene\Camera.cpp">
       <Filter>src\Scene</Filter>
     </ClCompile>
-    <ClCompile Include="src\Scene\Components\LightComponent.cpp">
+    <ClCompile Include="src\Scene\Components\AComponent.cpp">
+      <Filter>src\Scene\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Scene\Components\CLight.cpp">
+      <Filter>src\Scene\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Scene\Components\CModelRenderer.cpp">
+      <Filter>src\Scene\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Scene\Components\CTransform.cpp">
       <Filter>src\Scene\Components</Filter>
     </ClCompile>
     <ClCompile Include="src\Scene\Components\RigidBodyComponent.cpp">
       <Filter>src\Scene\Components</Filter>
     </ClCompile>
-    <ClCompile Include="src\Scene\Components\SpriteComponent.cpp">
-      <Filter>src\Scene\Components</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Scene\Components\TransformComponent.cpp">
+    <ClCompile Include="src\Scene\Components\SkinnedMeshRendererComponent.cpp">
       <Filter>src\Scene\Components</Filter>
     </ClCompile>
     <ClCompile Include="src\Scene\Entity.cpp">
@@ -765,9 +738,6 @@
       <Filter>src\Scene\Environment</Filter>
     </ClCompile>
     <ClCompile Include="src\Scene\Scene.cpp">
-      <Filter>src\Scene</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Scene\SceneSerializer.cpp">
       <Filter>src\Scene</Filter>
     </ClCompile>
     <ClCompile Include="src\Scene\Systems\AudioSystem.cpp">
@@ -788,9 +758,6 @@
     <ClCompile Include="src\Scripting\NetModules\EngineNetAPI.cpp">
       <Filter>src\Scripting\NetModules</Filter>
     </ClCompile>
-    <ClCompile Include="src\Scripting\NetModules\EngineSubsystemNetAPI.cpp">
-      <Filter>src\Scripting\NetModules</Filter>
-    </ClCompile>
     <ClCompile Include="src\Scripting\NetModules\InputNetAPI.cpp">
       <Filter>src\Scripting\NetModules</Filter>
     </ClCompile>
@@ -809,32 +776,17 @@
     <ClCompile Include="src\Scripting\WrenScript.cpp">
       <Filter>src\Scripting</Filter>
     </ClCompile>
-    <ClCompile Include="src\Subsystems\EngineSubsystem.cpp">
-      <Filter>src\Subsystems</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Subsystems\EngineSubsystemScriptable.cpp">
-      <Filter>src\Subsystems</Filter>
-    </ClCompile>
     <ClCompile Include="src\Threading\Job.cpp">
       <Filter>src\Threading</Filter>
     </ClCompile>
     <ClCompile Include="src\Threading\JobSystem.cpp">
       <Filter>src\Threading</Filter>
     </ClCompile>
-    <ClCompile Include="src\UI\Font\Font.cpp">
-      <Filter>src\UI\Font</Filter>
-    </ClCompile>
     <ClCompile Include="src\UI\ImUI.cpp">
       <Filter>src\UI</Filter>
     </ClCompile>
-    <ClCompile Include="src\UI\PopupHelper.cpp">
-      <Filter>src\UI</Filter>
-    </ClCompile>
-    <ClCompile Include="src\UI\TextBlitting\FontSpriteSheet.cpp">
-      <Filter>src\UI\TextBlitting</Filter>
-    </ClCompile>
-    <ClCompile Include="src\UI\TextBlitting\TextBlitter.cpp">
-      <Filter>src\UI\TextBlitting</Filter>
+    <ClCompile Include="src\UI\Panels\APanel.cpp">
+      <Filter>src\UI\Panels</Filter>
     </ClCompile>
     <ClCompile Include="src\Util\PlatformUtil.cpp">
       <Filter>src\Util</Filter>

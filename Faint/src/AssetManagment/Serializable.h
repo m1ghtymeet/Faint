@@ -85,8 +85,5 @@ namespace YAML {
 class ISerializable {
 public:
 	virtual json Serialize() = 0;
-	virtual bool Deserialize(const json& j) = 0;
-
-	//virtual bool SerializeYaml(const std::string& path) { return false; };
-	//virtual bool DeserializeYaml(const std::string& path) { return false; };
+	virtual void Deserialize(const json& j) = 0;
 };

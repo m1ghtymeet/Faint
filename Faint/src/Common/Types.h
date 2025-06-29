@@ -9,6 +9,8 @@
 #include <vector>
 #include <iostream>
 
+#include "Enums.h"
+
 #define MAX_LIGHTS 64
 
 #define ORANGE              glm::vec4(1.00f, 0.65f, 0.00f, 1.0f)
@@ -27,31 +29,6 @@
 #define GRID_COLOR          glm::vec4(0.50f, 0.50f, 0.60f, 1.0f)
 #define OUTLINE_COLOR       glm::vec4(1.00f, 0.50f, 0.00f, 0.0f)
 #define DEFAULT_LIGHT_COLOR glm::vec4(1.00f, 0.7799999713897705f, 0.5289999842643738f, 1.0f)
-
-enum class RendererAPI { UNDEFINED = 0, OPENGL = 1, VULKAN = 2 };
-
-enum class ShaderDataType : uint8_t {
-	NONE = 0,
-	FLOAT,
-	FLOAT2,
-	FLOAT3,
-	FLOAT4,
-	MAT3,
-	MAT4,
-	INT,
-	INT2,
-	INT3,
-	INT4,
-	BOOL
-};
-
-enum DebugRenderMode {
-	NONE = 0,
-	PATHFINDING_RECAST,
-	PHYSX_ALL,
-	PHYSX_RAYCAST,
-	PHYSX_COLLISION,
-};
 
 #define PI 3.141592653589793f
 
@@ -134,7 +111,11 @@ struct TextureData {
 	int m_width = 0;
 	int m_height = 0;
 	int m_numChannels = 0;
+	int m_dataSize = 0;
+	int m_format = 0;
+	int m_internalFormat = 0;
 	void* m_data = nullptr;
+	ImageDataType m_imageDataType;
 };
 
 struct Node {
@@ -164,41 +145,6 @@ namespace Faint {
 		};
 	}
 }
-
-/* ^^^ ENUM ^^^ */
-enum struct PhysicsType {
-	NONE = 0,
-	RIGID_DYNAMIC,
-	RIGID_STATIC,
-	UNDEFINED
-};
-
-struct PhysicsUserData {
-	PhysicsType physicsType = PhysicsType::NONE;
-};
-
-struct PhysXRayResult {
-	PhysicsUserData userData;
-	std::string hitObjectName;
-};
-
-enum CollisionGroup {
-	NO_COLLISION = 0,
-	ENVIROMENT_OBSTACLE,
-	GENERIC_BOUNCEABLE,
-	PLAYER
-};
-
-enum RaycastGroup {
-	RAYCAST_DISABLED = 0,
-	RAYCAST_ENABLED
-};
-
-struct PhysicsFilterData {
-	RaycastGroup raycastGroup = RaycastGroup::RAYCAST_DISABLED;
-	CollisionGroup collisionGroup = CollisionGroup::NO_COLLISION;
-	CollisionGroup collidesWith = CollisionGroup::ENVIROMENT_OBSTACLE;
-};
 
 #pragma pack(push, 1)
 struct BvhNode {

@@ -76,8 +76,7 @@ namespace Faint {
         return result;
     }
 
-    std::string String::ReplaceSlash(const std::string& str)
-    {
+    std::string String::ReplaceSlash(const std::string& str) {
         std::string result = str;
         std::replace(result.begin(), result.end(), '\\', '/');
         return result;

@@ -4,11 +4,14 @@
     <Filter Include="ComponentsPanel">
       <UniqueIdentifier>{BB524238-27DE-AFFC-30EF-32F19CF90BFD}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Helpers">
+      <UniqueIdentifier>{D8389B9D-4418-1A39-4D30-A50FB98E809A}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Misc">
       <UniqueIdentifier>{9116897C-7D4D-8A0D-263A-70101250060F}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Panel">
-      <UniqueIdentifier>{95BADD0D-01CF-05BF-CA50-A91E362402F0}</UniqueIdentifier>
+    <Filter Include="Panels">
+      <UniqueIdentifier>{A80D95C9-94AF-BF9F-7D6A-D3F369AB46F0}</UniqueIdentifier>
     </Filter>
     <Filter Include="Windows">
       <UniqueIdentifier>{5032B729-BC11-36C5-C529-C19B31889C26}</UniqueIdentifier>
@@ -21,9 +24,6 @@
     <ClInclude Include="src\ComponentsPanel\MaterialEditor.h">
       <Filter>ComponentsPanel</Filter>
     </ClInclude>
-    <ClInclude Include="src\ComponentsPanel\MeshPanel.h">
-      <Filter>ComponentsPanel</Filter>
-    </ClInclude>
     <ClInclude Include="src\ComponentsPanel\ModelResourceInspector.h">
       <Filter>ComponentsPanel</Filter>
     </ClInclude>
@@ -34,23 +34,32 @@
       <Filter>ComponentsPanel</Filter>
     </ClInclude>
     <ClInclude Include="src\EditorLayer.h" />
+    <ClInclude Include="src\Helpers\ImGuiHelper.h">
+      <Filter>Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Helpers\PopupHelper.h">
+      <Filter>Helpers</Filter>
+    </ClInclude>
     <ClInclude Include="src\Misc\ThumbnailManager.h">
       <Filter>Misc</Filter>
     </ClInclude>
-    <ClInclude Include="src\Panel\ContentBrowserPanel.h">
-      <Filter>Panel</Filter>
+    <ClInclude Include="src\Panels\AssetView.h">
+      <Filter>Panels</Filter>
     </ClInclude>
-    <ClInclude Include="src\Panel\FileSystemUI.h">
-      <Filter>Panel</Filter>
+    <ClInclude Include="src\Panels\Console.h">
+      <Filter>Panels</Filter>
     </ClInclude>
-    <ClInclude Include="src\Panel\Panel.h">
-      <Filter>Panel</Filter>
+    <ClInclude Include="src\Panels\FileSystemUI.h">
+      <Filter>Panels</Filter>
     </ClInclude>
-    <ClInclude Include="src\Panel\ProjectSettingsPanel.h">
-      <Filter>Panel</Filter>
+    <ClInclude Include="src\Panels\HardwareInfo.h">
+      <Filter>Panels</Filter>
     </ClInclude>
-    <ClInclude Include="src\Panel\SceneHierarchyPanel.h">
-      <Filter>Panel</Filter>
+    <ClInclude Include="src\Panels\ProjectSettingsPanel.h">
+      <Filter>Panels</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Panels\SceneHierarchyPanel.h">
+      <Filter>Panels</Filter>
     </ClInclude>
     <ClInclude Include="src\Windows\NewProjectWindow.h">
       <Filter>Windows</Filter>
@@ -71,17 +80,23 @@
     </ClCompile>
     <ClCompile Include="src\EditorLayer.cpp" />
     <ClCompile Include="src\HazelnutApp.cpp" />
+    <ClCompile Include="src\Helpers\PopupHelper.cpp">
+      <Filter>Helpers</Filter>
+    </ClCompile>
     <ClCompile Include="src\Misc\ThumbnailManager.cpp">
       <Filter>Misc</Filter>
     </ClCompile>
-    <ClCompile Include="src\Panel\ContentBrowserPanel.cpp">
-      <Filter>Panel</Filter>
+    <ClCompile Include="src\Panels\FileSystemUI.cpp">
+      <Filter>Panels</Filter>
     </ClCompile>
-    <ClCompile Include="src\Panel\FileSystemUI.cpp">
-      <Filter>Panel</Filter>
+    <ClCompile Include="src\Panels\HardwareInfo.cpp">
+      <Filter>Panels</Filter>
     </ClCompile>
-    <ClCompile Include="src\Panel\SceneHierarchyPanel.cpp">
-      <Filter>Panel</Filter>
+    <ClCompile Include="src\Panels\ProjectSettingsPanel.cpp">
+      <Filter>Panels</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Panels\SceneHierarchyPanel.cpp">
+      <Filter>Panels</Filter>
     </ClCompile>
     <ClCompile Include="src\Windows\NewProjectWindow.cpp">
       <Filter>Windows</Filter>

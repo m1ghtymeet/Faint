@@ -11,15 +11,12 @@
 #include "Physics/Physics.h"
 //#include <UI/Parsers/CanvasParser.h>
 
-namespace Faint
-{
-	ScriptingSystem::ScriptingSystem(Scene* scene)
-	{
+namespace Faint {
+	ScriptingSystem::ScriptingSystem(Scene* scene) {
 		m_scene = scene;
 	}
 
-	bool ScriptingSystem::Init()
-	{
+	bool ScriptingSystem::Init() {
 		/* Main Scripting*/
 		ScriptEngine::Init();
 		HZ_CORE_INFO("Initializing Lua Scripting");
@@ -28,21 +25,29 @@ namespace Faint
 		for (auto& e : luaEntities) {
 			LuaScriptComponent& script = luaEntities.get<LuaScriptComponent>(e);
 			if (script.path != "") {
-				script.env = sol::environment(*ScriptEngine::luaState, sol::create, ScriptEngine::luaState->globals());
-				ScriptEngine::luaState->script_file("data/editor/scripts/Engine.lua", script.env);
-				ScriptEngine::luaState->script_file("data/editor/scripts/Class.lua", script.env);
-				ScriptEngine::luaState->script_file("data/editor/scripts/Input.lua", script.env);
-				std::cout << "Loaded Script: " << script.path << "\n";
+				Entity entity = *m_scene->GetEntityByID((int)e);
 
-				auto result = ScriptEngine::luaState->script_file(script.path, script.env);
-				sol::table scriptClass = ScriptEngine::luaState->require_file(FileSystem::GetFileNameFromPath(script.path), script.path);
-				//script.instance = result;
-				script.instance = scriptClass["new"](scriptClass);
+				script.env = sol::environment(ScriptEngine::GetLuaState(), sol::create, ScriptEngine::GetLuaState().globals());
 
-				script.instance["entity_id"] = (int)e;
-				script.instance["entity_name"] = Engine::GetCurrentScene()->GetEntityByID((int)e).GetComponent<NameComponent>().name;
-				if (script.instance["Start"].valid())
-					script.instance["Start"](script.instance);
+				try {
+					ScriptEngine::GetLuaState().script_file("data/editor/scripts/Engine.lua", script.env);
+					ScriptEngine::GetLuaState().script_file("data/editor/scripts/Class.lua", script.env);
+					ScriptEngine::GetLuaState().script_file("data/editor/scripts/Input.lua", script.env);
+					std::cout << "Loaded Script: " << script.path << "\n";
+
+					auto result = ScriptEngine::GetLuaState().script_file(script.path, script.env);
+					sol::table scriptClass = ScriptEngine::GetLuaState().require_file(FileSystem::GetFileNameFromPath(script.path), script.path);
+					//script.instance = result;
+					script.instance = scriptClass["new"](scriptClass);
+
+					script.instance["entity_id"] = (int)entity.GetID();
+					script.instance["entity_name"] = entity.GetName().c_str();
+					if (script.instance["Start"].valid())
+						script.instance["Start"](script.instance);
+				}
+				catch (const sol::error& err) {
+					std::cerr << "[Lua Error] " << err.what() << "\n";
+				}
 			}
 			else {
 				std::cout << "Script File was not found!\n";
@@ -57,8 +62,7 @@ namespace Faint
 		preInitDelegate.Broadcast();
 
 		auto wrenEntities = m_scene->Reg().view<WrenScriptComponent>();
-		for (auto& e : wrenEntities)
-		{
+		for (auto& e : wrenEntities) {
 			WrenScriptComponent& wren = wrenEntities.get<WrenScriptComponent>(e);
 
 			if (!wren.mWrenScript)
@@ -88,7 +92,7 @@ namespace Faint
 			if (netScriptComponent.ScriptPath.empty())
 				continue;
 
-			auto entity = Entity{ e, m_scene };
+			auto entity = *m_scene->GetEntityByID((int)e);
 
 			// Creates an instance of the entity script in C#
 			scriptingEngineNet.RegisterEntityScript(entity);
@@ -105,9 +109,9 @@ namespace Faint
 		// Call OnInit on entity script instances
 		for (auto& e : netEntities)
 		{
-			auto entity = Entity{ e, m_scene };
+			auto entity = *m_scene->GetEntityByID((int)e);
 
-			if (entity.IsValid() && scriptingEngineNet.HasEntityScriptInstance(entity))
+			if (scriptingEngineNet.HasEntityScriptInstance(entity))
 			{
 				// We can now call on init on it.
 				auto scriptInstance = scriptingEngineNet.GetEntityScript(entity);
@@ -155,7 +159,7 @@ namespace Faint
 				if (netScriptComponent.ScriptPath.empty())
 					continue;
 
-				auto entity = Entity{ e, m_scene };
+				auto entity = *m_scene->GetEntityByID((int)e);
 
 				// Creates an instance of the entity script in C#
 				scriptingEngineNet.RegisterEntityScript(entity);
@@ -168,8 +172,8 @@ namespace Faint
 		// Call init on the newly created instance
 		for (auto& e : entityJustInstanced)
 		{
-			auto& netScriptComponent = e.GetComponent<NetScriptComponent>();
-			if (e.IsValid() && scriptingEngineNet.HasEntityScriptInstance(e))
+			auto* netScriptComponent = e.GetComponent<NetScriptComponent>();
+			if (scriptingEngineNet.HasEntityScriptInstance(e))
 			{
 				// We can now call on init on it.
 				auto scriptInstance = scriptingEngineNet.GetEntityScript(e);
@@ -185,7 +189,7 @@ namespace Faint
 			if (netScriptComponent.ScriptPath.empty())
 				continue;
 
-			auto entity = Entity{ e, m_scene };
+			auto entity = *m_scene->GetEntityByID((int)e);
 			auto scriptInstance = scriptingEngineNet.GetEntityScript(entity);
 			scriptInstance.InvokeMethod("OnUpdate", ts.GetDeltaTime());
 		}
@@ -204,8 +208,7 @@ namespace Faint
 		DispatchPhysicCallbacks();
 	}
 
-	void ScriptingSystem::FixedUpdate(Time ts)
-	{
+	void ScriptingSystem::FixedUpdate(Time ts) {
 		if (!Engine::IsPlayMode())
 			return;
 
@@ -218,27 +221,24 @@ namespace Faint
 			if (netScriptComponent.ScriptPath.empty())
 				continue;
 
-			auto entity = Entity{ e, m_scene };
+			auto entity = *m_scene->GetEntityByID((int)e);
 			auto scriptInstance = scriptingEngineNet.GetEntityScript(entity);
 			scriptInstance.InvokeMethod("OnFixedUpdate", ts.GetDeltaTime());
 		}
 	}
 
-	void ScriptingSystem::Exit()
-	{
+	void ScriptingSystem::Exit() {
 		auto& scriptingEngineNet = ScriptingEngineNet::Get();
 		auto netEntities = m_scene->Reg().view<NetScriptComponent>();
-		for (auto& e : netEntities)
-		{
+		for (auto& e : netEntities) {
 			NetScriptComponent& netScriptComponent = netEntities.get<NetScriptComponent>(e);
 
 			if (netScriptComponent.ScriptPath.empty())
 				continue;
 
-			auto entity = Entity{ e, m_scene };
-			if (entity.IsValid() && scriptingEngineNet.HasEntityScriptInstance(entity))
-			{
-				HZ_CORE_TRACE(entity.GetComponent<NameComponent>().name);
+			auto entity = *m_scene->GetEntityByID((int)e);
+			if (scriptingEngineNet.HasEntityScriptInstance(entity)) {
+				//HZ_CORE_TRACE(entity.GetComponent<NameComponent>().name);
 				auto scriptInstance = scriptingEngineNet.GetEntityScript(entity);
 				scriptInstance.InvokeMethod("OnDestroy");
 			}
@@ -247,8 +247,7 @@ namespace Faint
 		ScriptingEngineNet::Get().Uninitialize();
 	}
 
-	void ScriptingSystem::InitializeNewScripts()
-	{
+	void ScriptingSystem::InitializeNewScripts() {
 		auto& scriptingEngineNet = ScriptingEngineNet::Get();
 		auto netEntities = m_scene->Reg().view<NetScriptComponent>();
 
@@ -262,7 +261,7 @@ namespace Faint
 				if (netScriptComponent.ScriptPath.empty())
 					continue;
 
-				auto entity = Entity{ e, m_scene };
+				auto entity = *m_scene->GetEntityByID((int)e);
 
 				// Creates an instance of the entity script in C#
 				scriptingEngineNet.RegisterEntityScript(entity);
@@ -273,10 +272,13 @@ namespace Faint
 		}
 	}
 
-	void ScriptingSystem::DispatchPhysicCallbacks()
-	{
+	void ScriptingSystem::DispatchPhysicCallbacks() {
 		auto& scriptingEngineNet = ScriptingEngineNet::Get();
 
+		const auto collisions = Physics::GetCollisionReports();
+		for (const auto& col : collisions) {
+			
+		}
 		//auto& physicsManager = PhysicsManager::Get();
 		//const auto collisions = physicsManager.GetCollisions();
 		//for (const auto& col : collisions)
@@ -297,7 +299,6 @@ namespace Faint
 		//	}
 		//}
 
-		//physicsManager.GetWorld()->ClearCollisionData();
 		Physics::ClearCollisionReports();
 	}
 }

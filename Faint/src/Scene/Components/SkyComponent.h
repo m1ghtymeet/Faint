@@ -2,12 +2,12 @@
 
 #include "Core/Base.h"
 #include "AssetManagment/Serializable.h"
-#include "Component.h"
+#include "AComponent.h"
 #include "Common/UUID.h"
 
 namespace Faint {
 
-	class SkyComponent : public Component {
+	class SkyComponent : public AComponent {
 	public:
 		UUID Resource = UUID(0);
 		std::string SkyResourceFilePath;

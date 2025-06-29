@@ -51,7 +51,7 @@ namespace Faint::Physics {
                 default: color = WHITE; break;
             }
 
-            SceneRenderer::DrawLine(Physics::PxVec3toGlmVec3(pxLine.pos0), Physics::PxVec3toGlmVec3(pxLine.pos1), color);
+            //SceneRenderer::DrawLine(Physics::PxVec3toGlmVec3(pxLine.pos0), Physics::PxVec3toGlmVec3(pxLine.pos1), color);
         }
     }
 }

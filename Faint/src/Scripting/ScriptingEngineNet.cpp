@@ -9,12 +9,9 @@
 #include "Scene/Components/NetScriptComponent.h"
 
 #include "NetModules/EngineNetAPI.h"
-#include "NetModules/EngineSubsystemNetAPI.h"
 #include "NetModules/InputNetAPI.h"
 #include "NetModules/SceneNetAPI.h"
 //#include "NetModules/UINetAPI.h"
-
-#include <Scene/Components/BSPBrushComponent.h>
 
 #include <filesystem>
 #include <sstream>
@@ -59,7 +56,6 @@ namespace Faint
 		modules =
 		{
 			CreateRef<EngineNetAPI>(),
-			CreateRef<EngineSubsystemNetAPI>(),
 			CreateRef<InputNetAPI>(),
 			CreateRef<SceneNetAPI>(),
 			//CreateRef<UINetAPI>()
@@ -220,17 +216,17 @@ namespace Faint
 
 	void ScriptingEngineNet::UpdateEntityWithExposedVar(Entity entity)
 	{
-		if (!entity.HasComponent<NetScriptComponent>())
+		if (!entity.GetComponent<NetScriptComponent>())
 		{
 			return;
 		}
 
 		std::vector<std::string> detectedExposedVar;
-		NetScriptComponent& component = entity.GetComponent<NetScriptComponent>();
+		NetScriptComponent* component = entity.GetComponent<NetScriptComponent>();
 		for (auto& e : ScriptingEngineNet::Get().GetExposedVarForTypes(entity))
 		{
 			bool found = false;
-			for (auto& c : component.ExposedVar)
+			for (auto& c : component->ExposedVar)
 			{
 				if (e.Name == c.Name)
 				{
@@ -249,11 +245,11 @@ namespace Faint
 				exposedVar.Value = e.Value;
 				exposedVar.DefaultValue = e.Value;
 				exposedVar.Type = (NetScriptExposedVarType)e.Type;
-				component.ExposedVar.push_back(exposedVar);
+				component->ExposedVar.push_back(exposedVar);
 			}
 		}
 
-		std::erase_if(component.ExposedVar,
+		std::erase_if(component->ExposedVar,
 			[&](NetScriptExposedVar& var)
 			{
 				return std::find(detectedExposedVar.begin(), detectedExposedVar.end(), var.Name) == detectedExposedVar.end();
@@ -261,32 +257,28 @@ namespace Faint
 		);
 	}
 
-	std::vector<ExposedVar> ScriptingEngineNet::GetExposedVarForTypes(Entity entity)
+	std::vector<ExposedVar> ScriptingEngineNet::GetExposedVarForTypes(Entity& entity)
 	{
-		if (!entity.HasComponent<NetScriptComponent>())
-		{
+		if (!entity.GetComponent<NetScriptComponent>()) {
 			return std::vector<ExposedVar>();
 		}
 
-		auto& component = entity.GetComponent<NetScriptComponent>();
-		const auto& filePath = component.ScriptPath;
+		auto* component = entity.GetComponent<NetScriptComponent>();
+		const auto& filePath = component->ScriptPath;
 
 		std::string className;
-		if (String::EndsWith(filePath, ".cs"))
-		{
+		if (String::EndsWith(filePath, ".cs")) {
 			className = FindClassNameInScript(filePath);;
 		}
-		else
-		{
+		else {
 			className = filePath;
 		}
 
-		if (gameEntityTypes.find(className) == gameEntityTypes.end())
-		{
+		if (gameEntityTypes.find(className) == gameEntityTypes.end()) {
 			// The class name parsed in the file was not found in the game's DLL.
 			const std::string& msg = "Skipped .net entity script: \n Class: " +
 				className + " not found in " + std::string(gameAssembly.GetName());
-			HZ_CORE_ERROR(".net * {0}", msg);
+			HZ_CORE_ERROR(".net * " + msg);
 			return std::vector<ExposedVar>();
 		}
 
@@ -311,7 +303,7 @@ namespace Faint
 			// The class name parsed in the file was not found in the game's DLL.
 			const std::string& msg = "Skipped .net widget script: \n Class: " +
 				widgetTypeName + " not found in " + std::string(gameAssembly.GetName());
-			HZ_CORE_ERROR(".net * {0}", msg);
+			HZ_CORE_ERROR(".net * " + msg);
 			return;
 		}
 
@@ -391,8 +383,7 @@ namespace Faint
 		auto& uiWidgetType = gameAssembly.GetType("Faint.Net.UIWidget");
 		auto& uiWidgetExternalLayoutType = gameAssembly.GetType("Faint.Net.ExternalHTML");
 
-		for (auto& type : gameAssembly.GetTypes())
-		{
+		for (auto& type : gameAssembly.GetTypes()) {
 			// Brush
 			bool isBrushScript = false;
 			std::string brushDescription;
@@ -419,11 +410,9 @@ namespace Faint
 				}
 			}
 
-			if (type->IsSubclassOf(entityScriptType))
-			{
+			if (type->IsSubclassOf(entityScriptType)) {
 				const std::string baseTypeName = std::string(type->GetBaseType().GetFullName());
-				if (baseTypeName != "Faint.Net.Entity")
-				{
+				if (baseTypeName != "Faint.Net.Entity") {
 					continue;
 				}
 
@@ -439,12 +428,15 @@ namespace Faint
 				gameScriptObject.Base = baseTypeName;
 				for (auto& f : type->GetFields())
 				{
+
 					for (auto& a : f.GetAttributes())
 					{
 						if (a.GetType() == exposedFieldAttributeType)
 						{
 							ExposedVar exposedVar;
 							exposedVar.Name = f.GetName();
+							std::cout << exposedVar.Name << "\n";
+
 
 							auto typeName = f.GetType().GetFullName();
 							ExposedVarTypes varType = ExposedVarTypes::Unsupported;
@@ -501,6 +493,7 @@ namespace Faint
 							{
 								exposedVar.Type = varType;
 								gameScriptObject.exposedVars.push_back(exposedVar);
+								std::cout << gameScriptObject.exposedVars.size() << "\n";
 							}
 
 							HZ_CORE_ERROR("Exposed field detected: " + std::string(f.GetName()) + " of type " + std::string(f.GetType().GetFullName()));
@@ -556,21 +549,21 @@ namespace Faint
 			return;
 		}
 
-		if (!entity.IsValid())
-		{
-			HZ_CORE_ERROR("Failed to register entity .net script: Entity not valid.", ".net");
-			return;
-		}
+		//if (!entity.IsValid())
+		//{
+		//	HZ_CORE_ERROR("Failed to register entity .net script: Entity not valid.", ".net");
+		//	return;
+		//}
 
-		if (!entity.HasComponent<NetScriptComponent>())
+		if (!entity.GetComponent<NetScriptComponent>())
 		{
 			HZ_CORE_ERROR("Failed to register entity .net script: Entity doesn't have a .net script component.", ".net");
 			return;
 		}
 
-		auto& component = entity.GetComponent<NetScriptComponent>();
+		auto* component = entity.GetComponent<NetScriptComponent>();
 
-		const auto& filePath = component.ScriptPath;
+		const auto& filePath = component->ScriptPath;
 
 		std::string className;
 		if (String::EndsWith(filePath, ".cs"))
@@ -587,7 +580,7 @@ namespace Faint
 			// The class name parsed in the file was not found in the game's DLL.
 			const std::string& msg = "Skipped .net entity script: \n Class: " +
 				className + " not found in " + std::string(gameAssembly.GetName());
-			HZ_CORE_ERROR(".net * {0}", msg);
+			HZ_CORE_ERROR(".net * " + msg);
 			return;
 		}
 
@@ -598,11 +591,6 @@ namespace Faint
 		classInstance.SetPropertyValue("ECSHandle", handle);
 		classInstance.SetPropertyValue("ID", id);
 
-		if (entity.HasComponent<BSPBrushComponent>())
-		{
-			BSPBrushComponent& brushComponent = entity.GetComponent<BSPBrushComponent>();
-		}
-
 		std::vector<std::string> detectedExposedVar;
 		detectedExposedVar.reserve(std::size(gameEntityTypes[className].exposedVars));
 		// Update new default values if they have changed in the code.
@@ -611,16 +599,9 @@ namespace Faint
 			const std::string varName = exposedVar.Name;
 			detectedExposedVar.push_back(varName);
 
-			switch (exposedVar.Type)
-			{
-			case ExposedVarTypes::Float:
-			{
-				break;
-			}
-			case ExposedVarTypes::Double:
-			{
-				break;
-			}
+			switch (exposedVar.Type) {
+			case ExposedVarTypes::Float: break;
+			case ExposedVarTypes::Double: break;
 			case ExposedVarTypes::String:
 			{
 				try {
@@ -629,7 +610,6 @@ namespace Faint
 				catch (...)
 				{
 				}
-
 				break;
 			}
 			case ExposedVarTypes::Bool:
@@ -665,7 +645,7 @@ namespace Faint
 		entityToManagedObjects.emplace(entity.GetID(), classInstance);
 
 		// Override with user values set in the editor.
-		for (auto& exposedVarUserValue : component.ExposedVar)
+		for (auto& exposedVarUserValue : component->ExposedVar)
 		{
 			if (!exposedVarUserValue.Value.has_value())
 			{
@@ -683,27 +663,27 @@ namespace Faint
 				if (exposedVarUserValue.Value.has_value())
 				{
 					int entityId = std::any_cast<int>(exposedVarUserValue.Value);
-					Entity scriptEntity = entity.GetScene()->GetEntityByID(entityId);
-					if (scriptEntity.IsValid())
-					{
-						if (HasEntityScriptInstance(scriptEntity))
-						{
-							// In the case the entity has a script & instance, we pass that.
-							// This gives access to the objects scripts.
-							auto scriptInstance = GetEntityScript(scriptEntity);
-							classInstance.SetFieldValue<Coral::ManagedObject>(exposedVarUserValue.Name, scriptInstance);
-						}
-						else
-						{
-							// In the case where the entity doesnt have an instance, we create one
-							auto newEntity = baseEntityType.CreateInstance(scriptEntity.GetHandle());
-							classInstance.SetFieldValue<Coral::ManagedObject>(exposedVarUserValue.Name, newEntity);
-						}
-					}
-					else
-					{
-						HZ_CORE_ERROR("Invalid entity exposed variable set", ".net");
-					}
+					//Entity scriptEntity = entity.GetScene()->GetEntityByID(entityId);
+					//if (scriptEntity.IsValid())
+					//{
+					//	if (HasEntityScriptInstance(scriptEntity))
+					//	{
+					//		// In the case the entity has a script & instance, we pass that.
+					//		// This gives access to the objects scripts.
+					//		auto scriptInstance = GetEntityScript(scriptEntity);
+					//		classInstance.SetFieldValue<Coral::ManagedObject>(exposedVarUserValue.Name, scriptInstance);
+					//	}
+					//	else
+					//	{
+					//		// In the case where the entity doesnt have an instance, we create one
+					//		auto newEntity = baseEntityType.CreateInstance(scriptEntity.GetHandle());
+					//		classInstance.SetFieldValue<Coral::ManagedObject>(exposedVarUserValue.Name, newEntity);
+					//	}
+					//}
+					//else
+					//{
+					//	HZ_CORE_ERROR("Invalid entity exposed variable set", ".net");
+					//}
 				}
 			}
 			else if (exposedVarUserValue.Type == NetScriptExposedVarType::Prefab)
@@ -734,8 +714,7 @@ namespace Faint
 	{
 		if (!HasEntityScriptInstance(entity))
 		{
-			std::string name = entity.GetComponent<NameComponent>().name;
-			HZ_CORE_ERROR(name);
+			HZ_CORE_ERROR(entity.GetName());
 			HZ_CORE_ERROR("Failed to get entity .Net script instance, doesn't exist", ".net");
 			return Coral::ManagedObject();
 		}
@@ -753,7 +732,7 @@ namespace Faint
 		return entityToManagedObjects.find(entity.GetID()) != entityToManagedObjects.end();
 	}
 
-	void ScriptingEngineNet::CopyNuakeNETAssemblies(const std::string& path)
+	void ScriptingEngineNet::CopyFaintNETAssemblies(const std::string& path)
 	{
 		// Create .Net directory in projects folder.
 		const auto netDirectionPath = "/";
@@ -777,7 +756,7 @@ namespace Faint
 
 	void ScriptingEngineNet::GenerateSolution(const std::string& path, const std::string& projectName)
 	{
-		CopyNuakeNETAssemblies(path);
+		CopyFaintNETAssemblies(path);
 
 		const std::string cleanProjectName = String::Sanitize(projectName);
 		const std::string csprojFilePath = cleanProjectName + ".csproj";

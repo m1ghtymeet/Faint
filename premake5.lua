@@ -42,7 +42,7 @@ group "Tools"
 project "FaintGame"
 	location "FaintGame"
 	language "C++"
-	cppdialect "C++17"
+	cppdialect "C++20"
 	
 	targetdir ("bin/".. outputdir .."/%{prj.name}")
 	objdir ("bin-int/".. outputdir .."/%{prj.name}")
@@ -65,6 +65,7 @@ project "FaintGame"
 		"%{IncludeDir.PhysX}",
 		"%{IncludeDir.Coral}",
 		"%{IncludeDir.Wren}",
+		"%{IncludeDir.Lua}",
 		"%{IncludeDir.Soloud}",
 		"%{IncludeDir.FreeType}",
 		"%{IncludeDir.msdfgen}",
@@ -72,7 +73,7 @@ project "FaintGame"
 	}
 	
 	links { "ImGui", "Faint", "Coral.Native",
-	"%{wks.location}/Faint/vendor/freetype/freetype.lib", "msdfgen", "msdf-atlas-gen" }
+	"%{wks.location}/Faint/vendor/freetype/freetype.lib", "%{wks.location}/Faint/vendor/lua/lib/lua-5.4.4.lib", "msdfgen", "msdf-atlas-gen" }
 	characterset ("MBCS")
 	
 	filter "system:windows"
@@ -81,6 +82,7 @@ project "FaintGame"
 		
 	filter "configurations:Debug"
 		defines "FT_DEBUG"
+		buildoptions "/MTd"
 		symbols "on"
 		kind "ConsoleApp"
 		

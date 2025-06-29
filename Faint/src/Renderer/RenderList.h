@@ -1,8 +1,8 @@
 #pragma once
 
 #include "../Math/Math.h"
-#include "Types/Mesh.h"
-#include "Types/Material.h"
+#include "OpenGL/Types/Mesh.h"
+#include "Renderer/Types/Material.h"
 #include "Shader.h"
 
 namespace Faint {

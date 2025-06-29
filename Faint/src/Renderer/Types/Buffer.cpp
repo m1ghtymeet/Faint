@@ -1,9 +1,9 @@
 #include "hzpch.h"
 #include "Buffer.h"
 
-#include "../Renderer.h"
+#include "Renderer/Renderer.h"
 
-#include "OpenGLBuffer.h"
+#include "Renderer/OpenGL/Types/OpenGLBuffer.h"
 
 namespace Faint {
     Ref<VertexBuffer> VertexBuffer::Create(std::vector<Vertex>& vertices) {

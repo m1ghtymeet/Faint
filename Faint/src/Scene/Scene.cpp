@@ -1,6 +1,8 @@
-#include "hzpch.h"
+
+#include <algorithm>
+#include <string>
+
 #include "Entity.h"
-#include "SceneSerializer.h"
 
 #include "Renderer/SceneRenderer.h"
 #include "Scripting/ScriptingEngineNet.h"
@@ -12,10 +14,6 @@
 #include "Components.h"
 #include "Engine.h"
 
-#include "UI/Font/Font.h"
-#include "UI/Font/FontLoader.h"
-
-#include "Components/ParentComponent.h"
 #include "Components/PrefabComponent.h"
 #include "Systems/UISystem.h"
 #include "Systems/AudioSystem.h"
@@ -25,11 +23,8 @@ namespace Faint {
 	std::vector<CompilationError> errors;
 
 	Scene::Scene() {
-
-		if (environment == nullptr)
-			environment = CreateRef<Environment>();
-
 		m_systems = std::vector<Ref<System>>();
+		
 		m_EditorCamera = CreateRef<EditorCamera>(30.0f, 1.7798f, 0.1f, 500.0f);
 
 		m_ScriptingSystem = CreateRef<ScriptingSystem>(this);
@@ -40,17 +35,24 @@ namespace Faint {
 		m_systems.push_back(m_ScriptingSystem);
 		m_systems.push_back(CreateRef<TransformSystem>(this));
 		m_systems.push_back(CreateRef<AudioSystem>(this));
-
-		//SceneRenderer::Init();
 	}
 
 	Scene::~Scene() {
 
 	}
 
-	bool Scene::OnInit()
-	{
-		preInitializeDelegate.Broadcast();
+	void Scene::Play() {
+		m_isPlaying = true;
+
+		/* Wake up gameobjects to allow them to react to OnEnable, OnDisable and OnDestroy */
+		std::for_each(m_entities.begin(), m_entities.end(), [](Entity* p_element) {  });
+
+		std::for_each(m_entities.begin(), m_entities.end(), [](Entity* p_element) { if (p_element->IsActive()) p_element->OnAwake(); });
+		//std::for_each(m_entities.begin(), m_entities.end(), [](Entity* p_element) { if (p_element->IsActive()) p_element->OnEnable(); });
+		//std::for_each(m_entities.begin(), m_entities.end(), [](Entity* p_element) { if (p_element->IsActive()) p_element->OnStart(); });
+	}
+
+	bool Scene::OnInit() {
 
 		for (auto& system : m_systems) {
 			if (!system->Init()) {
@@ -58,8 +60,6 @@ namespace Faint {
 				return false;
 			}
 		}
-
-		postInitializeDelegate.Broadcast();
 
 		return true;
 	}
@@ -75,10 +75,9 @@ namespace Faint {
 	static void CopyComponent(entt::registry& dst, entt::registry& src, const std::unordered_map<UUID, entt::entity>& enttMap) {
 		([&]()
 			{
-				auto view = src.view<Component>();
-				for (auto srcEntity : view)
-				{
-					entt::entity dstEntity = enttMap.at(src.get<NameComponent>(srcEntity).id);
+				//auto view = src.view<Component>();
+				for (auto srcEntity : Engine::GetCurrentScene()->GetAllEntities()) {
+					entt::entity dstEntity = enttMap.at(srcEntity.GetID());
 
 					auto& srcComponent = src.get<Component>(srcEntity);
 					dst.emplace_or_replace<Component>(dstEntity, srcComponent);
@@ -91,19 +90,19 @@ namespace Faint {
 		CopyComponent<Component...>(dst, src, enttMap);
 	}
 
-	template<typename... Component>
-	static void CopyComponentIfExists(Entity dst, Entity src) {
-		([&]()
-			{
-				if (src.HasComponent<Component>())
-					dst.AddOrReplaceComponent<Component>(src.GetComponent<Component>());
-			}(), ...);
-	}
+	//template<typename... Component>
+	//static void CopyComponentIfExists(Entity dst, Entity src) {
+	//	([&]()
+	//		{
+	//			if (src.HasComponent<Component>())
+	//				dst.AddOrReplaceComponent<Component>(src.GetComponent<Component>());
+	//		}(), ...);
+	//}
 
-	template<typename... Component>
-	static void CopyComponentIfExists(ComponentGroup<Component...>, Entity dst, Entity src) {
-		CopyComponentIfExists<Component...>(dst, src);
-	}
+	//template<typename... Component>
+	//static void CopyComponentIfExists(ComponentGroup<Component...>, Entity dst, Entity src) {
+	//	CopyComponentIfExists<Component...>(dst, src);
+	//}
 
 	void Scene::Update(Time time)
 	{
@@ -129,8 +128,7 @@ namespace Faint {
 			system->FixedUpdate(time);
 	}
 
-	void Scene::Draw()
-	{
+	void Scene::Draw() {
 		Ref<Camera> cam = nullptr;
 		const auto& view = _registry.view<TransformComponent, CameraComponent>();
 		for (const auto& e : view)
@@ -140,219 +138,119 @@ namespace Faint {
 
 			cam->SetPosition(transform.GetGlobalPosition());
 		}
-		if (!cam)
-			return;
+		//if (!cam)
+		//	return;
 
 		SceneRenderer::BeginRenderScene(cam->GetProjectionMatrix(), cam->GetViewMatrix(), cam->GetPosition());
 		SceneRenderer::RenderScene(*this);
 	}
 
-	void Scene::Draw(const Matrix4& projection, const Matrix4& view)
-	{
+	void Scene::Draw(const Matrix4& projection, const Matrix4& view) {
 		SceneRenderer::BeginRenderScene(m_EditorCamera->GetProjectionMatrix(), m_EditorCamera->GetViewMatrix(), m_EditorCamera->GetPosition());
 		SceneRenderer::RenderScene(*this);
 	}
 
-	Ref<Scene> Scene::Copy(Ref<Scene> other)
-	{
-		Ref<Scene> newScene = CreateRef<Scene>();
-
-		newScene->_viewportWidth = other->_viewportWidth;
-		newScene->_viewportHeight = other->_viewportHeight;
-
-		auto& srcSceneRegistry = other->_registry;
-		auto& dstSceneRegistry = newScene->_registry;
-		std::unordered_map<UUID, entt::entity> enttMap;
-
-		// Create entities in new scene
-		auto idView = srcSceneRegistry.view<NameComponent>();
-		for (auto e : idView)
-		{
-			UUID uuid = srcSceneRegistry.get<NameComponent>(e).id;
-			const auto& name = srcSceneRegistry.get<NameComponent>(e).name;
-			Entity newEntity = newScene->CreateEntityWithUUID(uuid, name);
-			enttMap[uuid] = (entt::entity)newEntity;
-		}
-
-		// Copy components (except NameComponent)
-		CopyComponent(AllComponents{}, dstSceneRegistry, srcSceneRegistry, enttMap);
-
-		return newScene;
-	}
-
-	Ref<Scene> Scene::Copy(const std::string& path)
-	{
-		Ref<Scene> sceneCopy = Scene::New();
-
-		SceneSerializer serializer(sceneCopy);
-		if (serializer.Deserialize(path)) {
-			return sceneCopy;
-		}
+	Ref<Scene> Scene::Save() {
+		
 
 		return Ref<Scene>();
 	}
 
-	Ref<Scene> Scene::Copy()
-	{
-		Ref<Scene> sceneCopy = Scene::New();
-
-		//SceneSerializer serializer(sceneCopy);
-		//if (serializer.Deserialize(FullPath)) {
-		//	return sceneCopy;
-		//}
-
-		return Ref<Scene>();
-	}
-
-	Ref<Scene> Scene::New()
-	{
-		return CreateRef<Scene>();
-	}
-
-	Ref<Scene> Scene::Save()
-	{
-		return Ref<Scene>();
-	}
-
-	Entity Scene::CreateEntity(std::string name) {
-		return CreateEntityWithUUID(UUID(), name);
-	}
-	Entity Scene::CreateEntityWithUUID(UUID uuid, std::string name) {
-
-		if (name.empty()) {
-			HZ_CORE_ERROR("Failed to create entity. Entity name caanot be empty.");
-			return Entity();
-		}
-
+	std::string Scene::GetUniqueEntityName(const std::string& name) {
 		std::string entityName;
 		if (!EntityExists(name)) {
-			entityName = name;
+			return name;
 		}
-		
+
 		// Try to generate a unique name
 		for (uint32_t i = 1; i < 4096; i++) {
-			const std::string& entityEnumName = name + std::to_string(i);
-			const auto& entityId = GetEntity(entityEnumName).GetHandle();
-			if (entityId == -1) {
-				entityName = entityEnumName;
-				break;
+			const std::string& entityEnumName = name + " (" + std::to_string(i) + ")";
+			Entity* entityId = GetEntityByName(entityEnumName);
+			if (!entityId) {
+				return entityEnumName;
 			}
 		}
 
-		Entity entity = { _registry.create(), this };
-
-		entity.AddComponent<TransformComponent>();
-		entity.AddComponent<VisibilityComponent>();
-		entity.AddComponent<ParentComponent>();
-		entity.AddComponent<NameComponent>(name.empty() ? "Entity" : name);
-		entity.GetComponent<NameComponent>().id = uuid;
-
-		m_EntityIDMap[uuid] = entity;
-		if (!name.empty())
-			m_EntityNameMap[name] = entity;
-
-		return entity;
+		// We ran out of names
+		HZ_CORE_WARN("Failed to create unique entity name. Limit reached with name: " + name);
+		return name;
 	}
-	void Scene::DestroyEntity(Entity entity) {
 
-		ParentComponent& parentC = entity.GetComponent<ParentComponent>();
-		std::vector<Entity> copyChildrens = parentC.Children;
+	Entity& Scene::CreateEntity(std::string name) {
+		return CreateEntity(name, "");
+	}
 
-		if (parentC.HasParent) {
-			ParentComponent& parent = parentC.Parent.GetComponent<ParentComponent>();
-			parent.RemoveChildren(entity);
+	Entity& Scene::CreateEntity(const std::string& p_name, const std::string& p_tag) {
+		std::string entityName = GetUniqueEntityName(p_name);
+
+		m_entities.push_back(new Entity(m_availableID++, entityName, "", m_isPlaying));
+		Entity& instance = *m_entities.back();
+		instance.AddComponent<TransformComponent>();
+		//instance.ComponentAddedEvent += std::bind(&)
+		if (m_isPlaying) {
+			if (instance.IsActive()) {
+				instance.SetSleeping(false);
+				instance.OnAwake();
+			}
 		}
 
-		for (auto & c : copyChildrens)
-		{
-			DestroyEntity(c);
-		}
+		m_EntityIDMap[instance.GetID()] = &instance;
+		m_EntityNameMap[entityName] = &instance;
+
+		return instance;
+	}
+
+	void Scene::DestroyEntity(Entity& p_entity) {
+
 
 		// Remove from ID to Entity cache
-		if (m_EntityIDMap.find(entity.GetComponent<NameComponent>().id) != m_EntityIDMap.end()) {
-			m_EntityIDMap.erase(entity.GetComponent<NameComponent>().id);
+		if (m_EntityIDMap.find(p_entity.GetID()) != m_EntityIDMap.end()) {
+			m_EntityIDMap.erase(p_entity.GetID());
 		}
-
-		if (m_EntityNameMap.find(entity.GetComponent<NameComponent>().name) != m_EntityNameMap.end()) {
-			m_EntityNameMap.erase(entity.GetComponent<NameComponent>().name);
+		if (m_EntityNameMap.find(p_entity.GetName()) != m_EntityNameMap.end()) {
+			m_EntityNameMap.erase(p_entity.GetName());
 		}
 		
-		entity.Destroy();
+		p_entity.Destroy();
 	}
 
 	bool Scene::EntityExists(const std::string& name) {
-		return GetEntity(name).GetHandle() != -1;
+		return m_EntityNameMap.find(name) != m_EntityNameMap.end();
 	}
 
-	std::vector<Entity> Scene::GetAllEntities() {
-		std::vector<Entity> allEntities;
-		auto view = _registry.view<NameComponent>();
-		for (auto& e : view) {
-			Entity newEntity(e, this);
-
-			// Check if valid for deleted entities.
-			if (newEntity.IsValid()) {
-				allEntities.push_back(newEntity);
-			}
-		}
-
-		// Temporary fix to prevent order of tree to change randomly until actual order is implemented.
-		std::sort(allEntities.begin(), allEntities.end(), [](Entity a, Entity b) {
-			return a.GetComponent<NameComponent>().name < b.GetComponent<NameComponent>().name;
-		});
-		return allEntities;
+	std::vector<Entity*>& Scene::GetAllEntities() {
+		return m_entities;
 	}
 
-	Entity Scene::GetEntity(const std::string& name) {
-		if (m_EntityNameMap.find(name) != m_EntityNameMap.end()) {
-			return m_EntityNameMap[name];
-		}
-		return Entity();
+	Entity* Scene::GetEntityByName(const std::string& p_name) const {
+		auto it = m_EntityNameMap.find(p_name);
+		if (it != m_EntityNameMap.end())
+			return it->second;
+		return nullptr;
 	}
 
-	Entity Scene::GetEntityByUUID(UUID uuid) {
-		// TODO(Yan): Maybe should be assert
-		if (m_EntityIDMap.find(uuid) != m_EntityIDMap.end())
-			return { m_EntityIDMap.at(uuid), this };
-		return {};
+	Entity* Scene::GetEntityByTag(const std::string& p_tag) const {
+		//auto result = std::find_if(m_entities.begin(), m_entities.end(), [tag](Entity* e) {
+		//	return e->GetTag() == tag;
+		//	});
+		//if (result != m_entities.end())
+		//	return *result;
+		return nullptr;
 	}
 
-	Entity Scene::GetEntityByID(int id) {
-
-		if (m_EntityIDMap.find(id) != m_EntityIDMap.end()) {
-			return m_EntityIDMap[id];
-		}
-
-		auto idView = _registry.view<NameComponent>();
-		for (auto e : idView) {
-			NameComponent& nameC = idView.get<NameComponent>(e);
-			if (nameC.id == id) {
-				auto newEntity = Entity{ e, this };
-				m_EntityIDMap[id] = newEntity;
-				return newEntity;
-			}
-		}
-		return Entity{ (entt::entity)0, this };
+	Entity* Scene::GetEntityByID(int64_t p_id) const {
+		auto it = m_EntityIDMap.find(p_id);
+		if (it != m_EntityIDMap.end())
+			return it->second;
+		return nullptr;
 	}
 
-	bool Scene::EntityIsParent(Entity entity, Entity parent) {
-
-		if (!entity.IsValid())
-			return false;
-
-		if (entity.GetComponent<ParentComponent>().HasParent && entity.GetComponent<ParentComponent>().Parent == parent) {
-			return true;
-		}
-
-		Entity current = entity;
-		while (current.GetComponent<ParentComponent>().HasParent && current != parent) {
-			current = current.GetComponent<ParentComponent>().Parent;
-
-			if (current = parent) return true;
-		}
-
-		return false;
-	}
+	//Entity Scene::GetEntity(const std::string& name) {
+	//	//if (m_EntityNameMap.find(name) != m_EntityNameMap.end()) {
+	//	//	return m_EntityNameMap[name];
+	//	//}
+	//	//return Entity();
+	//}
 
 	void Scene::OnViewportResize(float width, float height) {
 		_viewportWidth = width;
@@ -362,36 +260,33 @@ namespace Faint {
 		for (auto entity : view) {
 			auto& camera = view.get<CameraComponent>(entity);
 			if (!camera.fixedAspectRatio) {
-				//camera.camera->SetViewportSizee(width, height);
 				camera.camera->SetProjectionMatrix(glm::perspective(glm::radians(camera.camera->m_fieldOfView), Window::Get()->viewportWidth / Window::Get()->viewportHeight, camera.camera->m_nearPlane, camera.camera->m_farPlane));
 			}
 		}
 	}
 
 	Entity Scene::DuplicateEntity(Entity entity) {
-		
-		std::string name = entity.GetComponent<NameComponent>().name;
+		std::string name = entity.GetName();
 		Entity newEntity = CreateEntity(name);
 
-		CopyComponentIfExists<MeshRendererComponent>(newEntity, entity);
-		CopyComponentIfExists<PrefabComponent>(newEntity, entity);
-		CopyComponentIfExists<CameraComponent>(newEntity, entity);
-		CopyComponentIfExists<RigidBodyComponent>(newEntity, entity);
-		CopyComponentIfExists<BoxColliderComponent>(newEntity, entity);
-		CopyComponentIfExists<SphereColliderComponent>(newEntity, entity);
-		CopyComponentIfExists<NetScriptComponent>(newEntity, entity);
-		CopyComponentIfExists<WrenScriptComponent>(newEntity, entity);
-		CopyComponentIfExists<LightComponent>(newEntity, entity);
-		CopyComponentIfExists<SpriteComponent>(newEntity, entity);
-		CopyComponentIfExists<AudioComponent>(newEntity, entity);
-		CopyComponentIfExists<TextComponent>(newEntity, entity);
-		CopyComponentIfExists<TextBlitterComponent>(newEntity, entity);
+		//CopyComponentIfExists<MeshRendererComponent>(newEntity, entity);
+		//CopyComponentIfExists<PrefabComponent>(newEntity, entity);
+		//CopyComponentIfExists<CameraComponent>(newEntity, entity);
+		//CopyComponentIfExists<RigidBodyComponent>(newEntity, entity);
+		//CopyComponentIfExists<BoxColliderComponent>(newEntity, entity);
+		//CopyComponentIfExists<SphereColliderComponent>(newEntity, entity);
+		//CopyComponentIfExists<NetScriptComponent>(newEntity, entity);
+		//CopyComponentIfExists<WrenScriptComponent>(newEntity, entity);
+		//CopyComponentIfExists<LightComponent>(newEntity, entity);
+		//CopyComponentIfExists<SpriteComponent>(newEntity, entity);
+		//CopyComponentIfExists<AudioComponent>(newEntity, entity);
+		//CopyComponentIfExists<TextComponent>(newEntity, entity);
+		//CopyComponentIfExists<TextBlitterComponent>(newEntity, entity);
 
 		return newEntity;
 	}
 
-	Ref<Camera> Scene::GetCurrentCamera()
-	{
+	Ref<Camera> Scene::GetCurrentCamera() {
 		if (Engine::IsPlayMode())
 		{
 			Ref<Camera> cam = nullptr;
@@ -414,27 +309,121 @@ namespace Faint {
 		return m_EditorCamera;
 	}
 
-	Entity Scene::GetPrimaryCameraEntity() {
-		auto view = _registry.view<CameraComponent>();
-		for (auto entity : view) {
-			const auto& camera = view.get<CameraComponent>(entity);
-			if (camera.primary) {
-				return Entity(entity, this);
-			}
-		}
-		return {};
+	Entity* Scene::GetPrimaryCameraEntity() {
+		//auto view = _registry.view<CameraComponent>();
+		//for (auto entity : view) {
+		//	const auto& camera = view.get<CameraComponent>(entity);
+		//	if (camera.primary) {
+		//		return Entity(entity, this);
+		//	}
+		//}
+		//return;
+		return nullptr;
 	}
 
-	json Scene::Serialize()
-	{
+	const Scene::FastAccessComponents& Scene::GetFastAccessComponents() const {
+		return m_fastAccessComponents;
+	}
+
+	json SerializeEntity(Entity* entity) {
 		BEGIN_SERIALIZE();
-		
+		j["Transform"] = entity->GetComponent<TransformComponent>()->Serialize();
+		if (entity->GetComponent<CameraComponent>()) j["Camera"] = entity->GetComponent<CameraComponent>()->Serialize();
+		if (entity->GetComponent<MeshRendererComponent>()) j["MeshRenderer"] = entity->GetComponent<MeshRendererComponent>()->Serialize();
+		if (entity->GetComponent<LightComponent>()) j["Light"] = entity->GetComponent<LightComponent>()->Serialize();
+		if (entity->GetComponent<BoxColliderComponent>()) j["BoxCollider"] = entity->GetComponent<BoxColliderComponent>()->Serialize();
+		if (entity->GetComponent<SphereColliderComponent>()) j["SphereCollider"] = entity->GetComponent<SphereColliderComponent>()->Serialize();
+		if (entity->GetComponent<RigidBodyComponent>()) j["RigidBody"] = entity->GetComponent<RigidBodyComponent>()->Serialize();
+		if (entity->GetComponent<NetScriptComponent>()) j["NetScript"] = entity->GetComponent<NetScriptComponent>()->Serialize();
+		if (entity->GetComponent<LuaScriptComponent>()) j["LuaScript"] = entity->GetComponent<LuaScriptComponent>()->Serialize();
+		if (entity->GetComponent<AudioComponent>()) j["Audio"] = entity->GetComponent<AudioComponent>()->Serialize();
 		END_SERIALIZE();
 	}
 
-	bool Scene::Deserialize(const json& j)
-	{
-		return true;
+	json Scene::Serialize() {
+		BEGIN_SERIALIZE();
+		j["Entities"] = json::object();
+		for (Entity* entity : Engine::GetCurrentScene()->GetAllEntities()) {
+			if (entity) continue;
+			j["Entities"][entity->GetName()] = SerializeEntity(entity);
+		}
+		END_SERIALIZE();
+	}
+
+	void Scene::Deserialize(const json& j) {
+		json entities = j["Entities"];
+		if (j.contains("Entities")) {
+			for (auto& [name, entity] : entities.items()) {
+				int64_t maxID = 1;
+
+				std::string name = entity["NameComponent"]["Name"];
+				uint64_t uuid = (uint64_t)entity["NameComponent"]["ID"];
+				HZ_CORE_TRACE("Deserialized entity with ID = " + std::to_string(uuid) + ", name = " + name + "");
+				Entity& deserializedEntity = Engine::GetCurrentScene()->CreateEntity(name);
+
+				if (entity.contains("Transform")) {
+					json transformC = entity["Transform"];
+					TransformComponent* transform = deserializedEntity.GetComponent<TransformComponent>();
+					transform->SetLocalPosition(glm::vec3(transformC["LocalPosition"]["x"], transformC["LocalPosition"]["y"], transformC["LocalPosition"]["z"]));
+					transform->SetLocalRotation(glm::quat(glm::vec3(transformC["LocalRotation"]["x"], transformC["LocalRotation"]["y"], transformC["LocalRotation"]["z"])));
+					transform->SetLocalScale(glm::vec3(transformC["LocalScale"]["x"], transformC["LocalScale"]["y"], transformC["LocalScale"]["z"]));
+				}
+
+				if (entity.contains("Camera")) {
+					json cameraComponent = entity["Camera"];
+					CameraComponent& cc = deserializedEntity.AddComponent<CameraComponent>();
+					cc.camera = CreateRef<Camera>();
+					cc.camera->m_fieldOfView = cameraComponent["FOV"];
+					cc.camera->m_nearPlane = cameraComponent["NearPlane"];
+					cc.camera->m_farPlane = cameraComponent["FarPlane"];
+					cc.primary = cameraComponent["Primary"];
+					cc.fixedAspectRatio = cameraComponent["FixedAspectRatio"];
+				}
+
+				if (entity.contains("MeshRenderer")) {
+					json meshRendererComponent = entity["MeshRenderer"];
+					MeshRendererComponent& meshRenderer = deserializedEntity.AddComponent<MeshRendererComponent>();
+					std::string modelPath = meshRendererComponent["ModelPath"];
+					Model* model = AssetManager::LoadModel(modelPath, true);
+					meshRenderer.ModelPath = modelPath;
+					meshRenderer.SetModel(model);
+
+					for (uint32_t i = 0; i < std::size(meshRenderer.GetModel()->GetMeshes()); i++) {
+						Ref<Mesh> mesh = meshRenderer.GetModel()->GetMeshes()[i];
+						auto meshR = meshRendererComponent["Model"]["Meshes"];
+						bool loadedMaterialFile = false;
+						const std::string materialPath = meshR[i]["MaterialPath"];
+						if (!materialPath.empty()) {
+							Ref<Material> newMaterial = AssetManager::LoadMaterial(materialPath);
+							mesh->SetMaterial(newMaterial);
+							loadedMaterialFile = true;
+						}
+						if (!loadedMaterialFile) {
+							Ref<Material> material = mesh->GetMaterial();
+							material = CreateRef<Material>();
+						}
+					}
+				}
+
+				if (entity.contains("Light")) {
+					json lightComponent = entity["Light"];
+					LightComponent& light = deserializedEntity.AddComponent<LightComponent>();
+					light.Radius = lightComponent["Radius"];
+					light.Strength = lightComponent["Strength"];
+					DESERIALIZE_VEC3(lightComponent["Color"], light.Color);
+					light.Type = (LightType)lightComponent["Type"];
+				}
+
+				if (entity.contains("NetScript")) {
+					json netScriptComponent = entity["NetScript"];
+					NetScriptComponent& net = deserializedEntity.AddComponent<NetScriptComponent>();
+					net.ScriptPath = netScriptComponent["Path"];
+				}
+			}
+		}
+		else {
+			HZ_CORE_ERROR("Cannot Find Entities Tree!");
+		}
 	}
 
 	template<typename T>
@@ -457,13 +446,14 @@ namespace Faint {
 	}
 
 	template<>
-	void Scene::OnComponentAdded<NameComponent>(Entity entity, NameComponent& component)
+	void Scene::OnComponentAdded<MeshRendererComponent>(Entity entity, MeshRendererComponent& component)
 	{
 	}
 
 	template<>
-	void Scene::OnComponentAdded<MeshRendererComponent>(Entity entity, MeshRendererComponent& component)
+	void Scene::OnComponentAdded<SkinnedMeshRendererComponent>(Entity entity, SkinnedMeshRendererComponent& component)
 	{
+		component.Model = AssetManager::LoadSkinnedModel("D:/C++ Projects/Heavy/Heavy/assets/models/Neutral_F.fbx", true);
 	}
 
 	template<>
@@ -472,8 +462,23 @@ namespace Faint {
 	}
 
 	template<>
-	void Scene::OnComponentAdded<BoxColliderComponent>(Entity entity, BoxColliderComponent& component)
-	{
+	void Scene::OnComponentAdded<BoxColliderComponent>(Entity entity, BoxColliderComponent& component) {
+		auto viewMesh = Reg().view<TransformComponent, BoxColliderComponent, MeshRendererComponent>();
+		for (auto e : viewMesh) {
+			auto [transform, box, meshC] = viewMesh.get<TransformComponent, BoxColliderComponent, MeshRendererComponent>(e);
+			for (auto mesh : meshC.GetModel()->GetMeshes()) {
+				if (mesh->GetAABB().boundsMin.x > 0.0f ||
+					mesh->GetAABB().boundsMin.y > 0.0f || 
+					mesh->GetAABB().boundsMin.z > 0.0f ||
+					mesh->GetAABB().boundsMax.x > 0.0f || 
+					mesh->GetAABB().boundsMax.y > 0.0f || 
+					mesh->GetAABB().boundsMax.z > 0.0f) {
+					glm::vec3 scale = transform.GetGlobalScale();
+					glm::vec3 fullSize = mesh->GetAABB().boundsMax - mesh->GetAABB().boundsMin;
+					box.halfExtents = (fullSize * scale) * 0.5f;
+				}
+			}
+		}
 	}
 
 	template<>
@@ -484,6 +489,7 @@ namespace Faint {
 	template<>
 	void Scene::OnComponentAdded<CharacterControllerComponent>(Entity entity, CharacterControllerComponent& component)
 	{
+		component.Create();
 	}
 
 	template<>
@@ -510,32 +516,12 @@ namespace Faint {
 	}
 
 	template<>
-	void Scene::OnComponentAdded<SpriteComponent>(Entity entity, SpriteComponent& component)
-	{
-	}
-
-	template<>
 	void Scene::OnComponentAdded<AudioComponent>(Entity entity, AudioComponent& component)
 	{
 	}
 
 	template<>
 	void Scene::OnComponentAdded<WrenScriptComponent>(Entity entity, WrenScriptComponent& component)
-	{
-	}
-
-	template<>
-	void Scene::OnComponentAdded<TextComponent>(Entity entity, TextComponent& component)
-	{
-	}
-
-	template<>
-	void Scene::OnComponentAdded<TextBlitterComponent>(Entity entity, TextBlitterComponent& component)
-	{
-	}
-
-	template<>
-	void Scene::OnComponentAdded<BSPBrushComponent>(Entity entity, BSPBrushComponent& component)
 	{
 	}
 

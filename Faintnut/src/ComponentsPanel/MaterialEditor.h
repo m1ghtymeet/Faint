@@ -2,7 +2,6 @@
 #include "Core/Base.h"
 #include "Core/String.h"
 
-
 #include "Renderer/Types/Material.h"
 
 #include "FileSystem/FileSystem.h"
@@ -33,14 +32,10 @@ public:
 			ImGui::Text(material->Path.c_str());
 			ImGui::PopFont();
 		}
-		ImGui::SameLine();
+		//ImGui::SameLine();
 		{
 			ImGui::PushFont(boldFont);
 			if (ImGui::Button(ICON_FA_SAVE)) {
-
-				//if (ResourceManager::IsResourceLoaded(material->id))
-				//	ResourceManager::RegisterResource(material);
-
 				if (materialTitle.empty()) {
 					std::string saveData = FileDialogs::SaveFile("*.material");
 					if (!saveData.empty()) {
@@ -113,20 +108,26 @@ public:
 				if (ImGui::ImageButtonEx(ImGui::GetCurrentWindow()->GetID("#image1"), (void*)textureID, ImVec2(80, 80), ImVec2(0, 1), ImVec2(1, 0), ImVec4(0, 0, 0, 0), ImVec4(1, 1, 1, 1))) {
 					std::string texture = FileDialogs::OpenFile("*.png | *.jpg");
 					if (texture != "") {
-						material->SetAlbedo(CreateRef<Texture>(texture));
+						if (!material->HasAlbedo()) {
+							material->SetAlbedo(CreateRef<Texture>(texture));
+						}
+						else {
+							material->m_Albedo = nullptr;
+							material->SetAlbedo(CreateRef<Texture>(texture));
+						}
 					}
 				}
 
 				if (ImGui::BeginPopupContextWindow()) {
 					if (ImGui::MenuItem("Clear Texture")) {
 						material->m_Albedo = nullptr;
-						material->data.u_HasAlbedo = false;
+						material->data.hasAlbedo = false;
 					}
 					ImGui::EndPopup();
 				}
 
 				ImGui::SameLine();
-				ImGui::ColorEdit3("Color", &material->data.m_AlbedoColor.r);
+				ImGui::ColorEdit3("Color", &material->data.albedoColor.r);
 			}
 			ImGui::EndChild();
 		}
@@ -137,7 +138,7 @@ public:
 			{
 				uint32_t textureID = 0;
 				if (material->HasNormal())
-					textureID = material->m_Normal->GetID();
+					textureID = material->m_Normal->GetTexture().GetHandle();
 
 				if (ImGui::ImageButtonEx(ImGui::GetCurrentWindow()->GetID("#image3"), (void*)textureID, ImVec2(80, 80), ImVec2(0, 1), ImVec2(1, 0), ImVec4(0, 0, 0, 1), ImVec4(1, 1, 1, 1)))
 				{
@@ -151,7 +152,7 @@ public:
 					if (ImGui::MenuItem("Clear Texture"))
 					{
 						material->m_Normal = nullptr;
-						material->data.u_HasNormal = false;
+						material->data.hasNormal = false;
 					}
 					ImGui::EndPopup();
 				}
@@ -165,7 +166,7 @@ public:
 			{
 				uint32_t textureID = 0;
 				if (material->HasMetalness())
-					textureID = material->m_Metalness->GetID();
+					textureID = material->m_Metalness->GetTexture().GetHandle();
 
 				if (ImGui::ImageButtonEx(ImGui::GetCurrentWindow()->GetID("#image4"), (void*)textureID, ImVec2(80, 80), ImVec2(0, 1), ImVec2(1, 0), ImVec4(0, 0, 0, 1), ImVec4(1, 1, 1, 1)))
 				{
@@ -179,13 +180,13 @@ public:
 					if (ImGui::MenuItem("Clear Texture"))
 					{
 						material->m_Metalness = nullptr;
-						material->data.u_HasMetalness = false;
+						material->data.hasMetalness = false;
 					}
 					ImGui::EndPopup();
 				}
 
 				ImGui::SameLine();
-				ImGui::DragFloat("Value##5", &material->data.u_MetalnessValue, 0.01f, 0.0f, 1.0f);
+				//ImGui::DragFloat("Value##5", &material->data.u_MetalnessValue, 0.01f, 0.0f, 1.0f);
 			}
 			ImGui::EndChild();
 		}
@@ -196,7 +197,7 @@ public:
 			{
 				uint32_t textureID = 0;
 				if (material->HasRoughness())
-					textureID = material->m_Roughness->GetID();
+					textureID = material->m_Roughness->GetTexture().GetHandle();
 
 				if (ImGui::ImageButtonEx(ImGui::GetCurrentWindow()->GetID("#image5"), (void*)textureID, ImVec2(80, 80), ImVec2(0, 1), ImVec2(1, 0), ImVec4(0, 0, 0, 1), ImVec4(1, 1, 1, 1)))
 				{
@@ -210,12 +211,12 @@ public:
 					if (ImGui::MenuItem("Clear Texture"))
 					{
 						material->m_Roughness = nullptr;
-						material->data.u_HasRoughness = false;
+						material->data.hasRoughness = false;
 					}
 					ImGui::EndPopup();
 				}
 				ImGui::SameLine();
-				ImGui::DragFloat("Value##6", &material->data.u_RoughnessValue, 0.01f, 0.0f, 1.0f);
+				//ImGui::DragFloat("Value##6", &material->data.u_RoughnessValue, 0.01f, 0.0f, 1.0f);
 			}
 			ImGui::EndChild();
 		}

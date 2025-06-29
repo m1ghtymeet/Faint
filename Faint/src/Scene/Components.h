@@ -1,36 +1,30 @@
 #pragma once
 
-#include "Components/NameComponent.h"
-#include "Components/VisibilityComponent.h"
-#include "Components/TransformComponent.h"
-#include "Components/CameraComponent.h"
-#include "Components/MeshRendererComponent.h"
+#include "Components/CTransform.h"
+#include "Components/CCamera.h"
+#include "Components/CModelRenderer.h"
+#include "Components/SkinnedMeshRendererComponent.h"
 #include "Components/RigidBodyComponent.h"
-#include "Components/BoxColliderComponent.h"
+#include "Components/CBoxCollider.h"
 #include "Components/SphereColliderComponent.h"
-#include "Components/CapsuleColliderComponent.h"
+#include "Components/CCapsuleCollider.h"
 #include "Components/CharacterControllerComponent.h"
 #include "Components/NetScriptComponent.h"
 #include "Components/WrenScriptComponent.h"
 #include "Components/LuaScriptComponent.h"
-#include "Components/LightComponent.h"
-#include "Components/SpriteComponent.h"
-#include "Components/BSPBrushComponent.h"
-#include "Components/AudioComponent.h"
+#include "Components/CLight.h"
+#include "Components/CAudio.h"
 #include "Components/SkyComponent.h"
-#include "Components/TextComponent.h"
-#include "Components/TextBlitterComponent.h"
 
 namespace Faint {
 
 	template<typename... Component>
 	struct ComponentGroup { };
 
-	class ParentComponent;
 	using AllComponents =
-		ComponentGroup<VisibilityComponent, TransformComponent, ParentComponent,
+		ComponentGroup<TransformComponent,
 		CameraComponent, NetScriptComponent, WrenScriptComponent, LuaScriptComponent,
 		BoxColliderComponent, SphereColliderComponent, CharacterControllerComponent, RigidBodyComponent,
-		AudioComponent, MeshRendererComponent, LightComponent, TextComponent, TextBlitterComponent,
+		AudioComponent, SkinnedMeshRendererComponent, MeshRendererComponent, LightComponent,
 		SkyComponent>;
 }

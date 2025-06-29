@@ -3,6 +3,8 @@ layout (location = 0) in vec3 aPos;
 layout (location = 1) in vec3 aNormal;
 layout (location = 2) in vec2 aTexCoord;
 layout (location = 3) in vec3 aTangent;
+layout (location = 4) in vec4 aBoneIds;
+layout (location = 5) in vec4 aWeights;
 
 out vec2 TexCoord;
 out flat int entityID;
@@ -21,11 +23,10 @@ void main() {
 	mat4 inverseModelMatrix = inverse(modelMatrix);
 	mat4 normalMatrix = transpose(inverseModelMatrix);
 	
-	Normal = normalize(modelMatrix * vec4(aNormal, 0.0f)).xyz;
-	Tangent = normalize(modelMatrix * vec4(aTangent, 0.0f)).xyz;
+	Normal = normalize(normalMatrix * vec4(aNormal, 0.0f)).xyz;
+	Tangent = normalize(normalMatrix * vec4(aTangent, 0.0f)).xyz;
 	BiTangent = normalize(cross(Normal, Tangent));
 	
 	WorldPos = modelMatrix * vec4(aPos, 1.0f);
-	
 	gl_Position = projection * view * WorldPos;
 }

@@ -79,19 +79,20 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>FT_PLATFORM_WINDOWS;FT_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\Faint\src;..\Faint\vendor\glm;..\Faint\vendor\imgui;..\Faint\vendor\entt\include;..\Faint\vendor\glad\include;..\Faint\vendor\assimp\include;..\Faint\vendor\yaml-cpp\include;..\Faint\vendor\nlohmann_json\include;..\Faint\vendor\JoltPhysics;..\Faint\vendor\physx\include;..\Faint\vendor\Coral\Coral.Native\Include;..\Faint\vendor\wren\src\include;..\Faint\vendor\soloud\include;..\Faint\vendor\freetype;..\Faint\vendor\msdfgen;..\Faint\vendor\msdf-atlas-gen;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\Faint\src;..\Faint\vendor\glm;..\Faint\vendor\imgui;..\Faint\vendor\entt\include;..\Faint\vendor\glad\include;..\Faint\vendor\assimp\include;..\Faint\vendor\yaml-cpp\include;..\Faint\vendor\nlohmann_json\include;..\Faint\vendor\JoltPhysics;..\Faint\vendor\physx\include;..\Faint\vendor\Coral\Coral.Native\Include;..\Faint\vendor\wren\src\include;..\Faint\vendor\lua\include;..\Faint\vendor\soloud\include;..\Faint\vendor\freetype;..\Faint\vendor\msdfgen;..\Faint\vendor\msdf-atlas-gen;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
       <MinimalRebuild>false</MinimalRebuild>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <AdditionalOptions>/MTd %(AdditionalOptions)</AdditionalOptions>
+      <LanguageStandard>stdcpp20</LanguageStandard>
       <ConformanceMode>true</ConformanceMode>
       <ExternalWarningLevel>Level3</ExternalWarningLevel>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>..\Faint\vendor\freetype\freetype.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>..\Faint\vendor\freetype\freetype.lib;..\Faint\vendor\lua\lib\lua-5.4.4.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -99,19 +100,19 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>FT_PLATFORM_WINDOWS;FT_RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\Faint\src;..\Faint\vendor\glm;..\Faint\vendor\imgui;..\Faint\vendor\entt\include;..\Faint\vendor\glad\include;..\Faint\vendor\assimp\include;..\Faint\vendor\yaml-cpp\include;..\Faint\vendor\nlohmann_json\include;..\Faint\vendor\JoltPhysics;..\Faint\vendor\physx\include;..\Faint\vendor\Coral\Coral.Native\Include;..\Faint\vendor\wren\src\include;..\Faint\vendor\soloud\include;..\Faint\vendor\freetype;..\Faint\vendor\msdfgen;..\Faint\vendor\msdf-atlas-gen;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\Faint\src;..\Faint\vendor\glm;..\Faint\vendor\imgui;..\Faint\vendor\entt\include;..\Faint\vendor\glad\include;..\Faint\vendor\assimp\include;..\Faint\vendor\yaml-cpp\include;..\Faint\vendor\nlohmann_json\include;..\Faint\vendor\JoltPhysics;..\Faint\vendor\physx\include;..\Faint\vendor\Coral\Coral.Native\Include;..\Faint\vendor\wren\src\include;..\Faint\vendor\lua\include;..\Faint\vendor\soloud\include;..\Faint\vendor\freetype;..\Faint\vendor\msdfgen;..\Faint\vendor\msdf-atlas-gen;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
       <MinimalRebuild>false</MinimalRebuild>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpp20</LanguageStandard>
       <ConformanceMode>true</ConformanceMode>
       <ExternalWarningLevel>Level3</ExternalWarningLevel>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>..\Faint\vendor\freetype\freetype.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>..\Faint\vendor\freetype\freetype.lib;..\Faint\vendor\lua\lib\lua-5.4.4.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Dist|x64'">
@@ -119,19 +120,19 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>FT_PLATFORM_WINDOWS;FT_DIST;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\Faint\src;..\Faint\vendor\glm;..\Faint\vendor\imgui;..\Faint\vendor\entt\include;..\Faint\vendor\glad\include;..\Faint\vendor\assimp\include;..\Faint\vendor\yaml-cpp\include;..\Faint\vendor\nlohmann_json\include;..\Faint\vendor\JoltPhysics;..\Faint\vendor\physx\include;..\Faint\vendor\Coral\Coral.Native\Include;..\Faint\vendor\wren\src\include;..\Faint\vendor\soloud\include;..\Faint\vendor\freetype;..\Faint\vendor\msdfgen;..\Faint\vendor\msdf-atlas-gen;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\Faint\src;..\Faint\vendor\glm;..\Faint\vendor\imgui;..\Faint\vendor\entt\include;..\Faint\vendor\glad\include;..\Faint\vendor\assimp\include;..\Faint\vendor\yaml-cpp\include;..\Faint\vendor\nlohmann_json\include;..\Faint\vendor\JoltPhysics;..\Faint\vendor\physx\include;..\Faint\vendor\Coral\Coral.Native\Include;..\Faint\vendor\wren\src\include;..\Faint\vendor\lua\include;..\Faint\vendor\soloud\include;..\Faint\vendor\freetype;..\Faint\vendor\msdfgen;..\Faint\vendor\msdf-atlas-gen;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
       <MinimalRebuild>false</MinimalRebuild>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpp20</LanguageStandard>
       <ConformanceMode>true</ConformanceMode>
       <ExternalWarningLevel>Level3</ExternalWarningLevel>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>..\Faint\vendor\freetype\freetype.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>..\Faint\vendor\freetype\freetype.lib;..\Faint\vendor\lua\lib\lua-5.4.4.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
