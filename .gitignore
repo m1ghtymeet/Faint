@@ -6,11 +6,16 @@
 *.so
 *.out
 
-*.cpp
-*.h
-*.hpp
+# *.cpp
+# *.h
+# *.hpp
+Faint/Faint.vcxproj
+Faint/Faint.vcxproj.filters
+Faint/Faint.vcxproj.user
 
+.vs/
 bin/
+bin-int/
 obj/
 build/
 dist/

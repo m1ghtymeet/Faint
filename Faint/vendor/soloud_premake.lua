@@ -4,7 +4,6 @@ project 'Soloud'
 	kind "StaticLib"
 	staticruntime "on"
 	warnings 'Off'
-	optimize 'Speed'
 
 	targetdir ("soloud/bin/" .. outputdir .. "/%{prj.name}")
     objdir ("soloud/bin-obj/" .. outputdir .. "/%{prj.name}")
@@ -31,13 +30,11 @@ project 'Soloud'
 		
 	filter "configurations:Debug"
 		cppdialect "C++17"
-		buildoptions "/MTd"
 		runtime "Debug"
 		symbols "on"
 
 	filter "configurations:Release"
-		cppdialect "C++17"
-		buildoptions "/MTd"
+		cppdialect "C++20"
 		runtime "Release"
 		optimize "on"
 

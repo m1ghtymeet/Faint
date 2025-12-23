@@ -4,17 +4,15 @@
 #include <geometry/PxGeometryHelpers.h>
 #pragma warning(pop)
 #include "CollisionReports.h"
-#include "Common/Types.h"
 #include "Math/Transform.h"
-#include "Types/RigidDynamic.h"
 #include <span>
 #include <vector>
 
-namespace Faint::Physics {
+namespace Moon::Physics {
 	void Init();
 	void BeginFrame();
 	void StepPhysics(float deltaTime, bool isEditor = false);
-	void SubmitDebugLinesToRenderer(const DebugRenderMode& debugRenderMode);
+	//void SubmitDebugLinesToRenderer(const DebugRenderMode& debugRenderMode);
 	void AddCollisionReport(CollisionReport& collisionReport);
 	void ClearCollisionReports();
 	void ClearCharacterControllerCollisionReports();
@@ -30,8 +28,8 @@ namespace Faint::Physics {
 
 	// Create
 	PxShape* CreateBoxShape(float width, float height, float depth, Transform shapeOffset = Transform(), PxMaterial* material = NULL);
-	PxRigidDynamic* CreateRigidDynamic(Transform transform, PhysicsFilterData filterData, PxShape* shape, Transform shapeOffset = Transform());
-	PxShape* CreateConvexShapeFromVertexList(std::vector<Vertex>& vertices);
+	//PxRigidDynamic* CreateRigidDynamic(Transform transform, PhysicsFilterData filterData, PxShape* shape, Transform shapeOffset = Transform());
+	//PxShape* CreateConvexShapeFromVertexList(std::vector<Vertex>& vertices);
 
 	// Rigid Dynamics
 	void UpdateActiveRigidDynamicAABBList();
@@ -55,5 +53,5 @@ namespace Faint::Physics {
 	PxVec3 GlmVec3toPxVec3(glm::vec3 vec);
 	PxQuat GlmQuatToPxQuat(glm::quat quat);
 	PxMat44 GlmMat4ToPxMat44(glm::mat4 glmMatrix);
-	PhysXRayResult CastPhysXRay(glm::vec3 rayOrigin, glm::vec3 rayDirection, float rayLength, PxU32 collisionFlags, bool cullbackFacing = false);
+	//PhysXRayResult CastPhysXRay(glm::vec3 rayOrigin, glm::vec3 rayDirection, float rayLength, PxU32 collisionFlags, bool cullbackFacing = false);
 }

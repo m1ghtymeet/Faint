@@ -1,0 +1,25 @@
+// data/shaders/fx/godray_composite.mnshader
+
+#shader vertex
+#version 450 core
+layout(location = 0) in vec3 a_position;
+layout(location = 1) in vec2 a_texCoords;
+out vec2 v_texCoords;
+void main() {
+    v_texCoords = a_texCoords;
+    gl_Position = vec4(a_position, 1.0);
+}
+
+#shader fragment
+#version 450 core
+in vec2 v_texCoords;
+out vec4 FragColor;
+
+uniform sampler2D u_godRayTexture;
+uniform float u_exposure = 0.3;
+uniform float u_intensity = 1.0;
+
+void main() {
+    vec3 godray = texture(u_godRayTexture, v_texCoords).rgb * u_exposure * u_intensity;
+    FragColor = vec4(godray, 1.0);
+}

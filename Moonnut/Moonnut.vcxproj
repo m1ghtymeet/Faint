@@ -1,0 +1,230 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Dist|x64">
+      <Configuration>Dist</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{55560736-C135-86D1-CA4D-11A836ACEC32}</ProjectGuid>
+    <IgnoreWarnCompileDuplicatedFilename>true</IgnoreWarnCompileDuplicatedFilename>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>Moonnut</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Dist|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Dist|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <LinkIncremental>true</LinkIncremental>
+    <OutDir>..\bin\Debug-windows-x86_64\Moonnut\</OutDir>
+    <IntDir>..\bin-int\Debug-windows-x86_64\Moonnut\</IntDir>
+    <TargetName>Moonnut</TargetName>
+    <TargetExt>.exe</TargetExt>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <LinkIncremental>true</LinkIncremental>
+    <OutDir>..\bin\Release-windows-x86_64\Moonnut\</OutDir>
+    <IntDir>..\bin-int\Release-windows-x86_64\Moonnut\</IntDir>
+    <TargetName>Moonnut</TargetName>
+    <TargetExt>.exe</TargetExt>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Dist|x64'">
+    <LinkIncremental>true</LinkIncremental>
+    <OutDir>..\bin\Dist-windows-x86_64\Moonnut\</OutDir>
+    <IntDir>..\bin-int\Dist-windows-x86_64\Moonnut\</IntDir>
+    <TargetName>Moonnut</TargetName>
+    <TargetExt>.exe</TargetExt>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>FT_PLATFORM_WINDOWS;IMGUI_DEFINE_MATH_OPERATORS;FT_DEBUG;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\Faint\src;..\Faint\vendor;..\Faint\vendor\zstd\include;..\Faint\vendor\nlohmann_json\include;..\Faint\vendor\glm;..\Faint\vendor\imgui;..\Faint\vendor\yaml-cpp\include;..\Faint\vendor\GLFW\include;..\Faint\vendor\glad\include;..\Faint\vendor\assimp\include;..\Faint\vendor\physx\include;..\Faint\vendor\Coral\Coral.Native\Include;..\Faint\vendor\lua\include;..\Faint\vendor\soloud\include;..\Faint\vendor\freetype\include;..\Faint\vendor\msdfgen;..\Faint\vendor\msdf-atlas-gen;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <Optimization>Disabled</Optimization>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <ConformanceMode>true</ConformanceMode>
+      <ExternalWarningLevel>Level3</ExternalWarningLevel>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>..\Faint\vendor\assimp\lib\assimp-vc143-mtd.lib;..\Faint\vendor\freetype\freetype.lib;..\Faint\vendor\lua\lib\lua-5.4.4.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>FT_PLATFORM_WINDOWS;IMGUI_DEFINE_MATH_OPERATORS;FT_RELEASE;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\Faint\src;..\Faint\vendor;..\Faint\vendor\zstd\include;..\Faint\vendor\nlohmann_json\include;..\Faint\vendor\glm;..\Faint\vendor\imgui;..\Faint\vendor\yaml-cpp\include;..\Faint\vendor\GLFW\include;..\Faint\vendor\glad\include;..\Faint\vendor\assimp\include;..\Faint\vendor\physx\include;..\Faint\vendor\Coral\Coral.Native\Include;..\Faint\vendor\lua\include;..\Faint\vendor\soloud\include;..\Faint\vendor\freetype\include;..\Faint\vendor\msdfgen;..\Faint\vendor\msdf-atlas-gen;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <Optimization>Disabled</Optimization>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <ConformanceMode>true</ConformanceMode>
+      <ExternalWarningLevel>Level3</ExternalWarningLevel>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>..\Faint\vendor\assimp\lib\assimp-vc143-mtd.lib;..\Faint\vendor\freetype\freetype.lib;..\Faint\vendor\lua\lib\lua-5.4.4.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Dist|x64'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>FT_PLATFORM_WINDOWS;IMGUI_DEFINE_MATH_OPERATORS;HZ_DIST;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\Faint\src;..\Faint\vendor;..\Faint\vendor\zstd\include;..\Faint\vendor\nlohmann_json\include;..\Faint\vendor\glm;..\Faint\vendor\imgui;..\Faint\vendor\yaml-cpp\include;..\Faint\vendor\GLFW\include;..\Faint\vendor\glad\include;..\Faint\vendor\assimp\include;..\Faint\vendor\physx\include;..\Faint\vendor\Coral\Coral.Native\Include;..\Faint\vendor\lua\include;..\Faint\vendor\soloud\include;..\Faint\vendor\freetype\include;..\Faint\vendor\msdfgen;..\Faint\vendor\msdf-atlas-gen;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <Optimization>Disabled</Optimization>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <ConformanceMode>true</ConformanceMode>
+      <ExternalWarningLevel>Level3</ExternalWarningLevel>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>..\Faint\vendor\assimp\lib\assimp-vc143-mtd.lib;..\Faint\vendor\freetype\freetype.lib;..\Faint\vendor\lua\lib\lua-5.4.4.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="src\Core\Application.h" />
+    <ClInclude Include="src\Core\Context.h" />
+    <ClInclude Include="src\Core\EditorActions.h" />
+    <ClInclude Include="src\Core\PanelsManager.h" />
+    <ClInclude Include="src\Core\ProjectWindow.h" />
+    <ClInclude Include="src\EditorCamera.h" />
+    <ClInclude Include="src\EditorLayer.h" />
+    <ClInclude Include="src\Helpers\ImGuiHelper.h" />
+    <ClInclude Include="src\Helpers\PopupHelper.h" />
+    <ClInclude Include="src\Misc\IconGenerator.h" />
+    <ClInclude Include="src\Misc\ShaderTemplateManager.h" />
+    <ClInclude Include="src\Panels\AssetView.h" />
+    <ClInclude Include="src\Panels\Console.h" />
+    <ClInclude Include="src\Panels\FileSystemUI.h" />
+    <ClInclude Include="src\Panels\FrameInfo.h" />
+    <ClInclude Include="src\Panels\HardwareInfo.h" />
+    <ClInclude Include="src\Panels\MaterialEditor.h" />
+    <ClInclude Include="src\Panels\Menubar.h" />
+    <ClInclude Include="src\Panels\ProjectSettings.h" />
+    <ClInclude Include="src\Panels\SceneHierarchyPanel.h" />
+    <ClInclude Include="src\Panels\ScriptEditor.h" />
+    <ClInclude Include="src\Panels\ShaderGraph.h" />
+    <ClInclude Include="src\Renderer\GL_DebugPass.h" />
+    <ClInclude Include="src\Renderer\Types.h" />
+    <ClInclude Include="src\UI\Canvas.h" />
+    <ClInclude Include="src\UI\Panels\APanel.h" />
+    <ClInclude Include="src\UI\Panels\APanelTransformable.h" />
+    <ClInclude Include="src\UI\Panels\AView.h" />
+    <ClInclude Include="src\UI\Panels\AViewControllable.h" />
+    <ClInclude Include="src\UI\Panels\PanelMenuBar.h" />
+    <ClInclude Include="src\UI\Panels\PanelUndecorated.h" />
+    <ClInclude Include="src\UI\Panels\PanelWindow.h" />
+    <ClInclude Include="src\UI\Plugins\IPlugin.h" />
+    <ClInclude Include="src\UI\Plugins\Pluginable.h" />
+    <ClInclude Include="src\UI\Widgets\AWidget.h" />
+    <ClInclude Include="src\UI\Widgets\Buttons\AButton.h" />
+    <ClInclude Include="src\UI\Widgets\Buttons\Button.h" />
+    <ClInclude Include="src\UI\Widgets\WidgetContainer.h" />
+    <ClInclude Include="src\Windows\NewProjectWindow.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\Core\Application.cpp" />
+    <ClCompile Include="src\Core\Context.cpp" />
+    <ClCompile Include="src\Core\EditorActions.cpp" />
+    <ClCompile Include="src\Core\PanelsManager.cpp" />
+    <ClCompile Include="src\Core\ProjectWindow.cpp" />
+    <ClCompile Include="src\EditorCamera.cpp" />
+    <ClCompile Include="src\EditorLayer.cpp" />
+    <ClCompile Include="src\Helpers\PopupHelper.cpp" />
+    <ClCompile Include="src\Main.cpp" />
+    <ClCompile Include="src\Misc\IconGenerator.cpp" />
+    <ClCompile Include="src\Misc\ShaderTemplateManager.cpp" />
+    <ClCompile Include="src\Panels\AssetView.cpp" />
+    <ClCompile Include="src\Panels\Console.cpp" />
+    <ClCompile Include="src\Panels\FileSystemUI.cpp" />
+    <ClCompile Include="src\Panels\FrameInfo.cpp" />
+    <ClCompile Include="src\Panels\HardwareInfo.cpp" />
+    <ClCompile Include="src\Panels\MaterialEditor.cpp" />
+    <ClCompile Include="src\Panels\Menubar.cpp" />
+    <ClCompile Include="src\Panels\ProjectSettings.cpp" />
+    <ClCompile Include="src\Panels\SceneHierarchyPanel.cpp" />
+    <ClCompile Include="src\Panels\ScriptEditor.cpp" />
+    <ClCompile Include="src\Panels\ShaderGraph.cpp" />
+    <ClCompile Include="src\Renderer\GL_DebugPass.cpp" />
+    <ClCompile Include="src\UI\Canvas.cpp" />
+    <ClCompile Include="src\UI\Panels\APanel.cpp" />
+    <ClCompile Include="src\UI\Panels\APanelTransformable.cpp" />
+    <ClCompile Include="src\UI\Panels\AView.cpp" />
+    <ClCompile Include="src\UI\Panels\AViewControllable.cpp" />
+    <ClCompile Include="src\UI\Panels\PanelMenuBar.cpp" />
+    <ClCompile Include="src\UI\Panels\PanelUndecorated.cpp" />
+    <ClCompile Include="src\UI\Panels\PanelWindow.cpp" />
+    <ClCompile Include="src\UI\Widgets\AWidget.cpp" />
+    <ClCompile Include="src\UI\Widgets\Buttons\AButton.cpp" />
+    <ClCompile Include="src\UI\Widgets\Buttons\Button.cpp" />
+    <ClCompile Include="src\UI\Widgets\WidgetContainer.cpp" />
+    <ClCompile Include="src\Windows\NewProjectWindow.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Faint\vendor\imgui\ImGui.vcxproj">
+      <Project>{C0FF640D-2C14-8DBE-F595-301E616989EF}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\Faint\Faint.vcxproj">
+      <Project>{77B1280D-E3C5-50BE-AC47-F41D181B4DEF}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\Faint\vendor\PhysX\PhysX.vcxproj">
+      <Project>{C1C1E10D-2DD6-09BF-F657-AD1E622B06F0}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\Faint\vendor\Coral\Coral.Native\Coral.Native.vcxproj">
+      <Project>{EB0B2E29-D76E-BDCD-80F4-F5836C368950}</Project>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

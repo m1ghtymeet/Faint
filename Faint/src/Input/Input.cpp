@@ -1,10 +1,9 @@
 #include "Input.h"
-
-#include "Engine.h"
-
+#include <Windows.h>
+#include <iostream>
 #include <GLFW/glfw3.h>
 
-namespace Faint {
+namespace Moon {
 	
 	bool Input::_keyPressed[372];
 	bool Input::_keyDown[372];
@@ -22,6 +21,7 @@ namespace Faint {
 	bool Input::_rightMousePressed = false;
 	bool Input::_leftMouseDownLastFrame = false;
 	bool Input::_rightMouseDownLastFrame = false;
+    GLFWwindow* window = nullptr;
 
 	int _scrollWheelYOffset = 0;
 
@@ -37,13 +37,14 @@ namespace Faint {
 		_scrollWheelYOffset = 0;
 	}
 
-	void Input::Init()
-	{
+	void Input::Init(Window p_window) {
+        window = p_window.GetGLFWWindow();
+
         ShowCursor();
 
 		double xpos, ypos;
-		glfwSetScrollCallback(Engine::GetCurrentWindow()->GetWindow(), scroll_callback);
-		glfwGetCursorPos(Engine::GetCurrentWindow()->GetWindow(), &xpos, &ypos);
+		glfwSetScrollCallback(window, scroll_callback);
+		glfwGetCursorPos(window, &xpos, &ypos);
 		_mouseXOffset = xpos;
 		_mouseXOffset = ypos;
 		_mouseX = (float)xpos;
@@ -54,7 +55,7 @@ namespace Faint {
 
         for (int i = 32; i < 349; i++) {
             // down
-            if (glfwGetKey(Engine::GetCurrentWindow()->GetWindow(), i) == GLFW_PRESS)
+            if (glfwGetKey(window, i) == GLFW_PRESS)
                 _keyDown[i] = true;
             else
                 _keyDown[i] = false;
@@ -69,7 +70,7 @@ namespace Faint {
 
         // Mouse
         double xpos, ypos;
-        glfwGetCursorPos(Engine::GetCurrentWindow()->GetWindow(), &xpos, &ypos);
+        glfwGetCursorPos(window, &xpos, &ypos);
         _mouseXOffset = (float)xpos - _mouseX;
         _mouseYOffset = (float)ypos - _mouseY;
         _mouseX = (float)xpos;
@@ -86,7 +87,7 @@ namespace Faint {
         ResetScrollWheelYOffset();
 
         // Left mouse down/pressed
-        _leftMouseDown = glfwGetMouseButton(Engine::GetCurrentWindow()->GetWindow(), GLFW_MOUSE_BUTTON_LEFT);
+        _leftMouseDown = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT);
         if (_leftMouseDown == GLFW_PRESS && !_leftMouseDownLastFrame)
             _leftMousePressed = true;
         else
@@ -94,7 +95,7 @@ namespace Faint {
         _leftMouseDownLastFrame = _leftMouseDown;
 
         // Right mouse down/pressed
-        _rightMouseDown = glfwGetMouseButton(Engine::GetCurrentWindow()->GetWindow(), GLFW_MOUSE_BUTTON_RIGHT);
+        _rightMouseDown = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT);
         if (_rightMouseDown == GLFW_PRESS && !_rightMouseDownLastFrame)
             _rightMousePressed = true;
         else
@@ -103,15 +104,15 @@ namespace Faint {
     }
 
     void Input::ShowCursor() {
-        glfwSetInputMode(Engine::GetCurrentWindow()->GetWindow(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+        glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
     }
 
     void Input::DisableCursor() {
-        glfwSetInputMode(Engine::GetCurrentWindow()->GetWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+        glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     }
 
     void Input::HideCursor() {
-        glfwSetInputMode(Engine::GetCurrentWindow()->GetWindow(), GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
+        glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
     }
 
     bool Input::KeyDown(unsigned int keycode) {
@@ -162,13 +163,25 @@ namespace Faint {
         return _mouseY;
     }
 
-    float lastMouseX = 0;
-    float lastMouseY = 0;
+    static bool s_mouseLocked;
+    static POINT s_prevMousePos;
     void Input::LockMouse(bool lock) {
         if (lock) {
-            POINT staticPos = { 1280 / 2, 720 / 2 };
+            if (!s_mouseLocked)
+                GetCursorPos(&s_prevMousePos);
+
+            int width;
+            int height;
+            glfwGetWindowSize(window, &width, &height);
+            POINT staticPos = { width / 2, height / 2 };
             ClientToScreen(nullptr, &staticPos);
             SetCursorPos(staticPos.x, staticPos.y);
+
+            s_mouseLocked = true;
+        }
+        else if (!lock && s_mouseLocked) {
+            SetCursorPos(s_prevMousePos.x, s_prevMousePos.y);
+            s_mouseLocked = false;
         }
     }
 

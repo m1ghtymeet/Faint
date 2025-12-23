@@ -1,0 +1,26 @@
+// data/shaders/fx/godray_detect.mnshader
+
+#shader vertex
+#version 450 core
+layout(location = 0) in vec3 a_position;
+layout(location = 1) in vec2 a_texCoords;
+out vec2 v_texCoords;
+void main() {
+    v_texCoords = a_texCoords;
+    gl_Position = vec4(a_position, 1.0);
+}
+
+#shader fragment
+#version 450 core
+in vec2 v_texCoords;
+out vec4 FragColor;
+
+uniform sampler2D u_sceneTexture;
+uniform vec3 u_lightPos; // x,y: screen-space position, z: intensity
+
+void main() {
+    // ساده: فقط موقعیت نور رو خروجی بده (بعداً در radial blur استفاده می‌شه)
+    // یا می‌تونی brightest pixel رو پیدا کنی (در آینده)
+    vec2 lightScreenPos = u_lightPos.xy;
+    FragColor = vec4(lightScreenPos, 1.0, 1.0);
+}

@@ -3,7 +3,7 @@ include "Dependencies.lua"
 workspace "Faint"
 	conformancemode "On"
 	startproject "Faintnut"
-	flags { "MultiProcessorCompile" }
+	-- flags { "MultiProcessorCompile" }
 	configurations { "Debug", "Release", "Dist" }
 	filter { "language:C++" }
 		architecture "x86_64"
@@ -21,11 +21,10 @@ group "Dependencies"
 	include "Faint/vendor/imgui"
 	include "Faint/vendor/yaml-cpp"
 	include "Faint/vendor/PhysX"
-	-- include "Faint/vendor/jolt_premake.lua"
 	include "Faint/vendor/coral_premake.lua"
 	include "Faint/vendor/soloud_premake.lua"
-	include "Faint/vendor/freetype_premake.lua"
-	include "Faint/vendor/msdf-atlas-gen_premake.lua"
+	include "Faint/vendor/freetype"
+	-- include "Faint/vendor/msdf-atlas-gen_premake.lua"
 group ""
 
 group "Core"
@@ -33,16 +32,17 @@ group "Core"
 group ""
 
 group "Tools"
-	include "Faintnut"
+	include "Moonnut"
+	include "MoonNet"
+	include "MoonGame"
 group ""
-
-include "FaintNet"
 		
 group "Tools"
 project "FaintGame"
 	location "FaintGame"
 	language "C++"
 	cppdialect "C++20"
+	staticruntime "on"
 	
 	targetdir ("bin/".. outputdir .."/%{prj.name}")
 	objdir ("bin-int/".. outputdir .."/%{prj.name}")
@@ -53,14 +53,14 @@ project "FaintGame"
 	}
 	
 	includedirs {
-		"Faint/src",
+		"%{wks.location}/Faint/src",
 		"%{IncludeDir.glm}",
 		"%{IncludeDir.ImGui}",
-		"%{IncludeDir.entt}",
 		"%{IncludeDir.glad}",
 		"%{IncludeDir.Assimp}",
 		"%{IncludeDir.yaml_cpp}",
 		"%{wks.location}/Faint/vendor/nlohmann_json/include",
+		"%{wks.location}/Faint/vendor/msdf-atlas-gen",
 		"%{IncludeDir.Jolt}",
 		"%{IncludeDir.PhysX}",
 		"%{IncludeDir.Coral}",
@@ -73,21 +73,21 @@ project "FaintGame"
 	}
 	
 	links { "ImGui", "Faint", "Coral.Native",
-	"%{wks.location}/Faint/vendor/freetype/freetype.lib", "%{wks.location}/Faint/vendor/lua/lib/lua-5.4.4.lib", "msdfgen", "msdf-atlas-gen" }
-	characterset ("MBCS")
+	"%{wks.location}/Faint/vendor/freetype/freetype.lib", "%{wks.location}/Faint/vendor/lua/lib/lua-5.4.4.lib" }
+	--characterset ("MBCS")
 	
 	filter "system:windows"
-		defines { "FT_PLATFORM_WINDOWS" }
-		fastuptodate "Off"
+		defines "FT_PLATFORM_WINDOWS"
 		
 	filter "configurations:Debug"
 		defines "FT_DEBUG"
-		buildoptions "/MTd"
+		runtime "Debug"
 		symbols "on"
 		kind "ConsoleApp"
 		
 	filter "configurations:Release"
 		defines "FT_RELEASE"
+		runtime "Release"
 		symbols "on"
 		kind "WindowedApp"
 		

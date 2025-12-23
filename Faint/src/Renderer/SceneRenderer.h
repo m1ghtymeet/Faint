@@ -1,56 +1,76 @@
 #pragma once
-#include "Core/Base.h"
-#include "Math/Math.h"
-#include "Math/AABB.h"
-#include "Scene/Scene.h"
-#include "Renderer/OpenGL/Types/GL_FrameBuffer.h"
-#include "Renderer/OpenGL/Types/GL_SSBO.hpp"
 
-#include "Renderer/Shader.h"
-#include "Renderer/OpenGL/Types/Mesh.h"
+#include "Renderer/Core/CompositeRenderer.h"
+#include <Renderer/Types/IMesh.h>
+#include <Types/Types.h>
 
-namespace Faint {
-	namespace SceneRenderer {
-		void Init();
-		void LoadShaders();
-		void Cleanup();
+namespace Moon::Rendering {
 
-		void Update(const Time time);
-		void UpdateSSBOS();
+	class SceneRenderer : public CompositeRenderer {
+	public:
+		enum class EOrderingMode {
+			BACK_TO_FRONT,
+			FRONT_TO_BACK,
+		};
 
-		// SSBOs
-		void CreateSSBO(const std::string& name, float size, GLbitfield flags);
-		OpenGLSSBO* GetSSBO(const std::string& name);
+		template<EOrderingMode OrderingMode>
+		struct DrawOrder {
+			const int order;
+			const float distance;
+			/**
+			* Determines the order of the drawables.
+			* Current order is: order -> distance
+			* @param p_other
+			*/
+			bool operator<(const DrawOrder& p_other) const {
+				if (order == p_other.order) {
+					if constexpr (OrderingMode == EOrderingMode::BACK_TO_FRONT) {
+						return distance > p_other.distance;
+					}
+					else {
+						return distance < p_other.distance;
+					}
+				}
+				else {
+					return order < p_other.order;
+				}
+			}
+		};
 
-		void BeginRenderScene(const Matrix4& projection, const Matrix4& view, const Vec3& camPos);
-		void RenderScene(Scene& scene, bool renderUI = true);
+		/**
+		* Input data for the scene renderer.
+		*/
+		struct SceneDescriptor {
+			Scene* scene;
+		};
 
-		void GBufferPass(Scene& scene);
-		void ShadingPass(Scene& scene);
-		void ShadowPass(Scene& scene);
-		void SkyboxPass();
-		void DebugPass(Scene& scene);
-		void OutlinePass(Scene& scene);
-		void OutlinePassEdgeDetection(Scene& scene);
+		/**
+		* Result of the scene parsing, containing the renderitems to be rendered.
+		*/
+		struct SceneRenderItemsDescriptor {
+			std::vector<RenderItem> renderItems;
+		};
 
-		// Debug
-		void UpdateDebugMesh();
-		void DrawLine(Vec3 begin, Vec3 end, Vec3 color, bool obeyDepth = false);
-		void DrawAABB(const AABB& aabb, const glm::vec3& color);
-		void DrawAABB(const AABB& aabb, const glm::vec3& color, const glm::mat4& worldTransform);
+		/**
+		* Filtered renderitems for the scene, categorized by their render pass, and sorted by their draw order.
+		*/
+		struct SceneFilteredRenderItemsDescriptor {
+			std::multimap<DrawOrder<EOrderingMode::FRONT_TO_BACK>, RenderItem> opaques;
+			std::multimap<DrawOrder<EOrderingMode::BACK_TO_FRONT>, RenderItem> transparents;
+			std::multimap<DrawOrder<EOrderingMode::BACK_TO_FRONT>, RenderItem> ui;
+		};
+		
+		SceneRenderer();
 
-		inline std::vector<DebugVertex> g_points;
-		inline std::vector<DebugVertex> g_lines;
+		virtual void BeginFrame(const Data::FrameDescriptor& p_frameData) override;
 
-		Shader* GetShader(const std::string& name);
-		FrameBuffer* GetFrameBuffer(const std::string& name);
+		SceneRenderItemsDescriptor ParseScene(const Scene& p_scene);
 
-		// Util
-		void BlitToDefaultFrameBuffer(FrameBuffer* srcFrameBuffer, const char* srcName, GLbitfield mask, GLenum filter);
-		void BlitToDefaultFrameBuffer(FrameBuffer* srcFrameBuffer, const char* srcName, glm::vec4 srcRect, glm::vec4 dstRect, GLbitfield mask, GLenum filter);
-		void BlitFrameBuffer(FrameBuffer* srcFrameBuffer, FrameBuffer* dstFrameBuffer, const char* srcName, const char* dstName, GLbitfield mask, GLenum filter);
+		SceneFilteredRenderItemsDescriptor FilterRenderItems(
+			const SceneRenderItemsDescriptor& renderItems
+		);
 
-		inline int m_hoveredEntityID = 0;
-		inline int m_selectedEntityID = 0;
-	}
+	private:
+		std::vector<Light> m_lights;
+	};
 }

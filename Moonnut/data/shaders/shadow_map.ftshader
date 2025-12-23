@@ -1,0 +1,26 @@
+#shader vertex
+#version 460
+layout (location = 0) in vec3 position;
+
+uniform mat4 modelMatrix;
+uniform mat4 shadowMatrices[6];
+uniform int faceIndex;
+
+out vec4 FragPosWorld;
+
+void main() {
+	FragPosWorld = modelMatrix * vec4(position, 1.0);
+    gl_Position = shadowMatrices[faceIndex] * FragPosWorld;
+}
+#shader fragment
+#version 460
+uniform vec3 lightPos;
+uniform float far_plane;
+in vec4 FragPosWorld;
+
+void main() {
+	float lightDistance = length(FragPosWorld.xyz - lightPos);
+    // normalize distance to 0..1
+    lightDistance = lightDistance / far_plane;
+    gl_FragDepth = lightDistance;
+}

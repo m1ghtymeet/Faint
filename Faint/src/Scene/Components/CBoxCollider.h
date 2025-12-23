@@ -1,39 +1,40 @@
 #pragma once
 
-//#include "Physics/PhysicsShapes.h"
 #include "AComponent.h"
+#include <Scene/Components/CRigidBody.h>
+#include <AssetManagment/Serializable.h>
 #include "Math/Transform.h"
 
-namespace Faint {
-	class BoxColliderComponent : public AComponent {
+namespace Moon {
+	class BoxColliderComponent : public RigidBodyComponent {
 	public:
-		BoxColliderComponent(Entity& p_owner) : AComponent(p_owner) {}
+		BoxColliderComponent(Entity& p_owner);
 		
-		std::string GetName() override { return "BoxCollider"; }
+		std::string GetName() override;
 		
-		Vec3 halfExtents = Vec3(0.5f, 0.5f, 0.5f);
+		glm::vec3 halfExtents = { 0.5f, 0.5f, 0.5f };
+		bool isTrigger = false;
 		float density = 1.0f;
-		Transform shapeOffset;
-		bool IsTrigger = true;
+		glm::vec3 shapeOffset = glm::vec3(0);
 
-		void SetSize(const Vec3& newSize) {
-			halfExtents = newSize;
-		}
+		void SetTrigger(bool trigger);
 
-		Vec3 GetSize() {
-			return halfExtents;
-		}
+		void SetSize(const glm::vec3& newSize);
 
-		json Serialize() {
-			BEGIN_SERIALIZE();
-			j["IsTrigger"] = IsTrigger;
-			SERIALIZE_VEC3(halfExtents);
-			END_SERIALIZE();
-		}
-		bool Deserialize(const json& j) {
-			this->IsTrigger = j["IsTrigger"];
-			this->halfExtents = Vec3(j["Size"]["x"], j["Size"]["y"], j["Size"]["z"]);
-			return true;
-		}
+		void SetShapeOffset(const glm::vec3& posOffset, const glm::quat& rotOffset = glm::quat{});
+
+		glm::vec3 GetSize();
+
+		json Serialize();
+
+		void Deserialize(const json& j);
+
+		virtual void Init() override;
+
+	private:
+		void OnEnable() override;
+		void OnDisable() override;
+		void OnUpdate(float p_deltaTime) override;
+		bool m_needPhysicsInit = false;
 	};
 }

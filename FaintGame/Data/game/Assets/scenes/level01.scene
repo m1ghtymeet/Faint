@@ -1,0 +1,378 @@
+{
+    "Entities": {
+        "Bowl": {
+            "ID": 1,
+            "MaterialRenderer": {
+                "0": "data/engine/materials/default.ftmat"
+            },
+            "MeshRenderer": {
+                "ModelPath": "D:/A Faint Projects/OpenWindow/Assets/models/Bowl.obj"
+            },
+            "Tag": "",
+            "Transform": {
+                "LocalPosition": {
+                    "x": 0.0,
+                    "y": 1.0358226299285889,
+                    "z": 0.5961744785308838
+                },
+                "LocalRotation": {
+                    "w": 1.0,
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "LocalScale": {
+                    "x": 0.20000000298023224,
+                    "y": 0.20000000298023224,
+                    "z": 0.20000000298023224
+                }
+            }
+        },
+        "Camera": {
+            "Behaviours": [
+                {
+                    "Path": "Scripts/MouseLook.lua",
+                    "Properties": {
+                        "pitch": 0.0,
+                        "sensitivity": 4.0,
+                        "yaw": 0.0
+                    }
+                }
+            ],
+            "Camera": {
+                "FOV": 1.0,
+                "Far": 100.0,
+                "Near": 0.10000000149011612
+            },
+            "ID": 2,
+            "ParentID": 7,
+            "Tag": "",
+            "Transform": {
+                "LocalPosition": {
+                    "x": 0.0,
+                    "y": 1.5,
+                    "z": 0.0
+                },
+                "LocalRotation": {
+                    "w": 1.0,
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "LocalScale": {
+                    "x": 1.0,
+                    "y": 1.0,
+                    "z": 1.0
+                }
+            }
+        },
+        "Cat": {
+            "ID": 3,
+            "MaterialRenderer": {
+                "0": "data/engine/materials/default.ftmat"
+            },
+            "MeshRenderer": {
+                "ModelPath": "D:/A Faint Projects/OpenWindow/Assets/models/Cat.fbx"
+            },
+            "Tag": "",
+            "Transform": {
+                "LocalPosition": {
+                    "x": 2.0590455532073975,
+                    "y": 1.0199999809265137,
+                    "z": 0.22824129462242126
+                },
+                "LocalRotation": {
+                    "w": 0.8660253882408142,
+                    "x": 0.0,
+                    "y": -0.5,
+                    "z": 0.0
+                },
+                "LocalScale": {
+                    "x": 0.05000000074505806,
+                    "y": 0.05000000074505806,
+                    "z": 0.05000000074505806
+                }
+            }
+        },
+        "Desk": {
+            "BoxCollider": {
+                "halfExtents": {
+                    "x": 3.200000047683716,
+                    "y": 0.5,
+                    "z": 0.699999988079071
+                },
+                "shapePosOffset": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                }
+            },
+            "ID": 4,
+            "RigidBody": {
+                "AngularDrag": 0.05000000074505806,
+                "BodyType": 1,
+                "Bounciness": 0.0,
+                "DynamicFriction": 0.5,
+                "EnableSleep": true,
+                "FreezePositionX": false,
+                "FreezePositionY": false,
+                "FreezePositionZ": false,
+                "FreezeRotationX": false,
+                "FreezeRotationY": false,
+                "FreezeRotationZ": false,
+                "Friction": 0.5,
+                "GravityScale": 1.0,
+                "IsKinematic": true,
+                "LinearDrag": 0.0,
+                "Mass": 1.0,
+                "SleepThreshold": 0.10000000149011612,
+                "StaticFriction": 0.5,
+                "Trigger": false
+            },
+            "Tag": "",
+            "Transform": {
+                "LocalPosition": {
+                    "x": 0.699999988079071,
+                    "y": 0.5199999809265137,
+                    "z": 0.10266603529453278
+                },
+                "LocalRotation": {
+                    "w": 1.0,
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "LocalScale": {
+                    "x": 1.0,
+                    "y": 1.0,
+                    "z": 1.0
+                }
+            }
+        },
+        "Directional Light": {
+            "DirectionalLight": {
+                "CastShadows": true,
+                "Color": {
+                    "x": 1.0,
+                    "y": 0.7799999713897705,
+                    "z": 0.5289999842643738
+                },
+                "Direction": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "Intensity": 2.0
+            },
+            "ID": 5,
+            "Tag": "",
+            "Transform": {
+                "LocalPosition": {
+                    "x": 0.0,
+                    "y": 4.139999866485596,
+                    "z": 0.0
+                },
+                "LocalRotation": {
+                    "w": 0.881119430065155,
+                    "x": -0.364971786737442,
+                    "y": 0.27781617641448975,
+                    "z": -0.1150752380490303
+                },
+                "LocalScale": {
+                    "x": 0.9999999403953552,
+                    "y": 0.9999999403953552,
+                    "z": 0.9999999403953552
+                }
+            }
+        },
+        "ObjectGrabPoint": {
+            "ID": 6,
+            "ParentID": 2,
+            "Tag": "",
+            "Transform": {
+                "LocalPosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": -1.0
+                },
+                "LocalRotation": {
+                    "w": 1.0,
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "LocalScale": {
+                    "x": 1.0,
+                    "y": 1.0,
+                    "z": 1.0
+                }
+            }
+        },
+        "Player": {
+            "Behaviours": [
+                {
+                    "Path": "Scripts/Character.lua",
+                    "Properties": {
+                        "airVelocity": 0.30000001192092896,
+                        "jumpPower": 8.0,
+                        "moveSpeed": 10.0,
+                        "velocityY": 0.0
+                    }
+                }
+            ],
+            "CharacterController": {
+                "Height": 1.899999976158142,
+                "Radius": 0.20000000298023224
+            },
+            "ID": 7,
+            "Tag": "",
+            "Transform": {
+                "LocalPosition": {
+                    "x": 0.0,
+                    "y": 0.4426000118255615,
+                    "z": 1.721524953842163
+                },
+                "LocalRotation": {
+                    "w": 1.0,
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "LocalScale": {
+                    "x": 1.0,
+                    "y": 1.0,
+                    "z": 1.0
+                }
+            }
+        },
+        "coffee": {
+            "BoxCollider": {
+                "halfExtents": {
+                    "x": 3.859081983566284,
+                    "y": 0.009999999776482582,
+                    "z": 3.859081983566284
+                },
+                "shapePosOffset": {
+                    "x": 0.0,
+                    "y": 0.014999999664723873,
+                    "z": 0.0
+                }
+            },
+            "ID": 8,
+            "MaterialRenderer": {
+                "0": "D:\\A Faint Projects\\OpenWindow\\Assets\\Floorboard_laminate.mnmat",
+                "1": "data/engine/materials/default.ftmat",
+                "2": "D:\\A Faint Projects\\OpenWindow\\Assets\\Plywood.mnmat"
+            },
+            "MeshRenderer": {
+                "ModelPath": "D:/A Faint Projects/OpenWindow/Assets/models/coffee.obj"
+            },
+            "RigidBody": {
+                "AngularDrag": 0.05000000074505806,
+                "BodyType": 1,
+                "Bounciness": 0.0,
+                "DynamicFriction": 0.5,
+                "EnableSleep": true,
+                "FreezePositionX": false,
+                "FreezePositionY": false,
+                "FreezePositionZ": false,
+                "FreezeRotationX": false,
+                "FreezeRotationY": false,
+                "FreezeRotationZ": false,
+                "Friction": 0.5,
+                "GravityScale": 1.0,
+                "IsKinematic": true,
+                "LinearDrag": 0.0,
+                "Mass": 1.0,
+                "SleepThreshold": 0.10000000149011612,
+                "StaticFriction": 0.5,
+                "Trigger": false
+            },
+            "Tag": "",
+            "Transform": {
+                "LocalPosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "LocalRotation": {
+                    "w": 1.0,
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "LocalScale": {
+                    "x": 0.5,
+                    "y": 0.5,
+                    "z": 0.5
+                }
+            }
+        },
+        "coffee_cup": {
+            "Behaviours": [
+                {
+                    "Path": "Scripts/ObjectGrabable.lua"
+                }
+            ],
+            "BoxCollider": {
+                "halfExtents": {
+                    "x": 0.10474240779876709,
+                    "y": 0.126672625541687,
+                    "z": 0.10474240779876709
+                },
+                "shapePosOffset": {
+                    "x": 0.0,
+                    "y": 0.126672625541687,
+                    "z": 0.0
+                }
+            },
+            "ID": 9,
+            "MaterialRenderer": {
+                "0": "data/engine/materials/default.ftmat"
+            },
+            "MeshRenderer": {
+                "ModelPath": "D:/A Faint Projects/OpenWindow/Assets/models/coffee_cup.obj"
+            },
+            "RigidBody": {
+                "AngularDrag": 0.05000000074505806,
+                "BodyType": 1,
+                "Bounciness": 0.0,
+                "DynamicFriction": 0.5,
+                "EnableSleep": true,
+                "FreezePositionX": false,
+                "FreezePositionY": false,
+                "FreezePositionZ": false,
+                "FreezeRotationX": false,
+                "FreezeRotationY": false,
+                "FreezeRotationZ": false,
+                "Friction": 0.5,
+                "GravityScale": 1.0,
+                "IsKinematic": false,
+                "LinearDrag": 0.0,
+                "Mass": 1.0,
+                "SleepThreshold": 0.10000000149011612,
+                "StaticFriction": 0.5,
+                "Trigger": false
+            },
+            "Tag": "cup",
+            "Transform": {
+                "LocalPosition": {
+                    "x": -0.5884250402450562,
+                    "y": 1.0049697160720825,
+                    "z": 0.5439111590385437
+                },
+                "LocalRotation": {
+                    "w": 1.0,
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "LocalScale": {
+                    "x": 0.10000000149011612,
+                    "y": 0.10000000149011612,
+                    "z": 0.10000000149011612
+                }
+            }
+        }
+    }
+}

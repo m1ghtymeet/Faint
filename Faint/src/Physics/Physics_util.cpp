@@ -1,6 +1,6 @@
 #include "Physics.h"
 
-namespace Faint::Physics {
+namespace Moon::Physics {
 
     glm::vec3 PxVec3toGlmVec3(PxVec3 vec) {
         return { vec.x, vec.y, vec.z };
@@ -19,7 +19,7 @@ namespace Faint::Physics {
     }
 
     glm::quat PxQuatToGlmQuat(PxQuat quat) {
-        return { quat.x, quat.y, quat.z, quat.w };
+        return { quat.w, quat.x, quat.y, quat.z };
     }
 
     glm::mat4 PxMat44ToGlmMat4(physx::PxMat44 pxMatrix) {
@@ -32,14 +32,9 @@ namespace Faint::Physics {
 
     physx::PxMat44 GlmMat4ToPxMat44(glm::mat4 glmMatrix) {
         physx::PxMat44 matrix;
-        std::copy(glm::value_ptr(glmMatrix),
-            glm::value_ptr(glmMatrix) + 16,
-            reinterpret_cast<float*>(&matrix));
+        //std::copy(glm::value_ptr(glmMatrix),
+        //    glm::value_ptr(glmMatrix) + 16,
+        //    reinterpret_cast<float*>(&matrix));
         return matrix;
     }
-
-	PhysXRayResult CastPhysXRay(glm::vec3 rayOrigin, glm::vec3 rayDirection, float rayLength, PxU32 collisionFlags, bool cullbackFacing) {
-
-		return PhysXRayResult();
-	}
 }

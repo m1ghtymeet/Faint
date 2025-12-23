@@ -1,0 +1,50 @@
+#shader vertex
+#version 450 core
+
+layout (location = 0) in vec2 a_position;
+layout (location = 1) in vec2 a_uv;     
+
+// Instance data
+layout (location = 2) in vec2 a_instancePos;
+layout (location = 3) in vec2 a_instanceScale;
+layout (location = 4) in vec3 a_instanceColor;
+layout (location = 5) in vec4 a_atlasCoords;
+
+out vec2 v_texCoord;
+out vec3 v_color;
+out vec2 v_quadUV; // DEBUG
+
+uniform mat4 u_projection;
+
+void main() {
+    vec2 worldPos = a_instancePos + a_position * a_instanceScale;
+    gl_Position = u_projection * vec4(worldPos, 0.0, 1.0);
+    
+    v_texCoord = a_atlasCoords.xy + a_uv * a_atlasCoords.zw;
+    v_color = a_instanceColor;
+	v_quadUV = a_uv;
+}
+#shader fragment
+#version 450 core
+
+in vec2 v_texCoord;
+in vec3 v_color;
+in vec2 v_quadUV; // DEBUG
+
+out vec4 FragColor;
+
+layout (binding = 0) uniform sampler2D u_atlasTexture;
+uniform float u_pxRange = 6.0;
+
+float median(float r, float g, float b) {
+    return max(min(r, g), min(max(r, g), b));
+}
+
+void main() {
+    vec3 msd = texture(u_atlasTexture, v_texCoord).rgb;
+    float sd = median(msd.r, msd.g, msd.b);
+    float screenPxDistance = u_pxRange * (sd - 0.5);
+	float opacity = smoothstep(0.45, 0.55, sd);
+
+    FragColor = vec4(v_color, opacity);
+}

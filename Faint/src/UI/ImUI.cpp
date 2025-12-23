@@ -83,9 +83,16 @@ bool ImGui::ColoredButtonV1(const char* label, const ImVec2& size_arg, ImU32 tex
     return pressed;
 }
 
-namespace Faint {
+namespace Moon {
     namespace UI {
-        bool PrimaryButton(const std::string& label, const Vec2& size, Color color) {
+        void ColoredText(const std::string& label, ImVec4 color) {
+
+            ImGui::PushStyleColor(ImGuiCol_Text, color);
+            ImGui::Text(label.c_str());
+            ImGui::PopStyleColor();
+        }
+
+        bool PrimaryButton(const std::string& label, const glm::vec2& size, glm::vec4 color) {
             
             //ImGui::PushStyleColor(ImGuiCol_Button, IM_COL32(color.r * 255.0f, color.g * 255.0f, color.b * 255.0f, 255.0f));
             //ImGui::PushStyleColor(ImGuiCol_ButtonHovered, IM_COL32(color.r * 255.0f, color.g * 255.0f, color.b * 255.0f, 200));

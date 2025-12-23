@@ -1,18 +1,29 @@
 #include "CLight.h"
+#include <Scene/Entity.h>
 
-namespace Faint {
-	LightComponent::LightComponent(Entity& p_owner) : AComponent(p_owner) {
-		Direction = Vec3(0, 1, 0);
-		Color = Vec3(1, 1, 1);
-		Strength = 1.0f;
-		Radius = 16.0f;
-		SetCastShadows(true);
+namespace Moon {
+	LightComponent::LightComponent(Entity& p_owner) :
+		AComponent(p_owner),
+		m_data{ p_owner.GetComponent<TransformComponent>()->GetTransform() } {
 	}
-	LightComponent::~LightComponent() {}
-	void LightComponent::Update(float deltaTime) {
-		glm::mat4 projectionMatrix = glm::perspective(glm::radians(90.0f), 2048.0f / 2048.0f, 0.1f, 10.0f);
+
+	std::string LightComponent::GetName() {
+		return "Light";
 	}
-	void LightComponent::SetCastShadows(bool toggle) {
-		CastShadows = toggle;
+
+	Rendering::Light& LightComponent::GetData() {
+		return m_data;
+	}
+
+	void LightComponent::SetColor(const glm::vec3& p_color) {
+		m_data.color = p_color;
+	}
+
+	glm::vec3 LightComponent::GetColor() const {
+		return m_data.color;
+	}
+
+	void LightComponent::SetStrength(float strength) {
+		m_data.strength = strength;
 	}
 }

@@ -1,19 +1,36 @@
 #pragma once
 
-namespace Faint {
+#include <chrono>
 
+namespace Moon::Tools {
+
+	// Time class to handle time-related operations
 	class Time {
 	public:
-		Time(float time = 0.0f) : m_time(time) {
+		void Update();
 
-		}
+		float GetFramerate();
 
-		operator float() const { return m_time; }
+		float GetDeltaTime();
 
-		float GetDeltaTime() const { return m_time; }
-		float GetMilliseconds() const { return m_time * 1000.0f; }
-		float GetFPS() const { return (float)(1.0 / m_time); }
+		float GetTimeSinceStart();
+
+		void Scale(float p_ceoff);
+
+		void SetTimeScale(float p_timeScale);
+
+		operator float() const { return __DELTA_TIME; }
 	private:
-		float m_time;
+		void Initialize();
+
+		std::chrono::steady_clock::time_point __START_TIME;
+		std::chrono::steady_clock::time_point __LAST_TIME;
+		std::chrono::steady_clock::time_point __CURRENT_TIME;
+		std::chrono::duration<double> __ELAPSED;
+
+		bool  __INITIALIZED = false;
+		float __TIME_SCALE = 1.0f;
+		float __DELTA_TIME = 0.0f;
+		float __TIME_SINCE_START = 0.0f;
 	};
 }

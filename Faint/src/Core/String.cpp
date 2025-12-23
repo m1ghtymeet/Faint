@@ -3,7 +3,7 @@
 #include <regex>
 #include <sstream>
 
-namespace Faint {
+namespace Moon {
 
     bool String::BeginsWith(const std::string& string, const std::string& begin) {
         

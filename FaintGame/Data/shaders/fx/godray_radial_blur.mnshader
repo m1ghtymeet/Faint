@@ -1,0 +1,41 @@
+// data/shaders/fx/godray_radial_blur.mnshader
+
+#shader vertex
+#version 450 core
+layout(location = 0) in vec3 a_position;
+layout(location = 1) in vec2 a_texCoords;
+out vec2 v_texCoords;
+void main() {
+    v_texCoords = a_texCoords;
+    gl_Position = vec4(a_position, 1.0);
+}
+
+#shader fragment
+#version 450 core
+in vec2 v_texCoords;
+out vec4 FragColor;
+
+uniform sampler2D u_sourceTexture;
+uniform vec3 u_lightPos;
+uniform float u_density = 0.8;
+uniform float u_decay = 0.95;
+uniform float u_weight = 0.5;
+uniform int u_numSamples = 32;
+
+void main() {
+    vec2 lightPos = u_lightPos.xy;
+    vec2 delta = v_texCoords - lightPos;
+    vec2 texCoord = v_texCoords;
+    
+    float illuminationDecay = 1.0;
+    vec3 color = vec3(0.0);
+
+    for (int i = 0; i < u_numSamples; ++i) {
+        texCoord -= delta * (u_density / float(u_numSamples));
+        float col = texture(u_sourceTexture, texCoord).r;
+        color += col * illuminationDecay * u_weight;
+        illuminationDecay *= u_decay;
+    }
+
+    FragColor = vec4(color, 1.0);
+}

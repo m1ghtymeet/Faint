@@ -4,6 +4,7 @@
 #include <yaml-cpp/yaml.h>
 #include <glm/glm.hpp>
 
+/* =============== JSON =============== */
 using json = nlohmann::json;
 
 #define BEGIN_SERIALIZE() json j;
@@ -39,51 +40,25 @@ using json = nlohmann::json;
 	}
 
 #define DESERIALIZE_VEC2(v, p) \
-	p = Vec2(v["x"], v["y"]);
+	p = glm::vec2(v["x"], v["y"]);
 
 #define DESERIALIZE_VEC3(v, p) \
-	p = Vec3(v["x"], v["y"], v["z"]);
+	p = glm::vec3(v["x"], v["y"], v["z"]);
 
 #define DESERIALIZE_VEC4(v, p) \
-	p = Vec4(v["x"], v["y"], v["z"], v["w"]);
-
-// (v).file = FileSystem::GetFile(filePath); \
+	p = glm::vec4(v["x"], v["y"], v["z"], v["w"]);
 
 #define SERIALIZE_OBJECT_REF_LBL(lbl, v) j[lbl] = v.Serialize();
 #define END_SERIALIZE() return j;
 
-//#define BEGIN_SERIALIZE_YAML() \
-//	YAML::Emitter out \
-//	out << YAML::BeginMap;
-//
-//#define SERIALIZE_VAL_YAML(name, v) \
-//	out << YAML::Key << name << YAML::Value << v;
-//
-//#define END_SERIALIZE_YAML() return out;
-
-namespace YAML {
-	template<>
-	struct convert<glm::vec3> {
-		static Node encode(const glm::vec3& rhs) {
-			Node node;
-			node.push_back(rhs.x);
-			node.push_back(rhs.y);
-			node.push_back(rhs.z);
-			return node;
-		}
-		static bool decode(const Node& node, glm::vec3& rhs) {
-			if (!node.IsSequence() || node.size() != 3)
-				return false;
-			rhs.x = node[0].as<float>();
-			rhs.y = node[1].as<float>();
-			rhs.z = node[2].as<float>();
-			return true;
-		}
-	};
-}
 
 class ISerializable {
 public:
+	virtual ~ISerializable() = default;
+
 	virtual json Serialize() = 0;
 	virtual void Deserialize(const json& j) = 0;
+
+	//virtual void SerializeCBA(std::vector<uint8_t>& data) const = 0;
+	//virtual void DeserializeCBA(std::vector<uint8_t>& data, size_t size) = 0;
 };

@@ -1,19 +1,28 @@
 #pragma once
 
 #include <string>
-#include "FileSystem/FileSystem.h"
 
-namespace Faint {
-
+namespace Moon {
 	class OS {
 	public:
-		static void CopyToClipboard(const std::string& value);
-		static std::string GetFromClipboard();
-		static void OpenIn(const std::string& filePath);
-		static int RenameDirectory(const Ref<Directory>& dir, const std::string& newName);
-		static void ShowInFileExplorer(const std::string& filePath);
-		static std::string CompileSln(const std::string& slnPath);
+		OS() = delete;
 
-		static int Subprocess(const std::string& command, std::string& out, std::string& err);
+		/** Copies text to the system clipboard. */
+		static void CopyToClipboard(const std::string& value);
+
+		/** Retrieves text from the system clipboard. Returns empty string if clipboard is empty or contains non-text. */
+		static std::string GetFromClipboard();
+		
+		/** Opens a file or URL with its default associated application (like double-clicking). */
+		static bool OpenIn(const std::string& filePath);
+
+		/** Revea;s the file or folder in the native file explorer (selects it). */
+		static bool ShowInFileExplorer(const std::string& filePath);
+
+		/** Returns the path to the current executable (useful for relative paths, logging, etc.) */
+		static std::string GetExecutablePath();
+
+		/** Returns the directory containing the current executable. */
+		static std::string GetExecutableDirectory();
 	};
 }

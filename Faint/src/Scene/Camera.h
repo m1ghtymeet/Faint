@@ -1,9 +1,9 @@
 #pragma once
-#include <glm/glm.hpp>
+#include "Core/Rendering/ICamera.h"
 #include <glm/gtc/quaternion.hpp>
 
-namespace Faint {
-	struct Camera {
+namespace Moon {
+	struct Camera : public ICamera {
 	public:
 		void Update();
 
@@ -14,10 +14,10 @@ namespace Faint {
 		void SetRotationQ(const glm::quat& rotation);
 		void SetProjectionMatrix(const glm::mat4& proj);
 		void SetViewMatrix(const glm::mat4& view);
-		const glm::mat4& GetProjectionMatrix() const;
-		const glm::mat4& GetViewMatrix() const;
+		const glm::mat4& GetProjectionMatrix() const override;
+		const glm::mat4& GetViewMatrix() const override;
 		const glm::mat4& GetInverseViewMatrix() const;
-		const glm::vec3& GetPosition() const;
+		const glm::vec3& GetPosition() const override;
 		const glm::vec3& GetRotation() const;
 		const glm::quat& GetEulerRotation() const;
 		const glm::vec3& GetForward() const;

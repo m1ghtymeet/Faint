@@ -1,7 +1,7 @@
-#include "hzpch.h"
 #include "CPUInfo.h"
+#include <Windows.h>
 
-namespace Faint::Hardware {
+namespace Moon::Hardware {
 
 	uint64_t FileTimeToInt64(const FILETIME& ft) {
 		return ((unsigned long long)(ft.dwHighDateTime)) << 32 | ((unsigned long long)ft.dwLowDateTime);

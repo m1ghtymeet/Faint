@@ -1,24 +1,11 @@
-﻿cl : command line  warning D9025: overriding '/MT' with '/MTd'
-cl : command line  warning D9025: overriding '/MT' with '/MTd'
-  soloud_monotone.cpp
-cl : command line  warning D9025: overriding '/MT' with '/MTd'
+﻿  soloud_monotone.cpp
   soloud_noise.cpp
-cl : command line  warning D9025: overriding '/MT' with '/MTd'
-cl : command line  warning D9025: overriding '/MT' with '/MTd'
-cl : command line  warning D9025: overriding '/MT' with '/MTd'
-cl : command line  warning D9025: overriding '/MT' with '/MTd'
   soloud_openmpt.cpp
   soloud_sfxr.cpp
   darray.cpp
-cl : command line  warning D9025: overriding '/MT' with '/MTd'
-cl : command line  warning D9025: overriding '/MT' with '/MTd'
   klatt.cpp
-cl : command line  warning D9025: overriding '/MT' with '/MTd'
-cl : command line  warning D9025: overriding '/MT' with '/MTd'
-cl : command line  warning D9025: overriding '/MT' with '/MTd'
   resonator.cpp
   soloud_speech.cpp
-cl : command line  warning D9025: overriding '/MT' with '/MTd'
   tts.cpp
   sid.cpp
   soloud_tedsid.cpp
@@ -31,6 +18,8 @@ cl : command line  warning D9025: overriding '/MT' with '/MTd'
   soloud_wasapi.cpp
   soloud.cpp
   soloud_audiosource.cpp
+  Generating Code...
+  Compiling...
   soloud_bus.cpp
   soloud_core_3d.cpp
   soloud_core_basicops.cpp
@@ -48,9 +37,8 @@ cl : command line  warning D9025: overriding '/MT' with '/MTd'
   soloud_misc.cpp
   soloud_queue.cpp
   soloud_thread.cpp
-cl : command line  warning D9025: overriding '/MT' with '/MTd'
-cl : command line  warning D9025: overriding '/MT' with '/MTd'
+  Generating Code...
   soloud_openmpt_dll.c
-cl : command line  warning D9025: overriding '/MT' with '/MTd'
   stb_vorbis.c
-  Soloud.vcxproj -> D:\C++ Projects\Hazel\Faint\vendor\soloud\bin\Release-windows-x86_64\Soloud\Soloud.lib
+  Generating Code...
+  Soloud.vcxproj -> D:\C++ Projects\Moon\Faint\vendor\soloud\bin\Release-windows-x86_64\Soloud\Soloud.lib

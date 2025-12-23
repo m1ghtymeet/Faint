@@ -1,0 +1,37 @@
+{
+    "Settings": {
+        "BackFaceCulling": true,
+        "Blendable": false,
+        "ColorWriting": true,
+        "DepthTest": true,
+        "DepthWriting": true,
+        "FrontFaceCulling": false
+    },
+    "Shader": "data/shaders/gBuffer.ftshader",
+    "Type": 1,
+    "Uniforms": {
+        "u_AlbedoColor": {
+            "x": 1.0,
+            "y": 1.0,
+            "z": 1.0
+        },
+        "u_AlbedoMap": "Assets/laminate_floor_02_diff_4k.dds",
+        "u_EmissiveColor": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+        },
+        "u_EmissiveIntensity": 0.0,
+        "u_HasAlbedo": true,
+        "u_HasMetalness": false,
+        "u_HasNormal": false,
+        "u_HasRoughness": false,
+        "u_MetalnessValue": 0.0,
+        "u_RoughnessValue": 0.0,
+        "u_Tiling": {
+            "x": 5.0,
+            "y": 5.0
+        },
+        "u_Transparent": 1.0
+    }
+}

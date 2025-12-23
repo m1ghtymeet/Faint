@@ -1,0 +1,41 @@
+// data/shaders/fx/godray_temporal.mnshader
+
+#shader vertex
+#version 450 core
+layout(location = 0) in vec3 a_position;
+layout(location = 1) in vec2 a_texCoords;
+out vec2 v_texCoords;
+void main() {
+    v_texCoords = a_texCoords;
+    gl_Position = vec4(a_position, 1.0);
+}
+
+#shader fragment
+#version 450 core
+in vec2 v_texCoords;
+out vec4 FragColor;
+
+uniform sampler2D u_current;
+uniform sampler2D u_history;
+uniform sampler2D u_velocity;
+uniform float u_feedback = 0.92; // 92% history
+
+void main() {
+    vec3 current = texture(u_current, v_texCoords).rgb;
+    
+    // Motion vector (از GBuffer)
+    vec2 velocity = texture(u_velocity, v_texCoords).rg;
+    vec2 prevCoord = v_texCoords - velocity;
+    
+    // Clamp to screen
+    prevCoord = clamp(prevCoord, vec2(0.0), vec2(1.0));
+    
+    vec3 history = texture(u_history, prevCoord).rgb;
+    
+    // Clip if velocity too high
+    float velocityLength = length(velocity);
+    float clipFactor = step(velocityLength, 0.1); // فقط اگر حرکت کم باشه
+    vec3 result = mix(current, history, u_feedback * clipFactor);
+    
+    FragColor = vec4(result, 1.0);
+}

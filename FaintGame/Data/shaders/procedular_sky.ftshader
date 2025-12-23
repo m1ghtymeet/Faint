@@ -1,0 +1,236 @@
+#shader vertex
+#version 460 core
+layout (location = 0) in vec3 aPos;
+
+out vec3 WorldPos;
+out vec3 ViewDir;
+
+uniform mat4 u_projection;
+uniform mat4 u_view;
+uniform vec3 u_cameraPos;
+
+void main() {
+    // Remove translation from view matrix
+    mat4 viewNoTranslation = mat4(mat3(u_view));
+    vec4 pos = u_projection * viewNoTranslation * vec4(aPos, 1.0);
+    
+    // Ensure sky is always at far plane
+    gl_Position = pos.xyww;
+    
+    WorldPos = aPos;
+    ViewDir = normalize(aPos - u_cameraPos);
+}
+
+#shader fragment
+#version 460 core
+in vec3 WorldPos;
+in vec3 ViewDir;
+
+out vec4 FragColor;
+
+// Sky Parameters
+uniform vec3 u_sunDirection = vec3(0.0, 0.5, 0.8);  // Direction TO sun
+uniform float u_sunIntensity = 20.0;
+uniform float u_sunSize = 0.015;
+uniform vec3 u_sunColor = vec3(1.0, 0.95, 0.85);
+
+// Atmosphere
+uniform float u_atmosphereThickness = 1.0;
+uniform float u_rayleighScatter = 1.0;
+uniform float u_mieScatter = 0.8;
+uniform float u_exposure = 1.0;
+
+// Time of day (0-24)
+uniform float u_timeOfDay = 12.0;
+
+// Cloud parameters
+uniform bool u_enableClouds = false;
+uniform float u_cloudSpeed = 0.1;
+uniform float u_cloudDensity = 0.5;
+uniform float u_time = 0.0;
+
+const float PI = 3.14159265359;
+
+// Rayleigh scattering coefficients (wavelength dependent)
+const vec3 betaR = vec3(5.8e-6, 13.5e-6, 33.1e-6);
+// Mie scattering coefficient
+const vec3 betaM = vec3(21e-6);
+
+// Phase functions
+float rayleighPhase(float cosTheta) {
+    return (3.0 / (16.0 * PI)) * (1.0 + cosTheta * cosTheta);
+}
+
+float miePhase(float cosTheta, float g) {
+    float g2 = g * g;
+    float nom = (1.0 - g2) * (1.0 + cosTheta * cosTheta);
+    float denom = (2.0 + g2) * pow(abs(1.0 + g2 - 2.0 * g * cosTheta), 1.5);
+    return (3.0 / (8.0 * PI)) * nom / (denom + 0.0001);
+}
+
+// Atmospheric scattering
+vec3 atmosphericScattering(vec3 rayDir, vec3 sunDir) {
+    float cosTheta = dot(rayDir, sunDir);
+    
+    // Height-based atmosphere density
+    float height = max(rayDir.y, 0.0);
+    float heightFalloff = exp(-height * 3.0);
+    
+    // Rayleigh (blue sky)
+    float phaseR = rayleighPhase(cosTheta);
+    vec3 rayleigh = betaR * phaseR * u_rayleighScatter * heightFalloff;
+    
+    // Mie (sun glow)
+    float g = 0.76; // Anisotropy
+    float phaseM = miePhase(cosTheta, g);
+    vec3 mie = betaM * phaseM * u_mieScatter * heightFalloff;
+    
+    // Combine
+    vec3 scatter = (rayleigh + mie) * u_atmosphereThickness;
+    
+    // Sunset/sunrise color shift
+    float sunHeight = sunDir.y;
+    vec3 horizonColor = vec3(1.0, 0.6, 0.3) * (1.0 - sunHeight);
+    scatter += horizonColor * max(0.0, 1.0 - height * 2.0) * 0.5;
+    
+    return scatter * 100.0; // Scale for visibility
+}
+
+// Sun disk
+vec3 renderSun(vec3 rayDir, vec3 sunDir) {
+    float sunDot = dot(rayDir, sunDir);
+    float sunDisk = smoothstep(u_sunSize, u_sunSize * 0.95, 1.0 - sunDot);
+    
+    // Sun corona
+    float corona = pow(max(0.0, sunDot), 128.0) * 0.5;
+    
+    return (sunDisk + corona) * u_sunColor * u_sunIntensity;
+}
+
+// Simple gradient sky (fallback for day/night)
+vec3 simpleGradientSky(vec3 rayDir, vec3 sunDir) {
+    float height = rayDir.y;
+    
+    // Day colors
+    vec3 zenithDay = vec3(0.3, 0.5, 0.9);
+    vec3 horizonDay = vec3(0.7, 0.8, 0.95);
+    
+    // Night colors
+    vec3 zenithNight = vec3(0.01, 0.02, 0.05);
+    vec3 horizonNight = vec3(0.05, 0.05, 0.1);
+    
+    // Interpolate based on sun position
+    float dayFactor = clamp(sunDir.y * 2.0 + 0.5, 0.0, 1.0);
+    
+    vec3 zenith = mix(zenithNight, zenithDay, dayFactor);
+    vec3 horizon = mix(horizonNight, horizonDay, dayFactor);
+    
+    // Gradient from horizon to zenith
+    float gradientFactor = smoothstep(-0.1, 0.5, height);
+    vec3 skyColor = mix(horizon, zenith, gradientFactor);
+    
+    return skyColor;
+}
+
+// Procedural clouds (3D noise-based)
+float hash(vec3 p) {
+    p = fract(p * 0.3183099 + 0.1);
+    p *= 17.0;
+    return fract(p.x * p.y * p.z * (p.x + p.y + p.z));
+}
+
+float noise3D(vec3 x) {
+    vec3 p = floor(x);
+    vec3 f = fract(x);
+    f = f * f * (3.0 - 2.0 * f);
+    
+    float n = p.x + p.y * 157.0 + 113.0 * p.z;
+    return mix(
+        mix(mix(hash(p + vec3(0, 0, 0)), hash(p + vec3(1, 0, 0)), f.x),
+            mix(hash(p + vec3(0, 1, 0)), hash(p + vec3(1, 1, 0)), f.x), f.y),
+        mix(mix(hash(p + vec3(0, 0, 1)), hash(p + vec3(1, 0, 1)), f.x),
+            mix(hash(p + vec3(0, 1, 1)), hash(p + vec3(1, 1, 1)), f.x), f.y),
+        f.z);
+}
+
+float fbm(vec3 p) {
+    float f = 0.0;
+    float amplitude = 0.5;
+    for (int i = 0; i < 4; i++) {
+        f += amplitude * noise3D(p);
+        p *= 2.0;
+        amplitude *= 0.5;
+    }
+    return f;
+}
+
+vec3 renderClouds(vec3 rayDir) {
+    if (rayDir.y < 0.0) return vec3(0.0);
+    
+    // Cloud layer height
+    float cloudHeight = 1000.0;
+    float t = cloudHeight / max(rayDir.y, 0.01);
+    vec3 cloudPos = rayDir * t;
+    
+    // Animate clouds
+    cloudPos.xz += u_time * u_cloudSpeed * 10.0;
+    
+    // Noise sampling
+    float noise = fbm(cloudPos * 0.0005);
+    float density = smoothstep(0.4, 0.6, noise) * u_cloudDensity;
+    
+    // Cloud color based on density and sun
+    vec3 cloudColor = mix(vec3(1.0), vec3(0.7, 0.75, 0.8), density);
+    
+    return cloudColor * density;
+}
+
+// Stars (for night time)
+float stars(vec3 rayDir) {
+    vec3 p = rayDir * 500.0;
+    float star = smoothstep(0.998, 1.0, hash(floor(p)));
+    return star;
+}
+
+void main() {
+    vec3 rayDir = normalize(ViewDir);
+    vec3 sunDir = normalize(u_sunDirection);
+    
+    // Calculate time-based sun direction
+    float timeAngle = (u_timeOfDay / 24.0) * 2.0 * PI;
+    sunDir = vec3(cos(timeAngle), sin(timeAngle), 0.2);
+    sunDir = normalize(sunDir);
+    
+    // Base sky color
+    vec3 skyColor = simpleGradientSky(rayDir, sunDir);
+    
+    // Atmospheric scattering
+    vec3 scatter = atmosphericScattering(rayDir, sunDir);
+    skyColor += scatter;
+    
+    // Sun
+    vec3 sun = renderSun(rayDir, sunDir);
+    skyColor += sun;
+    
+    // Clouds
+    if (u_enableClouds && rayDir.y > 0.0) {
+        vec3 clouds = renderClouds(rayDir);
+        skyColor = mix(skyColor, clouds, clouds.r * 0.8);
+    }
+    
+    // Stars (only visible at night)
+    float nightFactor = 1.0 - clamp(sunDir.y * 2.0 + 0.5, 0.0, 1.0);
+    if (nightFactor > 0.1) {
+        float starBrightness = stars(rayDir);
+        skyColor += vec3(starBrightness) * nightFactor * 0.5;
+    }
+    
+    // Exposure & tone mapping
+    skyColor *= u_exposure;
+    skyColor = vec3(1.0) - exp(-skyColor);
+    
+    // Gamma correction
+    skyColor = pow(skyColor, vec3(1.0 / 2.2));
+    
+    FragColor = vec4(skyColor, 1.0);
+}

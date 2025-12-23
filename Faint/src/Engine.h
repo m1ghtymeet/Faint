@@ -5,7 +5,7 @@
 #include "Core/Window.h"
 #include "AssetManagment/Project.h"
 
-namespace Faint {
+namespace Moon {
 
 	class Project;
 	class Scene;
@@ -20,13 +20,9 @@ namespace Faint {
 	class Engine {
 	public:
 		static void Init();  // Initialize the engine.
-		static void Update(Time time);// Updates everything, called every frame.
+		static void Update(float p_deltaTime);// Updates everything, called every frame.
 		static void Close(); // Shutdown the engine. 
 
-		static void EnterPlayMode(); // Start the game
-		static void ExitPlayMode(); // Start the game
-
-		static void Draw(); // Start new frame
 		static void EndDraw(); // Swap buffer
 
 		static void SetGameState(GameState state) { gameState = state; }
@@ -47,7 +43,7 @@ namespace Faint {
 		static Ref<Scene> LoadScene(const std::string& path);
 
 		// Window
-		static Ref<Window> GetCurrentWindow();
+		//static Ref<Window> GetCurrentWindow();
 
 		//static Ref<EngineSubsystemScriptable> GetScriptedSubsystem(const std::string& subsystemName);
 		//static Ref<EngineSubsystemScriptable> GetScriptedSubsystem(const int subsystemId);
@@ -63,7 +59,7 @@ namespace Faint {
 	private:
 		static Ref<Project> currentProject;
 		static Ref<Scene> currentScene;
-		static Ref<Window> currentWindow;
+		//static Ref<Window> currentWindow;
 		static std::string queuedScene;
 		static float time;
 

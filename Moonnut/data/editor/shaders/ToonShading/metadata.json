@@ -1,0 +1,6 @@
+{
+	"name": "Toon Shading",
+	"description": "Cartoon-style shading with deferred lighting",
+	"type": "deferred",
+	"version": "1.0"
+}

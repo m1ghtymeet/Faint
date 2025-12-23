@@ -1,2 +1,3 @@
-﻿  glad.c
-  glad.vcxproj -> D:\C++ Projects\Hazel\Faint\vendor\glad\bin\Release-windows-x86_64\glad\glad.lib
+﻿cl : command line  warning D9025: overriding '/MD' with '/MT'
+  glad.c
+  glad.vcxproj -> D:\C++ Projects\Moon\Faint\vendor\glad\bin\Release-windows-x86_64\glad\glad.lib

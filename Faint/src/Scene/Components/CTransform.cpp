@@ -1,78 +1,78 @@
 #include "CTransform.h"
 
-namespace Faint
+namespace Moon
 {
-	TransformComponent::TransformComponent(Entity& p_owner, const Vec3& position, const Quat& rotation, const Vec3& scale)
+	TransformComponent::TransformComponent(Entity& p_owner, const glm::vec3& position, const glm::quat& rotation, const glm::vec3& scale)
 		: AComponent(p_owner)
 	{
 		m_transform.GenerateMatricesLocal(position, rotation, scale);
 	}
 
-	Matrix4 TransformComponent::GetGlobalMatrix() const
+	const glm::mat4& TransformComponent::GetGlobalMatrix() const
 	{
 		return m_transform.GetWorldMatrix();
-		//return GlobalMatrix;
 	}
 
-	void TransformComponent::SetGlobalMatrix(const Matrix4& transform)
+	void TransformComponent::SetGlobalMatrix(const glm::mat4& transform)
 	{
 		m_transform.SetWorldMatrix(transform);
-		//GlobalMatrix = transform;
 	}
 
-	Matrix4 TransformComponent::GetLocalMatrix() const
+	std::string TransformComponent::GetName() {
+		return "Transform";
+	}
+
+	const glm::mat4& TransformComponent::GetLocalMatrix() const
 	{
 		return m_transform.GetLocalMatrix();
-		//return LocalMatrix;
 	}
 
-	void TransformComponent::SetLocalMatrix(const Matrix4& matrix)
+	void TransformComponent::SetLocalMatrix(const glm::mat4& matrix)
 	{
 		m_transform.SetLocalMatrix(matrix);
-		//LocalMatrix = matrix;
 	}
 
-	void TransformComponent::SetGlobalPosition(const Vec3& newPosition)
+	void TransformComponent::SetGlobalPosition(glm::vec3 newPosition)
 	{
 		m_transform.SetWorldPosition(newPosition);
 	}
 
-	void TransformComponent::SetGlobalRotation(const Quat& quat)
+	void TransformComponent::SetGlobalRotation(glm::quat quat)
 	{
 		m_transform.SetWorldRotation(quat);
 	}
 
-	void TransformComponent::SetGlobalScale(const Vec3& newScale)
+	void TransformComponent::SetGlobalScale(glm::vec3 newScale)
 	{
 		m_transform.SetWorldScale(newScale);
 	}
 
-	Vec3 TransformComponent::GetLocalPosition() const
+	const glm::vec3& TransformComponent::GetLocalPosition() const
 	{
 		return m_transform.GetLocalPosition();
 	}
 
-	Quat TransformComponent::GetLocalRotation() const
+	const glm::quat& TransformComponent::GetLocalRotation() const
 	{
 		return m_transform.GetLocalRotation();
 	}
 
-	Vec3 TransformComponent::GetLocalScale() const
+	const glm::vec3& TransformComponent::GetLocalScale() const
 	{
 		return m_transform.GetLocalScale();
 	}
 
-	Vec3 TransformComponent::GetGlobalPosition() const
+	const glm::vec3& TransformComponent::GetGlobalPosition() const
 	{
 		return m_transform.GetWorldPosition();
 	}
 
-	Quat TransformComponent::GetGlobalRotation() const
+	const glm::quat& TransformComponent::GetGlobalRotation() const
 	{
 		return m_transform.GetWorldRotation();
 	}
 
-	Vec3 TransformComponent::GetGlobalScale() const
+	const glm::vec3& TransformComponent::GetGlobalScale() const
 	{
 		return m_transform.GetWorldScale();
 	}
@@ -82,9 +82,9 @@ namespace Faint
 		return m_transform;
 	}
 
-	void TransformComponent::SetParent(Transform& parent) {
+	void TransformComponent::SetParent(TransformComponent& parent) {
 
-		m_transform.SetParent(parent);
+		m_transform.SetParent(parent.GetTransform());
 	}
 
 	bool TransformComponent::RemoveParent()
@@ -97,69 +97,54 @@ namespace Faint
 		return m_transform.HasParent();
 	}
 
-	void TransformComponent::SetLocalPosition(const Vec3& newPosition)
+	void TransformComponent::SetLocalPosition(glm::vec3 newPosition)
 	{
 		m_transform.SetLocalPosition(newPosition);
 	}
 
-	void TransformComponent::SetLocalRotation(const Quat& newRotation)
+	void TransformComponent::SetLocalRotation(const glm::quat& newRotation)
 	{
-		m_transform.SetLocalRotation(glm::normalize(newRotation));
+		m_transform.SetLocalRotation(newRotation);
 	}
 
-	void TransformComponent::SetLocalScale(const Vec3& newScale)
+	void TransformComponent::SetLocalScale(glm::vec3 newScale)
 	{
 		m_transform.SetLocalScale(newScale);
 	}
 
-	json TransformComponent::Serialize()
-	{
-		Vec3 LocalPosition = m_transform.GetLocalPosition();
-		Vec3 WorldPosition = m_transform.GetWorldPosition();
-		Quat LocalRotation    = m_transform.GetLocalRotation();
-		Quat WorldRotation    = m_transform.GetWorldRotation();
-		Vec3 LocalScale    = m_transform.GetLocalScale();
-		Vec3 WorldScale    = m_transform.GetWorldScale();
+	json TransformComponent::Serialize() {
 		BEGIN_SERIALIZE();
+
+		glm::vec3 LocalPosition = m_transform.GetLocalPosition();
+		glm::vec4 LocalRotation = {
+			m_transform.GetLocalRotation().x,
+			m_transform.GetLocalRotation().y,
+			m_transform.GetLocalRotation().z,
+			m_transform.GetLocalRotation().w
+		};
+		glm::vec3 LocalScale    = m_transform.GetLocalScale();
 		SERIALIZE_VEC3(LocalPosition);
-		SERIALIZE_VEC3(WorldPosition);
-		SERIALIZE_VEC3(LocalRotation);
-		SERIALIZE_VEC3(WorldRotation);
+		j["LocalRotation"] = { {"x", LocalRotation.x}, {"y", LocalRotation.y}, {"z", LocalRotation.z} , {"w", LocalRotation.w} };
 		SERIALIZE_VEC3(LocalScale);
-		SERIALIZE_VEC3(WorldScale);
+
+		//glm::vec3 WorldPosition = m_transform.GetWorldPosition();
+		//glm::quat WorldRotation    = m_transform.GetWorldRotation();
+		//glm::vec3 WorldScale    = m_transform.GetWorldScale();
+		//SERIALIZE_VEC3(WorldPosition);
+		//SERIALIZE_VEC3(WorldRotation);
+		//SERIALIZE_VEC3(WorldScale);
 		END_SERIALIZE();
 	}
 
-	bool TransformComponent::Deserialize(const json& j)
-	{
-		if (j.contains("LocalPosition"))
-		{
-			float x = j["LocalPosition"]["x"];
-			float y = j["LocalPosition"]["y"];
-			float z = j["LocalPosition"]["z"];
-			m_transform.SetLocalPosition(Vec3(x, y, z));
-		}
-		if (j.contains("WorldPosition"))
-		{
-			float x = j["WorldPosition"]["x"];
-			float y = j["WorldPosition"]["y"];
-			float z = j["WorldPosition"]["z"];
-			m_transform.SetWorldPosition(Vec3(x, y, z));
-		}
-		if (j.contains("LocalRotation"))
-		{
-			float x = j["LocalRotation"]["x"];
-			float y = j["LocalRotation"]["y"];
-			float z = j["LocalRotation"]["z"];
-			m_transform.SetLocalRotation(Quat(Vec3(x, y, z)));
-		}
-		if (j.contains("WorldRotation"))
-		{
-			float x = j["WorldRotation"]["x"];
-			float y = j["WorldRotation"]["y"];
-			float z = j["WorldRotation"]["z"];
-			m_transform.SetWorldRotation(Vec3(x, y, z));
-		}
-		return true;
+	void TransformComponent::Deserialize(const json& j) {
+		SetLocalPosition({ j["LocalPosition"]["x"], j["LocalPosition"]["y"], j["LocalPosition"]["z"] });
+		glm::quat loadedRotation(
+			j["LocalRotation"]["w"],
+			j["LocalRotation"]["x"],
+			j["LocalRotation"]["y"],
+			j["LocalRotation"]["z"]
+		);
+		SetLocalRotation(loadedRotation);
+		SetLocalScale(glm::vec3(j["LocalScale"]["x"], j["LocalScale"]["y"], j["LocalScale"]["z"]));
 	}
 }

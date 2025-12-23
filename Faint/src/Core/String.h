@@ -2,7 +2,7 @@
 #include <string>
 #include <vector>
 
-namespace Faint {
+namespace Moon {
 
 	class String {
 	public:

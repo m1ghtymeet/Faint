@@ -1,27 +1,26 @@
 #include "Physics.h"
 #include <iostream>
-#include <entt.hpp>
 
-PxFilterFlags contactReportFilterShader(PxFilterObjectAttributes attributes0, PxFilterData filterData0, PxFilterObjectAttributes attributes1, PxFilterData filterData1, PxPairFlags& pairFlags, const void* constantBlock, PxU32 constantBlockSize) {
-	PX_UNUSED(attributes0);
-	PX_UNUSED(attributes1);
-	PX_UNUSED(constantBlockSize);
-	PX_UNUSED(constantBlock);
-	// generate contacts for all that were not filtered above
-	pairFlags = PxPairFlag::eCONTACT_DEFAULT;
+//PxFilterFlags contactReportFilterShader(PxFilterObjectAttributes attributes0, PxFilterData filterData0, PxFilterObjectAttributes attributes1, PxFilterData filterData1, PxPairFlags& pairFlags, const void* constantBlock, PxU32 constantBlockSize) {
+//	PX_UNUSED(attributes0);
+//	PX_UNUSED(attributes1);
+//	PX_UNUSED(constantBlockSize);
+//	PX_UNUSED(constantBlock);
+//	// generate contacts for all that were not filtered above
+//	pairFlags = PxPairFlag::eCONTACT_DEFAULT;
+//
+//	if (filterData0.word2 == CollisionGroup::NO_COLLISION) {
+//		return PxFilterFlag::eKILL;
+//	}
+//	else if ((filterData0.word2 & filterData1.word1) && (filterData1.word2 & filterData0.word1)) {
+//		pairFlags |= PxPairFlag::eNOTIFY_TOUCH_FOUND;
+//		return PxFilterFlag::eDEFAULT;
+//	}
+//
+//	return PxFilterFlag::eKILL;
+//}
 
-	if (filterData0.word2 == CollisionGroup::NO_COLLISION) {
-		return PxFilterFlag::eKILL;
-	}
-	else if ((filterData0.word2 & filterData1.word1) && (filterData1.word2 & filterData0.word1)) {
-		pairFlags |= PxPairFlag::eNOTIFY_TOUCH_FOUND;
-		return PxFilterFlag::eDEFAULT;
-	}
-
-	return PxFilterFlag::eKILL;
-}
-
-namespace Faint::Physics {
+namespace Moon::Physics {
 
 	class UserErrorCallback : public PxErrorCallback
 	{
@@ -43,7 +42,6 @@ namespace Faint::Physics {
 	PxControllerManager* g_characterControllerManager;
 	std::vector<CollisionReport> g_collisionReports;
 	std::vector<CharacterCollisionReport> g_characterCollisionReports;
-	ContactReportCallback g_contactReportCallback;
 	CCTHitCallback g_cctHitCallback;
 
 	#define PVD_HOST "127.0.0.1"
@@ -58,8 +56,8 @@ namespace Faint::Physics {
 		sceneDesc.gravity = physx::PxVec3(0.0f, -9.81f, 0.0f);
 		g_dispatcher = physx::PxDefaultCpuDispatcherCreate(2);
 		sceneDesc.cpuDispatcher = g_dispatcher;
-		sceneDesc.filterShader = contactReportFilterShader;
-		sceneDesc.simulationEventCallback = &g_contactReportCallback;
+		//sceneDesc.filterShader = contactReportFilterShader;
+		//sceneDesc.simulationEventCallback = &g_contactReportCallback;
 
 		g_scene = g_physics->createScene(sceneDesc);
 		g_scene->setVisualizationParameter(physx::PxVisualizationParameter::eSCALE, 1.0f);
@@ -112,9 +110,9 @@ namespace Faint::Physics {
 	void AddCollisionReport(CollisionReport& collisionReport) {
 		g_collisionReports.push_back(collisionReport);
 
-		auto* entityA = reinterpret_cast<entt::entity*>(collisionReport.rigidA->userData);
-		auto* entityB = reinterpret_cast<entt::entity*>(collisionReport.rigidB->userData);
-		std::cout << "Collision detected between " << (int)*entityA << " and " << (int)*entityB << "\n";
+		//auto* entityA = reinterpret_cast<entt::entity*>(collisionReport.rigidA->userData);
+		//auto* entityB = reinterpret_cast<entt::entity*>(collisionReport.rigidB->userData);
+		//std::cout << "Collision detected between " << (int)*entityA << " and " << (int)*entityB << "\n";
 	}
 
 	void ClearCollisionReports() {
@@ -163,59 +161,59 @@ namespace Faint::Physics {
 		return shape;
 	}
 
-	PxRigidDynamic* CreateRigidDynamic(Transform transform, PhysicsFilterData filterData, PxShape* shape, Transform shapeOffset) {
-		PxQuat quat = GlmQuatToPxQuat(transform.GetLocalRotation());
-		PxTransform trans = PxTransform(PxVec3(transform.GetLocalPosition().x, transform.GetLocalPosition().y, transform.GetLocalPosition().z), quat);
-		PxRigidDynamic* body = Physics::GetPxPhysics()->createRigidDynamic(trans);
-
-		PxFilterData pxFilterData;
-		pxFilterData.word0 = (PxU32)filterData.raycastGroup;
-		pxFilterData.word1 = (PxU32)filterData.collisionGroup;
-		pxFilterData.word2 = (PxU32)filterData.collidesWith;
-		shape->setQueryFilterData(pxFilterData);
-		shape->setSimulationFilterData(pxFilterData);
-		//PxMat44 localShapeMatrix = GlmMat4ToPxMat44(shapeOffset.GetLocalMatrix());
-		//PxTransform localShapeTransform(localShapeMatrix);
-		//shape->setLocalPose(localShapeTransform);
-
-		body->attachShape(*shape);
-		//PxRigidBodyExt::updateMassAndInertia(*body, 10.0f);
-		Physics::GetPxScene()->addActor(*body);
-		return body;
-	}
-
-	PxShape* CreateConvexShapeFromVertexList(std::vector<Vertex>& vertices) {
-		PxPhysics* pxPhysics = GetPxPhysics();
-		PxMaterial* defaultMaterial = GetDefaultMaterial();
-
-		std::vector<PxVec3> pxVertices;
-		for (Vertex& vertex : vertices) {
-			pxVertices.push_back(Physics::GlmVec3toPxVec3(vertex.position));
-		}
-
-		PxConvexMeshDesc convexDesc;
-		convexDesc.points.count = pxVertices.size();
-		convexDesc.points.stride = sizeof(PxVec3);
-		convexDesc.points.data = pxVertices.data();
-		convexDesc.flags = PxConvexFlag::eSHIFT_VERTICES | PxConvexFlag::eCOMPUTE_CONVEX;
-		//  s
-		PxTolerancesScale scale;
-		PxCookingParams params(scale);
-
-		PxDefaultMemoryOutputStream buf;
-		PxConvexMeshCookingResult::Enum result;
-		if (!PxCookConvexMesh(params, convexDesc, buf, &result)) {
-			std::cout << "some convex mesh shit failed\n";
-			return 0;
-		}
-		PxDefaultMemoryInputData input(buf.getData(), buf.getSize());
-		PxConvexMesh* convexMesh = pxPhysics->createConvexMesh(input);
-		PxConvexMeshGeometryFlags flags(~PxConvexMeshGeometryFlag::eTIGHT_BOUNDS);
-		PxConvexMeshGeometry geometry(convexMesh, PxMeshScale(PxVec3(1.0f)), flags);
-
-		PxShape* pxShape = pxPhysics->createShape(geometry, *defaultMaterial);
-		return pxShape;
-	}
+	//PxRigidDynamic* CreateRigidDynamic(Transform transform, PhysicsFilterData filterData, PxShape* shape, Transform shapeOffset) {
+	//	PxQuat quat = GlmQuatToPxQuat(transform.GetLocalRotation());
+	//	PxTransform trans = PxTransform(PxVec3(transform.GetLocalPosition().x, transform.GetLocalPosition().y, transform.GetLocalPosition().z), quat);
+	//	PxRigidDynamic* body = Physics::GetPxPhysics()->createRigidDynamic(trans);
+	//
+	//	PxFilterData pxFilterData;
+	//	pxFilterData.word0 = (PxU32)filterData.raycastGroup;
+	//	pxFilterData.word1 = (PxU32)filterData.collisionGroup;
+	//	pxFilterData.word2 = (PxU32)filterData.collidesWith;
+	//	shape->setQueryFilterData(pxFilterData);
+	//	shape->setSimulationFilterData(pxFilterData);
+	//	//PxMat44 localShapeMatrix = GlmMat4ToPxMat44(shapeOffset.GetLocalMatrix());
+	//	//PxTransform localShapeTransform(localShapeMatrix);
+	//	//shape->setLocalPose(localShapeTransform);
+	//
+	//	body->attachShape(*shape);
+	//	//PxRigidBodyExt::updateMassAndInertia(*body, 10.0f);
+	//	Physics::GetPxScene()->addActor(*body);
+	//	return body;
+	//}
+	//
+	//PxShape* CreateConvexShapeFromVertexList(std::vector<Vertex>& vertices) {
+	//	PxPhysics* pxPhysics = GetPxPhysics();
+	//	PxMaterial* defaultMaterial = GetDefaultMaterial();
+	//
+	//	std::vector<PxVec3> pxVertices;
+	//	for (Vertex& vertex : vertices) {
+	//		pxVertices.push_back(Physics::GlmVec3toPxVec3(vertex.position));
+	//	}
+	//
+	//	PxConvexMeshDesc convexDesc;
+	//	convexDesc.points.count = pxVertices.size();
+	//	convexDesc.points.stride = sizeof(PxVec3);
+	//	convexDesc.points.data = pxVertices.data();
+	//	convexDesc.flags = PxConvexFlag::eSHIFT_VERTICES | PxConvexFlag::eCOMPUTE_CONVEX;
+	//	//  s
+	//	PxTolerancesScale scale;
+	//	PxCookingParams params(scale);
+	//
+	//	PxDefaultMemoryOutputStream buf;
+	//	PxConvexMeshCookingResult::Enum result;
+	//	if (!PxCookConvexMesh(params, convexDesc, buf, &result)) {
+	//		std::cout << "some convex mesh shit failed\n";
+	//		return 0;
+	//	}
+	//	PxDefaultMemoryInputData input(buf.getData(), buf.getSize());
+	//	PxConvexMesh* convexMesh = pxPhysics->createConvexMesh(input);
+	//	PxConvexMeshGeometryFlags flags(~PxConvexMeshGeometryFlag::eTIGHT_BOUNDS);
+	//	PxConvexMeshGeometry geometry(convexMesh, PxMeshScale(PxVec3(1.0f)), flags);
+	//
+	//	PxShape* pxShape = pxPhysics->createShape(geometry, *defaultMaterial);
+	//	return pxShape;
+	//}
 
 	void Physics::Destroy(PxRigidDynamic*& rigidDynamic) {
 		if (rigidDynamic) {
@@ -273,12 +271,12 @@ namespace Faint::Physics {
 
 void CCTHitCallback::onShapeHit(const PxControllerShapeHit& hit) {
 	CharacterCollisionReport report;
-	report.hitNormal = Faint::Physics::PxVec3toGlmVec3(hit.worldNormal);
-	report.worldPosition = Faint::Physics::PxVec3toGlmVec3(hit.worldPos);
+	report.hitNormal = Moon::Physics::PxVec3toGlmVec3(hit.worldNormal);
+	report.worldPosition = Moon::Physics::PxVec3toGlmVec3(hit.worldPos);
 	report.characterController = hit.controller;
 	report.hitShape = hit.shape;
 	report.hitActor = hit.actor;
-	Faint::Physics::g_characterCollisionReports.push_back(report);
+	Moon::Physics::g_characterCollisionReports.push_back(report);
 }
 
 void CCTHitCallback::onControllerHit(const PxControllersHit& hit) {

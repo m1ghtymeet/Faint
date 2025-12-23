@@ -6,6 +6,7 @@
 #include "ManagedObject.hpp"
 
 #include <functional>
+#include <filesystem>
 
 namespace Coral {
 

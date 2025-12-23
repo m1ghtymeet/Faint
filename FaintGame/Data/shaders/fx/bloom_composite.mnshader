@@ -1,0 +1,50 @@
+// ============================================
+// bloom_composite.vert (Optional - برای ترکیب نهایی)
+// ============================================
+#shader vertex
+#version 450 core
+
+layout(location = 0) in vec3 a_position;
+layout(location = 1) in vec2 a_texCoords;
+
+out vec2 v_texCoords;
+
+void main() {
+    v_texCoords = a_texCoords;
+    gl_Position = vec4(a_position, 1.0);
+}
+
+// ============================================
+// bloom_composite.frag
+// ============================================
+#shader fragment
+#version 450 core
+
+in vec2 v_texCoords;
+out vec4 FragColor;
+
+uniform sampler2D u_bloomTexture;
+uniform sampler2D u_dirtMask;
+
+uniform float u_intensity;
+uniform vec3 u_tint;
+uniform bool u_useDirtMask;
+uniform float u_dirtIntensity;
+
+void main() {
+    vec3 bloom = texture(u_bloomTexture, v_texCoords).rgb;
+    
+    // اعمال tint
+    bloom *= u_tint;
+    
+    // Dirt mask effect (لنز کثیف)
+    if (u_useDirtMask) {
+        vec3 dirt = texture(u_dirtMask, v_texCoords).rgb;
+        bloom += bloom * dirt * u_dirtIntensity;
+    }
+    
+    // اعمال intensity نهایی
+    bloom *= u_intensity;
+    
+    FragColor = vec4(bloom, 1.0);
+}

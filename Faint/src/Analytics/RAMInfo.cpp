@@ -1,10 +1,9 @@
-#include "hzpch.h"
 #include "RAMInfo.h"
 
-//#include <Windows.h>
+#include <Windows.h>
 #include <psapi.h>
 
-namespace Faint::Hardware {
+namespace Moon::Hardware {
 
 	void RamInfo::Update() {
 

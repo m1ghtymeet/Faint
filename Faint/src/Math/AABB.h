@@ -1,7 +1,7 @@
 #pragma once
 #include <glm/vec3.hpp>
 
-namespace Faint {
+namespace Moon {
 	struct AABB {
 		AABB() = default;
 		AABB(glm::vec3 min, glm::vec3 max);

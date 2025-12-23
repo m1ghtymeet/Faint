@@ -1,0 +1,257 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Core">
+      <UniqueIdentifier>{2EB4837C-1AEB-840D-C3D7-6A10AFED000F}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Helpers">
+      <UniqueIdentifier>{D8389B9D-4418-1A39-4D30-A50FB98E809A}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Misc">
+      <UniqueIdentifier>{9116897C-7D4D-8A0D-263A-70101250060F}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Panels">
+      <UniqueIdentifier>{A80D95C9-94AF-BF9F-7D6A-D3F369AB46F0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Renderer">
+      <UniqueIdentifier>{7CCE658F-689B-C09A-91B4-AE427DE0F528}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="UI">
+      <UniqueIdentifier>{83755900-6F01-880B-D8AF-880BC45A880B}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="UI\Panels">
+      <UniqueIdentifier>{75F4DAE1-E15E-8F58-2A9D-40FE96466DAD}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="UI\Plugins">
+      <UniqueIdentifier>{54F96137-40B1-A384-A9B8-7CE0958F3E75}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="UI\Widgets">
+      <UniqueIdentifier>{E977064A-D52F-4897-3E37-21F32A0EE387}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="UI\Widgets\Buttons">
+      <UniqueIdentifier>{C73ECA1F-B322-8B75-1C83-85C8088675F7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Windows">
+      <UniqueIdentifier>{5032B729-BC11-36C5-C529-C19B31889C26}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\Core\Application.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Core\Context.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Core\EditorActions.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Core\PanelsManager.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Core\ProjectWindow.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\EditorCamera.h" />
+    <ClInclude Include="src\EditorLayer.h" />
+    <ClInclude Include="src\Helpers\ImGuiHelper.h">
+      <Filter>Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Helpers\PopupHelper.h">
+      <Filter>Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Misc\IconGenerator.h">
+      <Filter>Misc</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Misc\ShaderTemplateManager.h">
+      <Filter>Misc</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Panels\AssetView.h">
+      <Filter>Panels</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Panels\Console.h">
+      <Filter>Panels</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Panels\FileSystemUI.h">
+      <Filter>Panels</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Panels\FrameInfo.h">
+      <Filter>Panels</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Panels\HardwareInfo.h">
+      <Filter>Panels</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Panels\MaterialEditor.h">
+      <Filter>Panels</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Panels\Menubar.h">
+      <Filter>Panels</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Panels\ProjectSettings.h">
+      <Filter>Panels</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Panels\SceneHierarchyPanel.h">
+      <Filter>Panels</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Panels\ScriptEditor.h">
+      <Filter>Panels</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Panels\ShaderGraph.h">
+      <Filter>Panels</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Renderer\GL_DebugPass.h">
+      <Filter>Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Renderer\Types.h">
+      <Filter>Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\UI\Canvas.h">
+      <Filter>UI</Filter>
+    </ClInclude>
+    <ClInclude Include="src\UI\Panels\APanel.h">
+      <Filter>UI\Panels</Filter>
+    </ClInclude>
+    <ClInclude Include="src\UI\Panels\APanelTransformable.h">
+      <Filter>UI\Panels</Filter>
+    </ClInclude>
+    <ClInclude Include="src\UI\Panels\AView.h">
+      <Filter>UI\Panels</Filter>
+    </ClInclude>
+    <ClInclude Include="src\UI\Panels\AViewControllable.h">
+      <Filter>UI\Panels</Filter>
+    </ClInclude>
+    <ClInclude Include="src\UI\Panels\PanelMenuBar.h">
+      <Filter>UI\Panels</Filter>
+    </ClInclude>
+    <ClInclude Include="src\UI\Panels\PanelUndecorated.h">
+      <Filter>UI\Panels</Filter>
+    </ClInclude>
+    <ClInclude Include="src\UI\Panels\PanelWindow.h">
+      <Filter>UI\Panels</Filter>
+    </ClInclude>
+    <ClInclude Include="src\UI\Plugins\IPlugin.h">
+      <Filter>UI\Plugins</Filter>
+    </ClInclude>
+    <ClInclude Include="src\UI\Plugins\Pluginable.h">
+      <Filter>UI\Plugins</Filter>
+    </ClInclude>
+    <ClInclude Include="src\UI\Widgets\AWidget.h">
+      <Filter>UI\Widgets</Filter>
+    </ClInclude>
+    <ClInclude Include="src\UI\Widgets\Buttons\AButton.h">
+      <Filter>UI\Widgets\Buttons</Filter>
+    </ClInclude>
+    <ClInclude Include="src\UI\Widgets\Buttons\Button.h">
+      <Filter>UI\Widgets\Buttons</Filter>
+    </ClInclude>
+    <ClInclude Include="src\UI\Widgets\WidgetContainer.h">
+      <Filter>UI\Widgets</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Windows\NewProjectWindow.h">
+      <Filter>Windows</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\Core\Application.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Core\Context.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Core\EditorActions.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Core\PanelsManager.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Core\ProjectWindow.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="src\EditorCamera.cpp" />
+    <ClCompile Include="src\EditorLayer.cpp" />
+    <ClCompile Include="src\Helpers\PopupHelper.cpp">
+      <Filter>Helpers</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Main.cpp" />
+    <ClCompile Include="src\Misc\IconGenerator.cpp">
+      <Filter>Misc</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Misc\ShaderTemplateManager.cpp">
+      <Filter>Misc</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Panels\AssetView.cpp">
+      <Filter>Panels</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Panels\Console.cpp">
+      <Filter>Panels</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Panels\FileSystemUI.cpp">
+      <Filter>Panels</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Panels\FrameInfo.cpp">
+      <Filter>Panels</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Panels\HardwareInfo.cpp">
+      <Filter>Panels</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Panels\MaterialEditor.cpp">
+      <Filter>Panels</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Panels\Menubar.cpp">
+      <Filter>Panels</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Panels\ProjectSettings.cpp">
+      <Filter>Panels</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Panels\SceneHierarchyPanel.cpp">
+      <Filter>Panels</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Panels\ScriptEditor.cpp">
+      <Filter>Panels</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Panels\ShaderGraph.cpp">
+      <Filter>Panels</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Renderer\GL_DebugPass.cpp">
+      <Filter>Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\UI\Canvas.cpp">
+      <Filter>UI</Filter>
+    </ClCompile>
+    <ClCompile Include="src\UI\Panels\APanel.cpp">
+      <Filter>UI\Panels</Filter>
+    </ClCompile>
+    <ClCompile Include="src\UI\Panels\APanelTransformable.cpp">
+      <Filter>UI\Panels</Filter>
+    </ClCompile>
+    <ClCompile Include="src\UI\Panels\AView.cpp">
+      <Filter>UI\Panels</Filter>
+    </ClCompile>
+    <ClCompile Include="src\UI\Panels\AViewControllable.cpp">
+      <Filter>UI\Panels</Filter>
+    </ClCompile>
+    <ClCompile Include="src\UI\Panels\PanelMenuBar.cpp">
+      <Filter>UI\Panels</Filter>
+    </ClCompile>
+    <ClCompile Include="src\UI\Panels\PanelUndecorated.cpp">
+      <Filter>UI\Panels</Filter>
+    </ClCompile>
+    <ClCompile Include="src\UI\Panels\PanelWindow.cpp">
+      <Filter>UI\Panels</Filter>
+    </ClCompile>
+    <ClCompile Include="src\UI\Widgets\AWidget.cpp">
+      <Filter>UI\Widgets</Filter>
+    </ClCompile>
+    <ClCompile Include="src\UI\Widgets\Buttons\AButton.cpp">
+      <Filter>UI\Widgets\Buttons</Filter>
+    </ClCompile>
+    <ClCompile Include="src\UI\Widgets\Buttons\Button.cpp">
+      <Filter>UI\Widgets\Buttons</Filter>
+    </ClCompile>
+    <ClCompile Include="src\UI\Widgets\WidgetContainer.cpp">
+      <Filter>UI\Widgets</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Windows\NewProjectWindow.cpp">
+      <Filter>Windows</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

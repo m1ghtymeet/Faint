@@ -1,0 +1,99 @@
+#shader vertex
+#version 460 core
+layout (location = 0) in vec3 aPos;
+layout (location = 1) in vec2 aTexCoord;
+layout (location = 2) in vec3 aNormal;
+layout (location = 3) in vec3 aTangent;
+
+out vec2 TexCoord;
+out flat int entityID;
+out vec4 WorldPos;
+out vec3 Normal;
+out vec3 Tangent;
+out vec3 BiTangent;
+
+layout(std430, binding = 0) buffer Camera {
+	mat4 u_projection;
+	mat4 u_view;
+};
+
+uniform mat4 u_modelMatrix;
+
+void main() {
+	TexCoord = aTexCoord;
+	
+	mat4 inverseModelMatrix = inverse(u_modelMatrix);
+	mat4 normalMatrix = transpose(inverseModelMatrix);
+	
+	Normal = normalize(u_modelMatrix * vec4(aNormal, 0.0f)).xyz;
+	Tangent = normalize(u_modelMatrix * vec4(aTangent, 0.0f)).xyz;
+	BiTangent = normalize(cross(Normal, Tangent));
+	
+	WorldPos = u_modelMatrix * vec4(aPos, 1.0f);
+	gl_Position = u_projection * u_view * WorldPos;
+}
+#shader fragment
+#version 460 core
+layout(location = 0) out vec4 AlbedoOut;
+layout(location = 1) out vec4 NormalOut;
+layout(location = 2) out vec4 RMAOut;
+layout(location = 3) out vec4 WorldSpaceOut;
+layout(location = 4) out vec4 ScreenSpaceOut;
+layout(location = 5) out int EntityOut;
+
+in vec2 TexCoord;
+in vec4 WorldPos;
+in vec3 Normal;
+in vec3 Tangent;
+in vec3 BiTangent;
+in vec3 viewPos;
+
+layout (binding = 0) uniform sampler2D baseColorTexture;
+layout (binding = 1) uniform sampler2D normalTexture;
+layout (binding = 2) uniform sampler2D specularTexture;
+
+uniform int u_entityID;
+
+uniform int u_HasAlbedo = 0;
+uniform int u_HasNormal = 0;
+uniform int u_HasSpecular = 0;
+uniform int u_HasEmissive = 0;
+uniform float u_MetalnessValue = 0;
+uniform float u_RoughnessValue = 0;
+uniform vec3 u_EmissiveColor = vec3(0.0);
+uniform float u_EmissiveIntensity = 1.0;
+
+uniform vec3 u_AlbedoColor = vec3(1, 1, 1);
+uniform vec2 u_Tiling = vec2(1.0f, 1.0f);
+uniform float u_Transparent = 1.0f;
+
+layout(std430, binding = 0) buffer Camera {
+	mat4 u_projection;
+	mat4 u_view;
+};
+
+void main() {
+	vec4 baseColor = vec4(u_AlbedoColor, 1);
+	if (u_HasAlbedo == 1) {
+		baseColor = texture(baseColorTexture, TexCoord * u_Tiling);
+		if (baseColor.a < 0.1f) { discard; }
+	}
+	AlbedoOut = baseColor;
+	AlbedoOut.a = u_Transparent;
+	
+	vec3 normal = Normal;
+	if (u_HasNormal == 1) {
+		mat3 TBN = mat3(Tangent, BiTangent, Normal);
+		vec3 normalMap = texture(normalTexture, TexCoord).rgb * 2.0 - 1.0;
+		normal = normalize(TBN * normalMap);
+	}
+	NormalOut = vec4(normal, u_Transparent);
+	
+	float metalnessValue = u_RoughnessValue;
+	if (u_HasSpecular == 1)
+		metalnessValue = texture(specularTexture, TexCoord).r;
+	RMAOut = vec4(u_RoughnessValue, metalnessValue, 0, u_Transparent);
+	WorldSpaceOut = WorldPos;
+	ScreenSpaceOut = u_view * WorldPos;
+	EntityOut = u_entityID;
+}

@@ -3,9 +3,11 @@
 #include "PxPhysicsAPI.h"
 #include "geometry/PxGeometryHelpers.h"
 #pragma warning(pop)
-//#include "Physics.h"
 #include <glm/vec3.hpp>
+#include <Physics/PhysicsEngine.h>
+#include <Core/GlobalLocator.h>
 #include <iostream>
+#include <algorithm>
 
 using namespace physx;
 
@@ -29,24 +31,24 @@ public:
     void onObstacleHit(const PxControllerObstacleHit& hit);
 };
 
-class ContactReportCallback : public PxSimulationEventCallback {
-public:
-    void onConstraintBreak(PxConstraintInfo* constraints, PxU32 count) { PX_UNUSED(constraints); PX_UNUSED(count); }
-    void onWake(PxActor** actors, PxU32 count) { PX_UNUSED(actors); PX_UNUSED(count); }
-    void onSleep(PxActor** actors, PxU32 count) { PX_UNUSED(actors); PX_UNUSED(count); }
-    void onTrigger(PxTriggerPair* pairs, PxU32 count) { PX_UNUSED(pairs); PX_UNUSED(count); }
-    void onAdvance(const PxRigidBody* const*, const PxTransform*, const PxU32) {}
-
-    void onContact(const PxContactPairHeader& pairHeader, const PxContactPair* /*pairs*/, PxU32 /*nbPairs*/) {
-        if (!pairHeader.actors[0] || !pairHeader.actors[1]) {
-            return;
-        }
-        CollisionReport report;
-        report.rigidA = pairHeader.actors[0];
-        report.rigidB = pairHeader.actors[1];
-        auto entityA = reinterpret_cast<uintptr_t>(report.rigidA->userData);
-        auto entityB = reinterpret_cast<uintptr_t>(report.rigidB->userData);
-        std::cout << "Collision detected between " << entityA << " and " << entityB << "\n";
-        //Faint::Physics::AddCollisionReport(report);
-    }
-};
+//class ContactReportCallback : public PxSimulationEventCallback {
+//public:
+//    void onConstraintBreak(PxConstraintInfo* constraints, PxU32 count) { PX_UNUSED(constraints); PX_UNUSED(count); }
+//    void onWake(PxActor** actors, PxU32 count) { PX_UNUSED(actors); PX_UNUSED(count); }
+//    void onSleep(PxActor** actors, PxU32 count) { PX_UNUSED(actors); PX_UNUSED(count); }
+//    void onTrigger(PxTriggerPair* pairs, PxU32 count) { PX_UNUSED(pairs); PX_UNUSED(count); }
+//    void onAdvance(const PxRigidBody* const*, const PxTransform*, const PxU32) {}
+//
+//    void onContact(const PxContactPairHeader& pairHeader, const PxContactPair* /*pairs*/, PxU32 /*nbPairs*/) {
+//        if (!pairHeader.actors[0] || !pairHeader.actors[1]) {
+//            return;
+//        }
+//        CollisionReport report;
+//        report.rigidA = pairHeader.actors[0];
+//        report.rigidB = pairHeader.actors[1];
+//        if (!report.rigidA || !report.rigidB)
+//            return;
+//        auto key = std::minmax(report.rigidA, report.rigidB);
+//        //auto it = FTSERVICE(Moon::Physics::PhysicsEngine)
+//    }
+//};

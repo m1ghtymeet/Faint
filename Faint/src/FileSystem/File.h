@@ -1,61 +1,74 @@
 #pragma once
+#include <string>
+#include <string_view>
+#include <filesystem>
+#include <chrono>
 
-#include "Core/Base.h"
-
-namespace Faint {
-	
-	enum class FileType
-	{
-		Unknown,
-		Image,
-		Material,
-		Mesh,
-		MeshAsset,
-		Script,
-		NetScript,
-		Project,
-		Prefab,
-		Scene,
-		Wad,
-		Map,
-		Assembly,
-		Solution,
-		Audio,
-		UI,
-		CSS,
-		Sky,
-		Env
-	};
-
+namespace Moon {
 	class Directory;
+	enum class FileType {
+		UNKNOWN,
+		TEXTURE,
+		MATERIAL,
+		MESH,
+		MODEL,
+		FONT,
+		SCRIPT,
+		PROJECT,
+		PREFAB,
+		SCENE,
+		AUDIO,
+		FX
+	};
 
 	class File {
 	public:
-		File(Ref<Directory> parentDir, const std::string& absolutePath, const std::string& name, const std::string& type);
+		File(std::weak_ptr<Directory> parentDir,
+			const std::string& absolutePath);
 		~File() = default;
 
-		std::string GetName() const { return name; }
-		std::string GetExtension() const { return type; }
-		std::string GetRelativePath() const { return relativePath; }
-		std::string GetAbsolutePath() const { return absolutePath; }
-		Ref<Directory> GetParent() const { return parent; }
+		// Non-copyable, movable
+		File(const File&) = delete;
+		File& operator=(const File&) = delete;
+		File(File&&) noexcept = default;
+		File& operator=(File&&) noexcept = default;
 
-		bool GetHasBeenModified() const { return modified; }
-		void SetHasBeenModified(bool value) { modified = value; }
+		// Getters
+		std::string GetName() const noexcept { return m_name; };
+		std::string GetExtension() const noexcept { return m_extension; };
+		const std::filesystem::path& GetAbsolutePath() const noexcept { return m_absolutePath; }
+		const std::filesystem::path& GetFullPath() const noexcept { return m_absolutePath; }
+		std::string GetRelativePath() const;
+		std::weak_ptr<Directory> GetParent() const noexcept { return m_parent; }
 
-		FileType GetFileType() const;
-		std::string GetFileTypeAsString() const;
+		// File info
+		FileType GetFileType() const noexcept { return m_fileType; };
+		std::string_view GetFileTypeAsString() const noexcept;
 
-		std::string Read() const;
-		bool Exist() const;
+		// File system operations
+		bool Exists() const noexcept;
+		std::string ReadAllText() const;
+		std::vector<uint8_t> ReadAllBytes() const;
+
+		// Modification tracking
+		bool IsModified() const;
+		void MarkModified() noexcept { m_lastKnownWriteTime = {}; }
+		std::filesystem::file_time_type GetLastWriteTime() const;
 
 	private:
-		std::string type;
-		std::string name;
-		std::string relativePath;
-		std::string absolutePath;
-		bool modified;
+		void DetectFileType();
+		void CachePathInfo();
 
-		Ref<Directory> parent;
+	private:
+		std::filesystem::path m_absolutePath;
+		std::weak_ptr<Directory> m_parent;
+
+		std::string m_name;
+		std::string m_extension;
+
+		mutable std::string m_cachedRelativePath;
+		mutable std::optional<std::filesystem::file_time_type> m_lastKnownWriteTime;
+
+		FileType m_fileType = FileType::UNKNOWN;
 	};
 }

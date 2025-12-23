@@ -2,7 +2,7 @@
 
 #include <Windows.h>
 
-Faint::Hardware::GPUInfo::GPUInfo()
+Moon::Hardware::GPUInfo::GPUInfo()
 {
 	#if _WIN32 || _WIN64
 		#if _WIN64
@@ -40,7 +40,7 @@ Faint::Hardware::GPUInfo::GPUInfo()
 	}
 }
 
-float Faint::Hardware::GPUInfo::CalculateGPULoad() {
+float Moon::Hardware::GPUInfo::CalculateGPULoad() {
 	if (!m_NvAPIReady || m_gpuCount == 0)
 		return 0.0f;
 

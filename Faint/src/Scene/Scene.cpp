@@ -2,531 +2,333 @@
 #include <algorithm>
 #include <string>
 
-#include "Entity.h"
-
-#include "Renderer/SceneRenderer.h"
-#include "Scripting/ScriptingEngineNet.h"
-#include "Threading/JobSystem.h"
-#include "FileSystem/File.h"
+#include <Debug/Log.h>
+#include <FileSystem/FileSystem.h>
 
 #include "AssetManagment/Project.h"
 
 #include "Components.h"
-#include "Engine.h"
+#include <Core/Window.h>
+#include "Scene.h"
 
-#include "Components/PrefabComponent.h"
-#include "Systems/UISystem.h"
-#include "Systems/AudioSystem.h"
+Moon::Scene::Scene() {
+}
 
-namespace Faint {
+Moon::Scene::~Scene() {
+	//std::for_each(m_entities.begin(), m_entities.end(), [](Entity*& element) {
+	//	delete element;
+	//});
+	m_entities.clear();
+}
 
-	std::vector<CompilationError> errors;
+void Moon::Scene::AddDefaultCamera() {
+	auto& camera = CreateEntity("Main Camera");
+	camera.AddComponent<CameraComponent>();
+	camera.transform->SetLocalPosition({ 0.0f, 3.0f, 8.0f });
+	camera.transform->SetLocalRotation(glm::quat({ 20.0f, 180.0f, 0.0f }));
+}
 
-	Scene::Scene() {
-		m_systems = std::vector<Ref<System>>();
-		
-		m_EditorCamera = CreateRef<EditorCamera>(30.0f, 1.7798f, 0.1f, 500.0f);
+void Moon::Scene::AddDefaultLights() {
+	auto& pointLight = CreateEntity("Point Light");
+	pointLight.AddComponent<LightComponent>();
+	pointLight.transform->SetLocalPosition({ 0.0f, 5.0f, 0.0f });
+}
 
-		m_ScriptingSystem = CreateRef<ScriptingSystem>(this);
+void Moon::Scene::Play() {
 
-		// Adding systems - Order is important
-		m_systems.push_back(CreateRef<PhysicsSystem>(this));
-		m_systems.push_back(CreateRef<UISystem>(this));
-		m_systems.push_back(m_ScriptingSystem);
-		m_systems.push_back(CreateRef<TransformSystem>(this));
-		m_systems.push_back(CreateRef<AudioSystem>(this));
-	}
+	m_isPlaying = true;
 
-	Scene::~Scene() {
+	/* Wake up gameobjects to allow them to react to OnEnable, OnDisable and OnDestroy */
+	std::for_each(m_entities.begin(), m_entities.end(), [](const std::unique_ptr<Entity>& p_element) {  });
 
-	}
+	std::for_each(m_entities.begin(), m_entities.end(), [](const std::unique_ptr<Entity>& p_element) { if (p_element->IsActive()) p_element->OnAwake(); });
+	std::for_each(m_entities.begin(), m_entities.end(), [](const std::unique_ptr<Entity>& p_element) { if (p_element->IsActive()) p_element->OnEnable(); });
+	std::for_each(m_entities.begin(), m_entities.end(), [](const std::unique_ptr<Entity>& p_element) { p_element->OnStart(); });
+}
 
-	void Scene::Play() {
-		m_isPlaying = true;
+bool Moon::Scene::IsPlaying() const {
+	return m_isPlaying;
+}
 
-		/* Wake up gameobjects to allow them to react to OnEnable, OnDisable and OnDestroy */
-		std::for_each(m_entities.begin(), m_entities.end(), [](Entity* p_element) {  });
+void Moon::Scene::Update(float p_deltaTime) {
+	// ZoneScoped
 
-		std::for_each(m_entities.begin(), m_entities.end(), [](Entity* p_element) { if (p_element->IsActive()) p_element->OnAwake(); });
-		//std::for_each(m_entities.begin(), m_entities.end(), [](Entity* p_element) { if (p_element->IsActive()) p_element->OnEnable(); });
-		//std::for_each(m_entities.begin(), m_entities.end(), [](Entity* p_element) { if (p_element->IsActive()) p_element->OnStart(); });
-	}
+	auto& entities = m_entities;
+	std::for_each(entities.begin(), entities.end(), std::bind(std::mem_fn(&Entity::OnUpdate), std::placeholders::_1, p_deltaTime));
+}
 
-	bool Scene::OnInit() {
+void Moon::Scene::FixedUpdate(float p_deltaTime) {
+	// ZoneScoped
+	//auto entities = m_entities;
+	//std::for_each(entities.begin(), entities.end(), std::bind(std::mem_fn(&Entity::), std::placeholders::_1, p_deltaTime));
+}
 
-		for (auto& system : m_systems) {
-			if (!system->Init()) {
-				HZ_CORE_WARN("Something don't want to Initialize!!");
-				return false;
-			}
-		}
-
-		return true;
-	}
-
-	void Scene::OnExit()
-	{
-		for (auto& system : m_systems) {
-			system->Exit();
-		}
-	}
-
-	template<typename... Component>
-	static void CopyComponent(entt::registry& dst, entt::registry& src, const std::unordered_map<UUID, entt::entity>& enttMap) {
-		([&]()
-			{
-				//auto view = src.view<Component>();
-				for (auto srcEntity : Engine::GetCurrentScene()->GetAllEntities()) {
-					entt::entity dstEntity = enttMap.at(srcEntity.GetID());
-
-					auto& srcComponent = src.get<Component>(srcEntity);
-					dst.emplace_or_replace<Component>(dstEntity, srcComponent);
-				}
-			}(), ...);
-	}
-
-	template<typename... Component>
-	static void CopyComponent(ComponentGroup<Component...>, entt::registry& dst, entt::registry& src, const std::unordered_map<UUID, entt::entity>& enttMap) {
-		CopyComponent<Component...>(dst, src, enttMap);
-	}
-
-	//template<typename... Component>
-	//static void CopyComponentIfExists(Entity dst, Entity src) {
-	//	([&]()
-	//		{
-	//			if (src.HasComponent<Component>())
-	//				dst.AddOrReplaceComponent<Component>(src.GetComponent<Component>());
-	//		}(), ...);
-	//}
-
-	//template<typename... Component>
-	//static void CopyComponentIfExists(ComponentGroup<Component...>, Entity dst, Entity src) {
-	//	CopyComponentIfExists<Component...>(dst, src);
-	//}
-
-	void Scene::Update(Time time)
-	{
-		if (!Engine::IsPlayMode()) {
-			
-			// ...
-		}
-
-		for (auto& system : m_systems)
-			system->Update(time);
-
-		SceneRenderer::Update(time);
-	}
-
-	void Scene::EditorUpdate(Time time)
-	{
-		m_EditorCamera->OnUpdate(time);
-	}
-
-	void Scene::FixedUpdate(Time time)
-	{
-		for (auto& system : m_systems)
-			system->FixedUpdate(time);
-	}
-
-	void Scene::Draw() {
-		Ref<Camera> cam = nullptr;
-		const auto& view = _registry.view<TransformComponent, CameraComponent>();
-		for (const auto& e : view)
-		{
-			auto [transform, camera] = view.get<TransformComponent, CameraComponent>(e);
-			cam = camera.camera;
-
-			cam->SetPosition(transform.GetGlobalPosition());
-		}
-		//if (!cam)
-		//	return;
-
-		SceneRenderer::BeginRenderScene(cam->GetProjectionMatrix(), cam->GetViewMatrix(), cam->GetPosition());
-		SceneRenderer::RenderScene(*this);
-	}
-
-	void Scene::Draw(const Matrix4& projection, const Matrix4& view) {
-		SceneRenderer::BeginRenderScene(m_EditorCamera->GetProjectionMatrix(), m_EditorCamera->GetViewMatrix(), m_EditorCamera->GetPosition());
-		SceneRenderer::RenderScene(*this);
-	}
-
-	Ref<Scene> Scene::Save() {
-		
-
-		return Ref<Scene>();
-	}
-
-	std::string Scene::GetUniqueEntityName(const std::string& name) {
-		std::string entityName;
-		if (!EntityExists(name)) {
-			return name;
-		}
-
-		// Try to generate a unique name
-		for (uint32_t i = 1; i < 4096; i++) {
-			const std::string& entityEnumName = name + " (" + std::to_string(i) + ")";
-			Entity* entityId = GetEntityByName(entityEnumName);
-			if (!entityId) {
-				return entityEnumName;
-			}
-		}
-
-		// We ran out of names
-		HZ_CORE_WARN("Failed to create unique entity name. Limit reached with name: " + name);
+std::string Moon::Scene::GetUniqueEntityName(const std::string& name) {
+	std::string entityName;
+	if (!EntityExists(name)) {
 		return name;
 	}
 
-	Entity& Scene::CreateEntity(std::string name) {
-		return CreateEntity(name, "");
+	// Try to generate a unique name
+	for (uint32_t i = 1; i < 4096; i++) {
+		const std::string& entityEnumName = name + " (" + std::to_string(i) + ")";
+		Entity* entityId = GetEntityByName(entityEnumName);
+		if (!entityId) {
+			return entityEnumName;
+		}
 	}
 
-	Entity& Scene::CreateEntity(const std::string& p_name, const std::string& p_tag) {
-		std::string entityName = GetUniqueEntityName(p_name);
+	// We ran out of names
+	HZ_CORE_WARN("Failed to create unique entity name. Limit reached with name: " + name);
+	return name;
+}
 
-		m_entities.push_back(new Entity(m_availableID++, entityName, "", m_isPlaying));
-		Entity& instance = *m_entities.back();
-		instance.AddComponent<TransformComponent>();
-		//instance.ComponentAddedEvent += std::bind(&)
-		if (m_isPlaying) {
-			if (instance.IsActive()) {
-				instance.SetSleeping(false);
-				instance.OnAwake();
-			}
+Moon::Entity& Moon::Scene::CreateEntity(std::string name) {
+	return CreateEntity(name, "");
+}
+
+Moon::Entity& Moon::Scene::CreateEntity(const std::string& p_name, const std::string& p_tag) {
+	std::string entityName = GetUniqueEntityName(p_name);
+
+	m_entities.push_back(std::make_unique<Entity>(m_availableID++, entityName, p_tag, m_isPlaying));
+	Entity& instance = *m_entities.back();
+	instance.ComponentAddedEvent += std::bind(&Scene::OnComponentAdded, this, std::placeholders::_1);
+	instance.ComponentRemovedEvent += std::bind(&Scene::OnComponentRemoved, this, std::placeholders::_1);
+	if (m_isPlaying) {
+		if (instance.IsActive()) {
+			instance.SetSleeping(false);
+			instance.OnAwake();
+			instance.OnEnable();
+			instance.OnStart();
 		}
-
-		m_EntityIDMap[instance.GetID()] = &instance;
-		m_EntityNameMap[entityName] = &instance;
-
-		return instance;
 	}
 
-	void Scene::DestroyEntity(Entity& p_entity) {
+	m_EntityIDMap[instance.GetID()] = &instance;
+	m_EntityNameMap[entityName] = &instance;
 
+	return instance;
+}
 
-		// Remove from ID to Entity cache
-		if (m_EntityIDMap.find(p_entity.GetID()) != m_EntityIDMap.end()) {
-			m_EntityIDMap.erase(p_entity.GetID());
+bool Moon::Scene::DestroyEntity(Entity& p_entity) {
+	auto found = std::find_if(
+		m_entities.begin(),
+		m_entities.end(),
+		[&p_entity](const std::unique_ptr<Entity>& element) {
+			return element.get() == &p_entity;
 		}
-		if (m_EntityNameMap.find(p_entity.GetName()) != m_EntityNameMap.end()) {
-			m_EntityNameMap.erase(p_entity.GetName());
+	);
+	if (found == m_entities.end())
+		return false;
+
+	auto& children = p_entity.GetChildren();
+	while (!children.empty()) {
+		Entity* child = children.back();
+		DestroyEntity(*child);
+	}
+
+	/*if (Entity* parent = p_entity.GetParent()) {
+		auto& parentChildren = parent->GetChildren();
+		parentChildren.erase(
+			std::remove_if(parentChildren.begin(), parentChildren.end(), [&p_entity](Entity* e) {
+				return e == &p_entity;
+			}), parentChildren.end()
+		);
+	}*/
+
+	// Remove from ID to Entity cache
+	m_EntityIDMap.erase(p_entity.GetID());
+	m_EntityNameMap.erase(p_entity.GetName());
+
+	m_entities.erase(found);
+
+	return true;
+}
+
+void Moon::Scene::CollectGarbages() {
+	m_entities.erase(std::remove_if(m_entities.begin(), m_entities.end(),
+		[](const std::unique_ptr<Entity>& element) {
+			return !element->IsActive();
+		}),
+		m_entities.end()
+	);
+}
+
+bool Moon::Scene::EntityExists(const std::string& name) {
+	return m_EntityNameMap.find(name) != m_EntityNameMap.end();
+}
+
+std::vector<std::unique_ptr<Moon::Entity>>& Moon::Scene::GetAllEntities() {
+	return m_entities;
+}
+
+const std::vector<std::unique_ptr<Moon::Entity>>& Moon::Scene::GetAllEntities() const {
+	return m_entities;
+}
+
+Moon::Entity* Moon::Scene::GetEntityByName(const std::string& p_name) const {
+	auto it = m_EntityNameMap.find(p_name);
+	if (it != m_EntityNameMap.end())
+		return it->second;
+	return nullptr;
+}
+
+Moon::Entity* Moon::Scene::GetEntityByTag(const std::string& p_tag) const {
+	auto result = std::find_if(m_entities.begin(), m_entities.end(), [&p_tag](const std::unique_ptr<Entity>& e) {
+		return e->GetTag() == p_tag;
+	});
+	if (result != m_entities.end())
+		return result->get();
+	else
+		return nullptr;
+}
+
+Moon::Entity* Moon::Scene::GetEntityByID(int64_t p_id) const {
+	auto it = m_EntityIDMap.find(p_id);
+	if (it != m_EntityIDMap.end())
+		return it->second;
+	return nullptr;
+}
+
+Moon::CameraComponent* Moon::Scene::FindMainCamera() const {
+	for (CameraComponent* camera : m_fastAccessComponents.cameras) {
+		if (camera->owner.IsActive()) {
+			return camera;
 		}
+	}
+	return nullptr;
+}
+
+void Moon::Scene::OnComponentAdded(AComponent& p_component) {
+
+	if (auto result = dynamic_cast<MeshRendererComponent*>(&p_component))
+		m_fastAccessComponents.modelRenderers.push_back(result);
+	if (auto result = dynamic_cast<SkinnedMeshRendererComp*>(&p_component))
+		m_fastAccessComponents.skinnedModelRenderers.push_back(result);
+	if (auto result = dynamic_cast<CameraComponent*>(&p_component))
+		m_fastAccessComponents.cameras.push_back(result);
+	if (auto result = dynamic_cast<LightComponent*>(&p_component))
+		m_fastAccessComponents.lights.push_back(result);
+	if (auto result = dynamic_cast<AudioComponent*>(&p_component))
+		m_fastAccessComponents.audios.push_back(result);
+	if (auto result = dynamic_cast<Text2DComponent*>(&p_component))
+		m_fastAccessComponents.texts.push_back(result);
+	if (auto result = dynamic_cast<UI::WidgetComponent*>(&p_component))
+		m_fastAccessComponents.widgets.push_back(result);
+}
+
+void Moon::Scene::OnComponentRemoved(AComponent& p_component) {
+
+	if (auto result = dynamic_cast<CameraComponent*>(&p_component))
+		m_fastAccessComponents.cameras.erase(std::remove(m_fastAccessComponents.cameras.begin(), m_fastAccessComponents.cameras.end(), result), m_fastAccessComponents.cameras.end());
+	if (auto result = dynamic_cast<MeshRendererComponent*>(&p_component))
+		m_fastAccessComponents.modelRenderers.erase(std::remove(m_fastAccessComponents.modelRenderers.begin(), m_fastAccessComponents.modelRenderers.end(), result), m_fastAccessComponents.modelRenderers.end());
+	if (auto result = dynamic_cast<SkinnedMeshRendererComp*>(&p_component))
+		m_fastAccessComponents.skinnedModelRenderers.erase(std::remove(m_fastAccessComponents.skinnedModelRenderers.begin(), m_fastAccessComponents.skinnedModelRenderers.end(), result), m_fastAccessComponents.skinnedModelRenderers.end());
+	if (auto result = dynamic_cast<LightComponent*>(&p_component))
+		m_fastAccessComponents.lights.erase(std::remove(m_fastAccessComponents.lights.begin(), m_fastAccessComponents.lights.end(), result), m_fastAccessComponents.lights.end());
+	if (auto result = dynamic_cast<AudioComponent*>(&p_component))
+		m_fastAccessComponents.audios.erase(std::remove(m_fastAccessComponents.audios.begin(), m_fastAccessComponents.audios.end(), result), m_fastAccessComponents.audios.end());
+	if (auto result = dynamic_cast<Text2DComponent*>(&p_component))
+		m_fastAccessComponents.texts.erase(std::remove(m_fastAccessComponents.texts.begin(), m_fastAccessComponents.texts.end(), result), m_fastAccessComponents.texts.end());
+	if (auto result = dynamic_cast<UI::WidgetComponent*>(&p_component))
+		m_fastAccessComponents.widgets.erase(std::remove(m_fastAccessComponents.widgets.begin(), m_fastAccessComponents.widgets.end(), result), m_fastAccessComponents.widgets.end());
+}
+
+const Moon::Scene::FastAccessComponents& Moon::Scene::GetFastAccessComponents() const {
+	return m_fastAccessComponents;
+}
+
+Moon::Entity& Moon::Scene::InstantiatePrefab(const std::string& prefabPath) {
+	if (!FileSystem::FileExists(prefabPath, true)) {
+		HZ_CORE_ERROR("Prefab not found: {}", prefabPath);
+		return CreateEntity("Missing Prefab");
+	}
+	// Load Prefab File
+	std::string contentFile = FileSystem::ReadFile(prefabPath, true);
+	if (contentFile.empty()) {
+		HZ_CORE_ERROR("Failed to read prefab file: {}", prefabPath);
+		return CreateEntity("Empty Prefab");
+	}
+	json prefabJson;
+	try {
+		prefabJson = json::parse(contentFile);
+	}
+	catch (const json::parse_error& e) {
+		HZ_CORE_ERROR("Failed to parse prefab JSON: {} | Error: {}", prefabPath, e.what());
+		return CreateEntity("Invalid Prefab");
+	}
+	// Create new entity from prefab data
+	std::string entityName = prefabJson.contains("Name") ? prefabJson["Name"].get<std::string>() + " (Instance)" : "Prefab Entity";
+	Moon::Entity& instance = CreateEntity(entityName);
+
+	instance.Deserialize(prefabJson);
+	auto& prefab = instance.AddComponent<PrefabComponent>();
+	prefab.filepath = prefabPath;
+	prefab.overridenComponents = prefabJson;
+
+	if (prefabJson.contains("Children") && prefabJson["Children"].is_array()) {
+		for (const auto& childJson : prefabJson["Children"]) {
+			InstantiatePrefabChild(instance, childJson);
+		}
+	}
+	return instance;
+}
+
+Moon::Entity& Moon::Scene::InstantiatePrefabChild(Moon::Entity& parent, const json& childJson) {
+	// Create new entity from prefab data
+	std::string entityName = childJson.contains("Name") ? childJson["Name"].get<std::string>() + " (Instance)" : "Prefab Entity";
+	Moon::Entity& instance = CreateEntity(entityName);
+	instance.SetParent(parent);
+	instance.transform->SetParent(*parent.transform);
+	instance.Deserialize(childJson);
+	if (childJson.contains("Children") && childJson["Children"].is_array()) {
+		for (const auto& childJson : childJson["Children"]) {
+			InstantiatePrefabChild(instance, childJson);
+		}
+	}
+	return instance;
+}
+
+json SerializeEntity(Moon::Entity* entity) {
+	return entity->Serialize();
+}
+
+json Moon::Scene::Serialize() {
+	BEGIN_SERIALIZE();
+	j["Entities"] = json::object();
+	for (auto& entity : GetAllEntities()) {
+		j["Entities"][entity->GetName()] = SerializeEntity(entity.get());
+	}
+	END_SERIALIZE();
+}
+
+void Moon::Scene::Deserialize(const json& j) {
+	if (!j.contains("Entities")) {
+		HZ_CORE_ERROR("Cannot Find Entities Tree!");
+		return;
+	}
+
+	std::unordered_map<uint64_t, Entity*> entityMap;
+	json entities = j["Entities"];
+	for (auto& [name, entityJson] : entities.items()) {
+		std::string entityName = name;
+		std::string entityTag = entityJson["Tag"];
+		Entity& entity = CreateEntity(entityName, entityTag);
+		entity.Deserialize(entityJson);
+
+		uint64_t id = entityJson["ID"];
+		//entity.SetID(id);
+		entityMap[id] = &entity;
+	}
+
+	for (auto& [name, entityJson] : entities.items()) {
+		uint64_t id = entityJson["ID"];
+		Entity* entity = entityMap[id];
 		
-		p_entity.Destroy();
-	}
-
-	bool Scene::EntityExists(const std::string& name) {
-		return m_EntityNameMap.find(name) != m_EntityNameMap.end();
-	}
-
-	std::vector<Entity*>& Scene::GetAllEntities() {
-		return m_entities;
-	}
-
-	Entity* Scene::GetEntityByName(const std::string& p_name) const {
-		auto it = m_EntityNameMap.find(p_name);
-		if (it != m_EntityNameMap.end())
-			return it->second;
-		return nullptr;
-	}
-
-	Entity* Scene::GetEntityByTag(const std::string& p_tag) const {
-		//auto result = std::find_if(m_entities.begin(), m_entities.end(), [tag](Entity* e) {
-		//	return e->GetTag() == tag;
-		//	});
-		//if (result != m_entities.end())
-		//	return *result;
-		return nullptr;
-	}
-
-	Entity* Scene::GetEntityByID(int64_t p_id) const {
-		auto it = m_EntityIDMap.find(p_id);
-		if (it != m_EntityIDMap.end())
-			return it->second;
-		return nullptr;
-	}
-
-	//Entity Scene::GetEntity(const std::string& name) {
-	//	//if (m_EntityNameMap.find(name) != m_EntityNameMap.end()) {
-	//	//	return m_EntityNameMap[name];
-	//	//}
-	//	//return Entity();
-	//}
-
-	void Scene::OnViewportResize(float width, float height) {
-		_viewportWidth = width;
-		_viewportHeight = height;
-
-		auto view = _registry.view<CameraComponent>();
-		for (auto entity : view) {
-			auto& camera = view.get<CameraComponent>(entity);
-			if (!camera.fixedAspectRatio) {
-				camera.camera->SetProjectionMatrix(glm::perspective(glm::radians(camera.camera->m_fieldOfView), Window::Get()->viewportWidth / Window::Get()->viewportHeight, camera.camera->m_nearPlane, camera.camera->m_farPlane));
-			}
+		if (entityJson.contains("ParentID")) {
+			uint64_t parentID = entityJson["ParentID"];
+			if (entityMap.contains(parentID))
+				entity->SetParent(*entityMap[parentID]);
 		}
-	}
-
-	Entity Scene::DuplicateEntity(Entity entity) {
-		std::string name = entity.GetName();
-		Entity newEntity = CreateEntity(name);
-
-		//CopyComponentIfExists<MeshRendererComponent>(newEntity, entity);
-		//CopyComponentIfExists<PrefabComponent>(newEntity, entity);
-		//CopyComponentIfExists<CameraComponent>(newEntity, entity);
-		//CopyComponentIfExists<RigidBodyComponent>(newEntity, entity);
-		//CopyComponentIfExists<BoxColliderComponent>(newEntity, entity);
-		//CopyComponentIfExists<SphereColliderComponent>(newEntity, entity);
-		//CopyComponentIfExists<NetScriptComponent>(newEntity, entity);
-		//CopyComponentIfExists<WrenScriptComponent>(newEntity, entity);
-		//CopyComponentIfExists<LightComponent>(newEntity, entity);
-		//CopyComponentIfExists<SpriteComponent>(newEntity, entity);
-		//CopyComponentIfExists<AudioComponent>(newEntity, entity);
-		//CopyComponentIfExists<TextComponent>(newEntity, entity);
-		//CopyComponentIfExists<TextBlitterComponent>(newEntity, entity);
-
-		return newEntity;
-	}
-
-	Ref<Camera> Scene::GetCurrentCamera() {
-		if (Engine::IsPlayMode())
-		{
-			Ref<Camera> cam = nullptr;
-			{
-				auto view = _registry.view<TransformComponent, CameraComponent>();
-				for (auto e : view)
-				{
-					auto [transform, camera] = view.get<TransformComponent, CameraComponent>(e);
-					cam = camera.camera;
-					break;
-				}
-			}
-
-			if (!cam)
-				cam = m_EditorCamera;
-
-			return cam;
-		}
-
-		return m_EditorCamera;
-	}
-
-	Entity* Scene::GetPrimaryCameraEntity() {
-		//auto view = _registry.view<CameraComponent>();
-		//for (auto entity : view) {
-		//	const auto& camera = view.get<CameraComponent>(entity);
-		//	if (camera.primary) {
-		//		return Entity(entity, this);
-		//	}
-		//}
-		//return;
-		return nullptr;
-	}
-
-	const Scene::FastAccessComponents& Scene::GetFastAccessComponents() const {
-		return m_fastAccessComponents;
-	}
-
-	json SerializeEntity(Entity* entity) {
-		BEGIN_SERIALIZE();
-		j["Transform"] = entity->GetComponent<TransformComponent>()->Serialize();
-		if (entity->GetComponent<CameraComponent>()) j["Camera"] = entity->GetComponent<CameraComponent>()->Serialize();
-		if (entity->GetComponent<MeshRendererComponent>()) j["MeshRenderer"] = entity->GetComponent<MeshRendererComponent>()->Serialize();
-		if (entity->GetComponent<LightComponent>()) j["Light"] = entity->GetComponent<LightComponent>()->Serialize();
-		if (entity->GetComponent<BoxColliderComponent>()) j["BoxCollider"] = entity->GetComponent<BoxColliderComponent>()->Serialize();
-		if (entity->GetComponent<SphereColliderComponent>()) j["SphereCollider"] = entity->GetComponent<SphereColliderComponent>()->Serialize();
-		if (entity->GetComponent<RigidBodyComponent>()) j["RigidBody"] = entity->GetComponent<RigidBodyComponent>()->Serialize();
-		if (entity->GetComponent<NetScriptComponent>()) j["NetScript"] = entity->GetComponent<NetScriptComponent>()->Serialize();
-		if (entity->GetComponent<LuaScriptComponent>()) j["LuaScript"] = entity->GetComponent<LuaScriptComponent>()->Serialize();
-		if (entity->GetComponent<AudioComponent>()) j["Audio"] = entity->GetComponent<AudioComponent>()->Serialize();
-		END_SERIALIZE();
-	}
-
-	json Scene::Serialize() {
-		BEGIN_SERIALIZE();
-		j["Entities"] = json::object();
-		for (Entity* entity : Engine::GetCurrentScene()->GetAllEntities()) {
-			if (entity) continue;
-			j["Entities"][entity->GetName()] = SerializeEntity(entity);
-		}
-		END_SERIALIZE();
-	}
-
-	void Scene::Deserialize(const json& j) {
-		json entities = j["Entities"];
-		if (j.contains("Entities")) {
-			for (auto& [name, entity] : entities.items()) {
-				int64_t maxID = 1;
-
-				std::string name = entity["NameComponent"]["Name"];
-				uint64_t uuid = (uint64_t)entity["NameComponent"]["ID"];
-				HZ_CORE_TRACE("Deserialized entity with ID = " + std::to_string(uuid) + ", name = " + name + "");
-				Entity& deserializedEntity = Engine::GetCurrentScene()->CreateEntity(name);
-
-				if (entity.contains("Transform")) {
-					json transformC = entity["Transform"];
-					TransformComponent* transform = deserializedEntity.GetComponent<TransformComponent>();
-					transform->SetLocalPosition(glm::vec3(transformC["LocalPosition"]["x"], transformC["LocalPosition"]["y"], transformC["LocalPosition"]["z"]));
-					transform->SetLocalRotation(glm::quat(glm::vec3(transformC["LocalRotation"]["x"], transformC["LocalRotation"]["y"], transformC["LocalRotation"]["z"])));
-					transform->SetLocalScale(glm::vec3(transformC["LocalScale"]["x"], transformC["LocalScale"]["y"], transformC["LocalScale"]["z"]));
-				}
-
-				if (entity.contains("Camera")) {
-					json cameraComponent = entity["Camera"];
-					CameraComponent& cc = deserializedEntity.AddComponent<CameraComponent>();
-					cc.camera = CreateRef<Camera>();
-					cc.camera->m_fieldOfView = cameraComponent["FOV"];
-					cc.camera->m_nearPlane = cameraComponent["NearPlane"];
-					cc.camera->m_farPlane = cameraComponent["FarPlane"];
-					cc.primary = cameraComponent["Primary"];
-					cc.fixedAspectRatio = cameraComponent["FixedAspectRatio"];
-				}
-
-				if (entity.contains("MeshRenderer")) {
-					json meshRendererComponent = entity["MeshRenderer"];
-					MeshRendererComponent& meshRenderer = deserializedEntity.AddComponent<MeshRendererComponent>();
-					std::string modelPath = meshRendererComponent["ModelPath"];
-					Model* model = AssetManager::LoadModel(modelPath, true);
-					meshRenderer.ModelPath = modelPath;
-					meshRenderer.SetModel(model);
-
-					for (uint32_t i = 0; i < std::size(meshRenderer.GetModel()->GetMeshes()); i++) {
-						Ref<Mesh> mesh = meshRenderer.GetModel()->GetMeshes()[i];
-						auto meshR = meshRendererComponent["Model"]["Meshes"];
-						bool loadedMaterialFile = false;
-						const std::string materialPath = meshR[i]["MaterialPath"];
-						if (!materialPath.empty()) {
-							Ref<Material> newMaterial = AssetManager::LoadMaterial(materialPath);
-							mesh->SetMaterial(newMaterial);
-							loadedMaterialFile = true;
-						}
-						if (!loadedMaterialFile) {
-							Ref<Material> material = mesh->GetMaterial();
-							material = CreateRef<Material>();
-						}
-					}
-				}
-
-				if (entity.contains("Light")) {
-					json lightComponent = entity["Light"];
-					LightComponent& light = deserializedEntity.AddComponent<LightComponent>();
-					light.Radius = lightComponent["Radius"];
-					light.Strength = lightComponent["Strength"];
-					DESERIALIZE_VEC3(lightComponent["Color"], light.Color);
-					light.Type = (LightType)lightComponent["Type"];
-				}
-
-				if (entity.contains("NetScript")) {
-					json netScriptComponent = entity["NetScript"];
-					NetScriptComponent& net = deserializedEntity.AddComponent<NetScriptComponent>();
-					net.ScriptPath = netScriptComponent["Path"];
-				}
-			}
-		}
-		else {
-			HZ_CORE_ERROR("Cannot Find Entities Tree!");
-		}
-	}
-
-	template<typename T>
-	void Scene::OnComponentAdded(Entity entity, T& component) {
-		//static_assert(sizeof(T) == 0);
-	}
-
-	template<>
-	void Scene::OnComponentAdded<TransformComponent>(Entity entity, TransformComponent& component) {
-		
-	}
-
-	template<>
-	void Scene::OnComponentAdded<CameraComponent>(Entity entity, CameraComponent& component) {
-		if (_viewportWidth > 0 && _viewportHeight > 0) {
-			component.camera = CreateRef<Camera>();
-			//component.camera->SetViewportSizee(_viewportWidth, _viewportHeight);
-			component.camera->SetProjectionMatrix(glm::perspective(glm::radians(component.camera->m_fieldOfView), Window::Get()->viewportWidth / Window::Get()->viewportHeight, component.camera->m_nearPlane, component.camera->m_farPlane));
-		}
-	}
-
-	template<>
-	void Scene::OnComponentAdded<MeshRendererComponent>(Entity entity, MeshRendererComponent& component)
-	{
-	}
-
-	template<>
-	void Scene::OnComponentAdded<SkinnedMeshRendererComponent>(Entity entity, SkinnedMeshRendererComponent& component)
-	{
-		component.Model = AssetManager::LoadSkinnedModel("D:/C++ Projects/Heavy/Heavy/assets/models/Neutral_F.fbx", true);
-	}
-
-	template<>
-	void Scene::OnComponentAdded<RigidBodyComponent>(Entity entity, RigidBodyComponent& component)
-	{
-	}
-
-	template<>
-	void Scene::OnComponentAdded<BoxColliderComponent>(Entity entity, BoxColliderComponent& component) {
-		auto viewMesh = Reg().view<TransformComponent, BoxColliderComponent, MeshRendererComponent>();
-		for (auto e : viewMesh) {
-			auto [transform, box, meshC] = viewMesh.get<TransformComponent, BoxColliderComponent, MeshRendererComponent>(e);
-			for (auto mesh : meshC.GetModel()->GetMeshes()) {
-				if (mesh->GetAABB().boundsMin.x > 0.0f ||
-					mesh->GetAABB().boundsMin.y > 0.0f || 
-					mesh->GetAABB().boundsMin.z > 0.0f ||
-					mesh->GetAABB().boundsMax.x > 0.0f || 
-					mesh->GetAABB().boundsMax.y > 0.0f || 
-					mesh->GetAABB().boundsMax.z > 0.0f) {
-					glm::vec3 scale = transform.GetGlobalScale();
-					glm::vec3 fullSize = mesh->GetAABB().boundsMax - mesh->GetAABB().boundsMin;
-					box.halfExtents = (fullSize * scale) * 0.5f;
-				}
-			}
-		}
-	}
-
-	template<>
-	void Scene::OnComponentAdded<SphereColliderComponent>(Entity entity, SphereColliderComponent& component)
-	{
-	}
-
-	template<>
-	void Scene::OnComponentAdded<CharacterControllerComponent>(Entity entity, CharacterControllerComponent& component)
-	{
-		component.Create();
-	}
-
-	template<>
-	void Scene::OnComponentAdded<PrefabComponent>(Entity entity, PrefabComponent& component)
-	{
-	}
-
-	template<>
-	void Scene::OnComponentAdded<NetScriptComponent>(Entity entity, NetScriptComponent& component)
-	{
-	}
-
-	template<>
-	void Scene::OnComponentAdded<LuaScriptComponent>(Entity entity, LuaScriptComponent& component) {
-		if (component.path == "") {
-			component.path = FileSystem::Root + "Scripts/player.lua";
-
-		}
-	}
-
-	template<>
-	void Scene::OnComponentAdded<LightComponent>(Entity entity, LightComponent& component)
-	{
-	}
-
-	template<>
-	void Scene::OnComponentAdded<AudioComponent>(Entity entity, AudioComponent& component)
-	{
-	}
-
-	template<>
-	void Scene::OnComponentAdded<WrenScriptComponent>(Entity entity, WrenScriptComponent& component)
-	{
-	}
-
-	template<>
-	void Scene::OnComponentAdded<SkyComponent>(Entity entity, SkyComponent& component)
-	{
 	}
 }

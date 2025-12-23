@@ -77,12 +77,10 @@
       <WarningLevel>Level3</WarningLevel>
       <DisableSpecificWarnings>4996;4267;4244;4312;%(DisableSpecificWarnings)</DisableSpecificWarnings>
       <PreprocessorDefinitions>FT2_BUILD_LIBRARY;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>include;.;include\config;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>include;include\freetype;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
-      <MinimalRebuild>false</MinimalRebuild>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
-      <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <AdditionalOptions>/MTd %(AdditionalOptions)</AdditionalOptions>
       <ConformanceMode>true</ConformanceMode>
       <ExternalWarningLevel>Level3</ExternalWarningLevel>
@@ -98,14 +96,13 @@
       <WarningLevel>Level3</WarningLevel>
       <DisableSpecificWarnings>4996;4267;4244;4312;%(DisableSpecificWarnings)</DisableSpecificWarnings>
       <PreprocessorDefinitions>FT2_BUILD_LIBRARY;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>include;.;include\config;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>include;include\freetype;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <MinimalRebuild>false</MinimalRebuild>
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <AdditionalOptions>/MTd %(AdditionalOptions)</AdditionalOptions>
       <ConformanceMode>true</ConformanceMode>
       <ExternalWarningLevel>Level3</ExternalWarningLevel>
@@ -122,11 +119,9 @@
       <WarningLevel>Level3</WarningLevel>
       <DisableSpecificWarnings>4996;4267;4244;4312;%(DisableSpecificWarnings)</DisableSpecificWarnings>
       <PreprocessorDefinitions>FT2_BUILD_LIBRARY;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>include;.;include\config;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>include;include\freetype;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Disabled</Optimization>
-      <MinimalRebuild>false</MinimalRebuild>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <ConformanceMode>true</ConformanceMode>
       <ExternalWarningLevel>Level3</ExternalWarningLevel>
     </ClCompile>
@@ -135,49 +130,49 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="src\autofit\autofit.c" />
-    <ClCompile Include="src\base\ftbase.c" />
-    <ClCompile Include="src\base\ftbbox.c" />
-    <ClCompile Include="src\base\ftbdf.c" />
-    <ClCompile Include="src\base\ftbitmap.c" />
-    <ClCompile Include="src\base\ftcid.c" />
-    <ClCompile Include="src\base\ftdebug.c">
+    <ClCompile Include="freetype\src\autofit\autofit.c" />
+    <ClCompile Include="freetype\src\base\ftbase.c" />
+    <ClCompile Include="freetype\src\base\ftbbox.c" />
+    <ClCompile Include="freetype\src\base\ftbdf.c" />
+    <ClCompile Include="freetype\src\base\ftbitmap.c" />
+    <ClCompile Include="freetype\src\base\ftcid.c" />
+    <ClCompile Include="freetype\src\base\ftdebug.c">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Dist|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="src\base\ftfstype.c" />
-    <ClCompile Include="src\base\ftgasp.c" />
-    <ClCompile Include="src\base\ftglyph.c" />
-    <ClCompile Include="src\base\ftgxval.c" />
-    <ClCompile Include="src\base\ftinit.c" />
-    <ClCompile Include="src\base\ftmm.c" />
-    <ClCompile Include="src\base\ftotval.c" />
-    <ClCompile Include="src\base\ftpatent.c" />
-    <ClCompile Include="src\base\ftpfr.c" />
-    <ClCompile Include="src\base\ftstroke.c" />
-    <ClCompile Include="src\base\ftsynth.c" />
-    <ClCompile Include="src\base\ftsystem.c" />
-    <ClCompile Include="src\base\fttype1.c" />
-    <ClCompile Include="src\base\ftwinfnt.c" />
-    <ClCompile Include="src\bdf\bdf.c" />
-    <ClCompile Include="src\cache\ftcache.c" />
-    <ClCompile Include="src\cff\cff.c" />
-    <ClCompile Include="src\cid\type1cid.c" />
-    <ClCompile Include="src\gzip\ftgzip.c" />
-    <ClCompile Include="src\lzw\ftlzw.c" />
-    <ClCompile Include="src\pcf\pcf.c" />
-    <ClCompile Include="src\pfr\pfr.c" />
-    <ClCompile Include="src\psaux\psaux.c" />
-    <ClCompile Include="src\pshinter\pshinter.c" />
-    <ClCompile Include="src\psnames\psmodule.c" />
-    <ClCompile Include="src\raster\raster.c" />
-    <ClCompile Include="src\sdf\sdf.c" />
-    <ClCompile Include="src\sfnt\sfnt.c" />
-    <ClCompile Include="src\smooth\smooth.c" />
-    <ClCompile Include="src\truetype\truetype.c" />
-    <ClCompile Include="src\type1\type1.c" />
-    <ClCompile Include="src\type42\type42.c" />
-    <ClCompile Include="src\winfonts\winfnt.c" />
+    <ClCompile Include="freetype\src\base\ftfstype.c" />
+    <ClCompile Include="freetype\src\base\ftgasp.c" />
+    <ClCompile Include="freetype\src\base\ftglyph.c" />
+    <ClCompile Include="freetype\src\base\ftgxval.c" />
+    <ClCompile Include="freetype\src\base\ftinit.c" />
+    <ClCompile Include="freetype\src\base\ftmm.c" />
+    <ClCompile Include="freetype\src\base\ftotval.c" />
+    <ClCompile Include="freetype\src\base\ftpatent.c" />
+    <ClCompile Include="freetype\src\base\ftpfr.c" />
+    <ClCompile Include="freetype\src\base\ftstroke.c" />
+    <ClCompile Include="freetype\src\base\ftsynth.c" />
+    <ClCompile Include="freetype\src\base\ftsystem.c" />
+    <ClCompile Include="freetype\src\base\fttype1.c" />
+    <ClCompile Include="freetype\src\base\ftwinfnt.c" />
+    <ClCompile Include="freetype\src\bdf\bdf.c" />
+    <ClCompile Include="freetype\src\cache\ftcache.c" />
+    <ClCompile Include="freetype\src\cff\cff.c" />
+    <ClCompile Include="freetype\src\cid\type1cid.c" />
+    <ClCompile Include="freetype\src\gzip\ftgzip.c" />
+    <ClCompile Include="freetype\src\lzw\ftlzw.c" />
+    <ClCompile Include="freetype\src\pcf\pcf.c" />
+    <ClCompile Include="freetype\src\pfr\pfr.c" />
+    <ClCompile Include="freetype\src\psaux\psaux.c" />
+    <ClCompile Include="freetype\src\pshinter\pshinter.c" />
+    <ClCompile Include="freetype\src\psnames\psmodule.c" />
+    <ClCompile Include="freetype\src\raster\raster.c" />
+    <ClCompile Include="freetype\src\sdf\sdf.c" />
+    <ClCompile Include="freetype\src\sfnt\sfnt.c" />
+    <ClCompile Include="freetype\src\smooth\smooth.c" />
+    <ClCompile Include="freetype\src\truetype\truetype.c" />
+    <ClCompile Include="freetype\src\type1\type1.c" />
+    <ClCompile Include="freetype\src\type42\type42.c" />
+    <ClCompile Include="freetype\src\winfonts\winfnt.c" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

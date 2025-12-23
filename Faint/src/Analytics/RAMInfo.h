@@ -1,10 +1,6 @@
-#include <iostream>
-#include <chrono>
-#include <unordered_map>
+#pragma once
 
-#include "Debug/Log.h"
-
-namespace Faint::Hardware {
+namespace Moon::Hardware {
 	
 	class RamInfo final {
 	public:

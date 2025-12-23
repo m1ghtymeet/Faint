@@ -1,26 +1,20 @@
 #pragma once
 
 #include "AComponent.h"
+#include <AssetManagment/Serializable.h>
 
-namespace Faint {
+namespace Moon {
 
-	struct CapsuleColliderComponent : public AComponent {
+	// TODO: Make PhysicsCapsuleCollider
+	class CapsuleColliderComponent : public AComponent {
 	public:
+		CapsuleColliderComponent(Entity& p_owner);
+
+		json Serialize();
+
+		void Deserialize(const json& j);
+	private:
 		float radius = 0.5f;
 		float height = 1.0f;
-		bool isTrigger = false;
-		json Serialize() {
-			BEGIN_SERIALIZE();
-			j["IsTrigger"] = isTrigger;
-			SERIALIZE_VAL(radius);
-			SERIALIZE_VAL(height);
-			END_SERIALIZE();
-		}
-		bool Deserialize(const json& j) {
-			this->isTrigger = j["IsTrigger"];
-			this->radius = j["radius"];
-			this->height = j["height"];
-			return true;
-		}
 	};
 }

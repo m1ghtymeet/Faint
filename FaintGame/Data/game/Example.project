@@ -1,0 +1,25 @@
+{
+    "assetDirectory": "Assets",
+    "cameraSettings": {
+        "position": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "rotation": [
+            0.0,
+            0.0,
+            0.0
+        ]
+    },
+    "description": "A cool game",
+    "name": "OpenWindow",
+    "settings": {
+        "buildMode": 0,
+        "configuration": "debug",
+        "gravity": -9.8100004196167,
+        "resolutionScale": 1.0,
+        "vSync": false
+    },
+    "startScene": "Assets/scenes/level01.scene"
+}

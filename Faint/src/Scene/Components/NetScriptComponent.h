@@ -6,7 +6,7 @@
 #include "Math/Math.h"
 #include "AssetManagment/Serializable.h"
 
-namespace Faint {
+namespace Moon {
 	enum class NetScriptExposedVarType {
 		Bool,
 		Float,

@@ -1,0 +1,26 @@
+#shader vertex
+#version 460
+layout (location = 0) in vec4 position;
+out vec2 TexCoord;
+uniform mat4 u_projection;
+
+void main() {
+	gl_Position = u_projection * vec4(position.xy, 0.0, 1.0);
+	TexCoord = position.zw;
+}
+#shader fragment
+#version 460
+out vec4 FragOut;
+in vec2 TexCoord;
+layout (binding = 0) uniform sampler2D tex;
+uniform vec3 color;
+uniform int hasTexture = 0;
+
+void main() {
+	if (hasTexture == 1) {
+		vec4 texColor = texture(tex, TexCoord);
+		FragOut = vec4(color, 1) * texColor;
+	} else {
+		FragOut = vec4(color, 1);
+	}
+}

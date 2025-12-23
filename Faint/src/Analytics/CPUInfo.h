@@ -4,7 +4,7 @@
 
 #include "Debug/Log.h"
 
-namespace Faint::Hardware {
+namespace Moon::Hardware {
 	
 	class CPUInfo final {
 	public:

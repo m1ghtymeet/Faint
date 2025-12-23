@@ -1,0 +1,111 @@
+#shader vertex
+#version 460 core
+
+layout (location = 0) in vec3 aPos;
+
+out vec3 v_ViewDir;
+
+layout(std430, binding = 0) buffer Camera {
+    mat4 u_projection;
+    mat4 u_view;
+};
+
+void main() {
+    vec4 clipPos = u_projection * mat4(mat3(u_view)) * vec4(aPos, 1.0);
+    gl_Position = clipPos.xyww;
+    
+    v_ViewDir = aPos; // موقعیت ورتکس در فضای world یعنی جهت دید
+}
+
+#shader fragment
+#version 460 core
+
+in vec3 v_ViewDir;
+out vec4 FragColor;
+
+// پارامترهای قابل تنظیم
+uniform vec3 u_sunDirection = vec3(0.0, 1.0, 0.0);
+uniform vec3 u_sunColor = vec3(1.0, 0.9, 0.8);
+uniform float u_sunIntensity = 20.0;
+uniform float u_sunSize = 0.001;
+
+uniform float u_rayleigh = 1.5;
+uniform float u_mie = 0.5;
+uniform float u_mieG = 0.76;
+
+const float PI = 3.14159265;
+const vec3 betaR = vec3(5.8e-3, 13.5e-3, 33.1e-3); // ضرایب Rayleigh (برای رنگ آبی/قرمز)
+const vec3 betaM = vec3(21e-3);                   // ضریب Mie
+
+// فانکشن phase برای Rayleigh
+float rayleighPhase(float cosTheta) {
+    return (3.0 / (16.0 * PI)) * (1.0 + cosTheta * cosTheta);
+}
+
+// فانکشن phase برای Mie (Henyey-Greenstein)
+float miePhase(float cosTheta, float g) {
+    float g2 = g * g;
+    float num = (1.0 - g2) * (1.0 + cosTheta * cosTheta);
+    float den = (2.0 + g2) * pow(1.0 + g2 - 2.0 * g * cosTheta, 1.5);
+    return (3.0 / (8.0 * PI)) * num / den;
+}
+
+void main()
+{
+    vec3 dir = normalize(v_ViewDir);
+    vec3 sunDir = normalize(u_sunDirection);
+    
+    // ارتفاع خورشید (برای تغییر رنگ کلی آسمان و تشخیص روز/شب)
+    float sunHeight = sunDir.y;
+    float dayFactor = clamp(sunHeight * 1.5 + 0.5, 0.0, 1.0); // 0=شب کامل، 1=ظهر
+    
+    // رنگ‌های پایه آسمان
+    vec3 dayZenith   = vec3(0.1, 0.2, 0.5);      // آبی تیره‌تر برای پایه
+    vec3 dayHorizon  = vec3(0.8, 0.9, 1.0);
+    vec3 sunsetColor = vec3(1.0, 0.6, 0.4);      // نارنجی/قرمز غروب
+    vec3 nightZenith = vec3(0.01, 0.02, 0.05);
+    vec3 nightHorizon = vec3(0.05, 0.1, 0.2);
+    
+    // ترکیب رنگ روز/شب
+    vec3 zenith  = mix(nightZenith, dayZenith, dayFactor);
+    vec3 horizon = mix(nightHorizon, mix(dayHorizon, sunsetColor, pow(1.0 - dayFactor, 2.0)), dayFactor);
+    
+    // گرادیان ساده بر اساس ارتفاع
+    float height = max(dir.y, 0.0);
+    float gradient = pow(height, 0.5); // نرم‌تر برای واقعی‌تر
+    vec3 baseSky = mix(horizon, zenith, gradient);
+    
+    // محاسبه cosTheta برای scattering
+    float cosTheta = dot(dir, sunDir);
+    
+    // Rayleigh scattering (آبی آسمان)
+    float phaseR = rayleighPhase(cosTheta);
+    vec3 rayleigh = betaR * phaseR * u_rayleigh * exp(-height * 2.0); // falloff با ارتفاع
+    
+    // Mie scattering (haze و glow اطراف خورشید)
+    float phaseM = miePhase(cosTheta, u_mieG);
+    vec3 mie = betaM * phaseM * u_mie * exp(-height * 1.5);
+    
+    // ترکیب scattering با پایه آسمان (شبیه Unity)
+    vec3 scatter = (rayleigh + mie) * u_sunIntensity * dayFactor;
+    vec3 skyColor = baseSky + scatter * u_sunColor;
+    
+    // اضافه کردن خورشید دیسک + glow
+    float sunDot = max(cosTheta, 0.0);
+    float sunDisk = smoothstep(1.0 - u_sunSize, 1.0 - u_sunSize * 0.95, sunDot);
+    float sunGlow = pow(sunDot, /*128.0*/248) * 0.5; // halo نرم
+    vec3 sun = (sunDisk + sunGlow) * u_sunColor * u_sunIntensity * step(0.0, sunHeight);
+    
+    skyColor += sun;
+    
+    // اثر غروب بیشتر نزدیک افق
+    float sunsetFactor = pow(max(0.0, 1.0 - sunHeight), 3.0) * (1.0 - gradient);
+    skyColor += sunsetColor * sunsetFactor * 1.2;
+    
+    // tone mapping و gamma برای واقعی‌تر
+    skyColor *= 0.5; // exposure ساده
+    skyColor = skyColor / (skyColor + vec3(1.0)); // Reinhard tonemap
+    skyColor = pow(skyColor, vec3(1.0 / 2.2));    // gamma correction
+    
+    FragColor = vec4(skyColor, 1.0);
+}

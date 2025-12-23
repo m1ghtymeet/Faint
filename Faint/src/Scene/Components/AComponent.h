@@ -1,8 +1,10 @@
 #pragma once
+
 #include <string>
 
-namespace Faint {
+namespace Moon {
 	class Entity;
+	class ColliderComponent;
 
 	/**
 	* AComponent is theh base class for any component
@@ -35,10 +37,28 @@ namespace Faint {
 		virtual void OnEnable() {}
 
 		/**
+		* 
+		*/
+		virtual void OnDisable() {}
+
+		/**
+		* Called when the components gets destroyed
+		*/
+		virtual void OnDestroy() {}
+
+		/**
 		* Called every frame
 		* @param p_deltaTime
 		*/
 		virtual void OnUpdate(float p_deltaTime) {}
+
+		virtual void OnCollisionEnter(ColliderComponent& otherBody) {}
+		virtual void OnCollisionStay(ColliderComponent& otherBody) {}
+		virtual void OnCollisionExit(ColliderComponent& otherBody) {}
+
+		virtual void OnTriggerEnter(ColliderComponent& otherBody) {}
+		virtual void OnTriggerStay(ColliderComponent& otherBody) {}
+		virtual void OnTriggerExit(ColliderComponent& otherBody) {}
 
 		/**
 		* Returns the name of the component

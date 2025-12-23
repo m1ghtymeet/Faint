@@ -1,42 +1,38 @@
 #pragma once
 
-#include "Core/Base.h"
-#include "Core/Time.h"
-#include "Math/Math.h"
+#include <optional>
+#include <unordered_map>
+
+#include "Settings/WindowSettings.h"
 
 struct GLFWwindow;
 
-namespace Faint {
-	class Scene;
+namespace Moon {
 
 	class Window {
 	public:
-		Window();
+		Window(const Settings::WindowSettings& p_settings);
 		
-		static Ref<Window> Get();
+		~Window();
 
-		GLFWwindow* GetWindow();
+		Window* FindInstance(GLFWwindow* p_glfwWindow);
+
+		void SetSize(uint16_t p_width, uint16_t p_height);
+
+		std::pair<uint16_t, uint16_t> GetSize() const;
+
+		void SetClose(bool close);
 
 		bool ShouldClose();
+		
+		void Destroy();
 
-		void Init();
-		void Update(Time time);
-		void FixedUpdate(Time time);
-		void Draw();
+		bool HasFocus();
+
+		// TODO: Remove
 		void EndDraw();
 
-		//Ref<Framebuffer2> GetFrameBuffer() const;
-
-		void SetScene(Ref<Scene> scene);
-		Ref<Scene> GetScene();
-
-		void SetSize(const Vec2& size);
-		Vec2 GetSize() const;
-
-		float GetWidth() { return width; }
-		float GetHeight() { return height; }
-
-		void SetPosition(const Vec2& position);
+		void SetPosition(int16_t p_x, int16_t p_);
 		void SetTitle(const std::string& title);
 		void SetIcon(const std::string& path);
 		void SetDecorated(bool enabled);
@@ -44,22 +40,28 @@ namespace Faint {
 		void Maximize();
 		void ShowWindow(bool show);
 
-		float viewportWidth = 536;
-		float viewportHeight = 342;
-		float lastViewportWidth = 536;
-		float lastViewportHeight = 342;
+		void MakeCurrentContext() const;
 
-	private:
-		GLFWwindow* window;
+		void SwapBuffers();
 
-		std::string title;
-		uint32_t width;
-		uint32_t height;
-
-		Ref<Scene> scene;
-
-		static Ref<Window> instance;
+		GLFWwindow* GetGLFWWindow() const;
 
 		void InitImgui();
+
+	private:
+		void CreateGLFWWindow(const Settings::WindowSettings& p_settings);
+
+	private:
+		static std::unordered_map<GLFWwindow*, Window*> __WINDOWS_MAP;
+
+		GLFWwindow* m_windowPointer;
+		Settings::WindowSettings m_windowSettings;
+
+		/* Window settings */
+		std::string m_title;
+		std::pair<uint16_t, uint16_t> m_size;
+		std::pair<int16_t, int16_t> m_position;
+		bool m_fullscreen;
+		int32_t m_refreshRate;
 	};
 }

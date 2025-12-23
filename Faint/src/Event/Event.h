@@ -2,7 +2,7 @@
 
 #include <functional>
 
-namespace Faint {
+namespace Moon {
 
 	using ListenerID = uint64_t;
 

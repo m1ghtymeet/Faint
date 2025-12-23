@@ -1,6 +1,10 @@
 #pragma once
 
-namespace Faint {
+#include <string>
+#include <vector>
+#include <format>
+
+namespace Moon {
 	struct LogEntry {
 		std::string time;
 		std::string message;
@@ -16,21 +20,24 @@ namespace Faint {
 
 	public:
 		static void Init();
-
-		static void GetLog(const std::string& log, const std::string& logName = "FAINT", const std::string& logType = "trace");
+		static void GetLog(const std::string& log, const std::string& logName = "Moon", const std::string& logType = "trace");
+		template<typename... Args>
+		static void GetLogFmt(const std::string& log, const std::string& logName, const std::string& logType, Args&&... args) {
+			GetLog(std::vformat(log, std::make_format_args(args...)), logName, logType);
+		}
 		static std::vector<LogEntry> GetLogs();
 		static void ClearLogs();
 	};
 }
 
 // Core log macros
-#define HZ_CORE_TRACE(log, ...) ::Faint::Log::GetLog(log, "FAINT", "trace");
-#define HZ_CORE_ERROR(log, ...) ::Faint::Log::GetLog(log, "FAINT", "error");
-#define HZ_CORE_WARN(log, ...)  ::Faint::Log::GetLog(log, "FAINT", "warn");
-#define HZ_CORE_INFO(log, ...)  ::Faint::Log::GetLog(log, "FAINT", "info");
+#define HZ_CORE_TRACE(log, ...) ::Moon::Log::GetLogFmt(log, "Moon", "trace", __VA_ARGS__);
+#define HZ_CORE_ERROR(log, ...) ::Moon::Log::GetLogFmt(log, "Moon", "error", __VA_ARGS__);
+#define HZ_CORE_WARN(log, ...)  ::Moon::Log::GetLogFmt(log, "Moon", "warn", __VA_ARGS__);
+#define HZ_CORE_INFO(log, ...)  ::Moon::Log::GetLogFmt(log, "Moon", "info", __VA_ARGS__);
 
 // Client log macros
-#define HZ_TRACE(log, ...)  Faint::Log::GetLog(log, "APP");
-#define HZ_ERROR(log, ...)  Faint::Log::GetLog(log, "APP", "error");
-#define HZ_WARN(log, ...)   Faint::Log::GetLog(log, "APP", "warn");
-#define HZ_INFO(log, ...)   Faint::Log::GetLog(log, "APP", "info");
+#define HZ_TRACE(log, ...)  Moon::Log::GetLogFmt(log, "APP", "trace", __VA_ARGS__);
+#define HZ_ERROR(log, ...)  Moon::Log::GetLogFmt(log, "APP", "error", __VA_ARGS__);
+#define HZ_WARN(log, ...)   Moon::Log::GetLogFmt(log, "APP", "warn", __VA_ARGS__);
+#define HZ_INFO(log, ...)   Moon::Log::GetLogFmt(log, "APP", "info", __VA_ARGS__);

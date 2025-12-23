@@ -1,0 +1,263 @@
+#shader vertex
+#version 460 core
+layout (location = 0) in vec3 aPos;
+layout (location = 1) in vec2 aTexCoord;
+layout (location = 2) in vec3 aNormal;
+layout (location = 3) in vec3 aTangent;
+
+out vec2 TexCoord;
+out flat int entityID;
+out vec4 WorldPos;
+out vec3 Normal;
+out vec3 Tangent;
+out vec3 BiTangent;
+out vec3 viewPos;
+
+layout(std430, binding = 0) buffer Camera {
+	mat4 u_projection;
+	mat4 u_view;
+};
+
+uniform mat4 u_modelMatrix;
+
+void main() {
+	TexCoord = aTexCoord;
+	
+	viewPos = inverse(u_view)[3].xyz;
+	
+	mat4 inverseModelMatrix = inverse(u_modelMatrix);
+	mat4 normalMatrix = transpose(inverseModelMatrix);
+	
+	Normal = normalize(u_modelMatrix * vec4(aNormal, 0.0f)).xyz;
+	Tangent = normalize(u_modelMatrix * vec4(aTangent, 0.0f)).xyz;
+	BiTangent = normalize(cross(Normal, Tangent));
+	
+	WorldPos = u_modelMatrix * vec4(aPos, 1.0f);
+	gl_Position = u_projection * u_view * WorldPos;
+}
+#shader fragment
+#version 460 core
+layout(location = 0) out vec4 NormalOut;
+layout(location = 1) out vec4 LightingOut;
+layout(location = 2) out int EntityOut;
+layout(location = 3) out vec4 WorldSpaceOut;
+layout(location = 4) out vec4 ScreenSpaceOut;
+
+in vec2 TexCoord;
+in vec4 WorldPos;
+in vec3 Normal;
+in vec3 Tangent;
+in vec3 BiTangent;
+in vec3 viewPos;
+
+layout (binding = 0) uniform sampler2D baseColorTexture;
+layout (binding = 1) uniform sampler2D normalTexture;
+layout (binding = 2) uniform sampler2D specularTexture;
+//layout (binding = 3) uniform sampler2D emissiveTexture;
+layout (binding = 4) uniform samplerCube shadowMapTexture;
+
+uniform int u_entityID;
+
+uniform int u_HasAlbedo = 0;
+uniform int u_HasNormal = 0;
+uniform int u_HasEmissive = 0;
+uniform vec3 u_EmissiveColor = vec3(0.0);
+uniform float u_EmissiveIntensity = 1.0;
+
+uniform vec3 u_AlbedoColor = vec3(1, 1, 1);
+uniform float u_TextureOffset = 1.0f;
+uniform float u_Transparent = 1.0f;
+
+layout(std430, binding = 0) buffer Camera {
+	mat4 u_projection;
+	mat4 u_view;
+};
+
+layout(std430, binding = 2) buffer GlobalBuffer {
+	int lightCount;
+};
+
+struct Light {
+    int type;           // 0 = Point, 1 = Directional, 2 = Spot
+    float intensity;
+    float colorR;
+    float colorG;
+    float colorB;
+    float padding[3];
+    mat4 data;          // Light-specific data
+};
+
+struct PointLight {
+    float intensity;
+    vec3 color;
+    vec3 position;
+    float constant;
+    float linear;
+    float quadratic;
+};
+
+struct DirectionalLight {
+	float intensity;
+    vec3 color;
+	vec3 direction;
+};
+
+// SSBO binding
+readonly restrict layout(std430, binding = 1) buffer lightsBuffer {
+    Light lights[];
+};
+
+PointLight UnpackPointLight(Light light) {
+    PointLight pl;
+    pl.intensity = light.intensity;
+    pl.color = vec3(light.colorR, light.colorG, light.colorB);
+    pl.position = light.data[0].xyz;
+    pl.constant = light.data[0].w;
+    pl.linear = light.data[1].x;
+    pl.quadratic = light.data[1].y;
+    return pl;
+}
+
+DirectionalLight UnpackDirectionalLight(Light light) {
+    DirectionalLight dl;
+    dl.intensity = light.intensity;
+    dl.color = vec3(light.colorR, light.colorG, light.colorB);
+    dl.direction = light.data[0].xyz;
+    //dl.hasShadow = light.data[0].w > 0.5;
+    return dl;
+}
+
+vec2 poissonDisk[16] = vec2[](
+   vec2(-0.94201624, -0.39906216), 
+   vec2( 0.94558609, -0.76890725), 
+   vec2(-0.09418410, -0.92938870), 
+   vec2( 0.34495938,  0.29387760),
+   vec2(-0.91588581,  0.45771432), 
+   vec2(-0.81544232, -0.87912464), 
+   vec2(-0.38277543,  0.27676845), 
+   vec2( 0.97484398,  0.75648379),
+   vec2( 0.44323325, -0.97511554), 
+   vec2( 0.53742981, -0.47373420), 
+   vec2(-0.26496911, -0.41893023), 
+   vec2( 0.79197514,  0.19090188),
+   vec2(-0.24188840,  0.99706507), 
+   vec2(-0.81409955,  0.91437590), 
+   vec2( 0.19984126,  0.78641367), 
+   vec2( 0.14383161, -0.14100790)
+);
+
+// برای Point Light با Poisson Disk 3D
+vec3 poissonDisk3D[16] = vec3[](
+   vec3(0.098, 0.971, -0.218), vec3(-0.956, -0.289, 0.036), 
+   vec3(-0.369, 0.874, -0.316), vec3(0.752, -0.619, 0.226),
+   vec3(-0.696, 0.631, 0.342), vec3(0.445, 0.845, -0.296),
+   vec3(-0.731, -0.661, -0.169), vec3(0.340, -0.883, -0.324),
+   vec3(0.813, 0.476, 0.334), vec3(-0.468, -0.727, 0.502),
+   vec3(0.186, -0.959, 0.214), vec3(-0.128, 0.957, 0.261),
+   vec3(0.681, -0.663, -0.310), vec3(-0.845, 0.523, -0.115),
+   vec3(0.738, 0.255, -0.625), vec3(-0.309, -0.128, -0.942)
+);
+
+float ShadowCalculation(vec3 fragPos, samplerCube shadowMap, vec3 lightPos, vec3 normal, vec3 lightDir, float farPlane, float softness) {
+    vec3 fragToLight = fragPos - lightPos;
+    float currentDepth = length(fragToLight);
+    
+    vec3 L = normalize(fragToLight);
+    float bias = max(0.05 * (1.0 - dot(normal, L)), 0.015);
+    
+    float viewDistance = length(viewPos - fragPos);
+    float filterRadius = (0.005 + softness * 0.01) * (1.0 + viewDistance / farPlane);
+    
+    float shadow = 0.0;
+    int samples = 16;
+    
+    for(int i = 0; i < samples; ++i) {
+        vec3 sampleDir = normalize(fragToLight + poissonDisk3D[i] * filterRadius);
+        float closestDepth = texture(shadowMap, sampleDir).r;
+        closestDepth *= farPlane;
+        
+        shadow += (currentDepth - bias > closestDepth) ? 1.0 : 0.0;
+    }
+    //shadow /= float(samples);
+    
+    float shadowFade = 1.0 - smoothstep(farPlane * 0.6, farPlane, currentDepth);
+    return shadow * shadowFade;
+}
+
+void main() {
+	vec4 baseColor = vec4(u_AlbedoColor, 1);
+	if (u_HasAlbedo == 1) {
+		baseColor = texture(baseColorTexture, vec2(TexCoord.x, TexCoord.y));
+		baseColor.a = u_Transparent;
+		if (baseColor.a < 0.1f) { discard; }
+	}
+	
+	vec3 normal = Normal;
+	if (u_HasNormal == 1) {
+		mat3 TBN = mat3(Tangent, BiTangent, Normal);
+		vec3 normalMap = texture(normalTexture, TexCoord).rgb * 2.0 - 1.0;
+		normal = normalize(TBN * normalMap);
+	}
+	NormalOut = vec4(normal, 1);
+	
+	vec3 ambient = 0.05 * baseColor.rgb;
+	vec3 totalDiffuse = vec3(0);
+	vec3 totalSpecular = vec3(0);
+	float totalShadow = 0.0f;
+	
+	float softness = 1.0f;
+	vec3 viewDir = normalize(viewPos - WorldPos.xyz);
+	float viewDistance = length(viewPos - WorldPos.xyz);
+	if (viewDistance > 50.0) softness = 2.0;
+	
+	for (int i = 0; i < lightCount; i++) {
+		Light light = lights[i];
+		PointLight pl = UnpackPointLight(light);
+		vec3 lightPos = pl.position;
+		vec3 lightColor = pl.color;
+		
+		vec3 lightDir = normalize(lightPos - WorldPos.xyz);
+		float distance = length(lightPos - WorldPos.xyz);
+		
+		if (distance > 16 * 1.5) continue;
+		
+		// Diffuse
+		float NdotL = max(dot(normal, lightDir), 0.0);
+		vec3 diffuse = NdotL * baseColor.rgb * lightColor * pl.intensity;
+		
+		// Specular (Blinn-Phong)
+		vec3 halfwayDir = normalize(lightDir + viewDir);
+		float spec = pow(max(dot(normal, halfwayDir), 0.0), 32.0);
+		vec3 specular = vec3(0.3) * spec * pl.intensity;
+		
+		// Attenuation
+		float attenuation = smoothstep(16, 0.0, distance);
+		
+		diffuse *= attenuation;
+		specular *= attenuation;
+		
+		float shadow = 0.0;
+		if (distance < 16 && NdotL > 0.0) {
+			shadow = ShadowCalculation(WorldPos.xyz, shadowMapTexture, lightPos, normal, lightDir, 16, softness);
+		}
+		
+		totalDiffuse += diffuse * (1 - shadow);
+		totalSpecular += specular * (1 - shadow);
+		totalShadow = max(totalShadow, shadow);
+	}
+	vec3 lighting = (ambient + (totalDiffuse + totalSpecular));
+	
+	// Emissive
+	vec3 emissive = vec3(0);
+	if (u_HasEmissive == 1) {
+		// TODO: Add emissive texture
+	} else {
+		emissive = u_EmissiveColor * u_EmissiveIntensity;
+	}
+	lighting += emissive;
+	
+	LightingOut.rgb = lighting;
+	WorldSpaceOut = WorldPos;
+	ScreenSpaceOut = u_view * WorldPos;
+	EntityOut = u_entityID;
+}

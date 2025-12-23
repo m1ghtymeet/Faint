@@ -1,10 +1,14 @@
+#pragma once
 #include <iostream>
 #include <chrono>
 #include <unordered_map>
+#include <future>
+#include <fstream>
+#include <thread>
 
 #include "Debug/Log.h"
 
-namespace Faint {
+namespace Moon {
 	struct ProfileResult {
 		std::string name;
 		long long start, end;
@@ -101,13 +105,13 @@ namespace Faint {
 
 #define HZ_PROFILE 1
 #if HZ_PROFILE
-#define HZ_PROFILE_BEGIN_SESSION(name, filepath) ::Faint::Instrumentor::Get().BeginSession(name, filepath)
-#define HZ_PROFILE_END_SESSION() ::Faint::Instrumentor::Get().EndSession()
-#define HZ_PROFILE_SCOPE(name) ::Faint::Timer timer##__LINE__(name);
-#define HZ_PROFILE_FUNCTION() HZ_PROFILE_SCOPE(__FUNCSIG__)
+#define FT_PROFILE_BEGIN_SESSION(name, filepath) ::Moon::Instrumentor::Get().BeginSession(name, filepath)
+#define FT_PROFILE_END_SESSION() ::Moon::Instrumentor::Get().EndSession()
+#define FT_PROFILE_SCOPE(name) ::Moon::Timer timer##__LINE__(name);
+#define FT_PROFILE_FUNCTION() FT_PROFILE_SCOPE(__FUNCSIG__)
 #else
-#define HZ_PROFILE_BEGIN_SESSION(name, filepath)
-#define HZ_PROFILE_END_SESSION()
-#define HZ_PROFILE_SCOPE(name)
-#define HZ_PROFILE_FUNCTION()
+#define FT_PROFILE_BEGIN_SESSION(name, filepath)
+#define FT_PROFILE_END_SESSION()
+#define FT_PROFILE_SCOPE(name)
+#define FT_PROFILE_FUNCTION()
 #endif

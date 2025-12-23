@@ -1,9 +1,9 @@
-#include "hzpch.h"
 #include "Log.h"
+#include <iostream>
 
 //#include "spdlog/sinks/stdout_color_sinks.h"
 
-namespace Faint {
+namespace Moon {
 
 	std::vector<LogEntry> Log::m_logs;
 

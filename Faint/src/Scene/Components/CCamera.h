@@ -4,31 +4,37 @@
 #include "CTransform.h"
 #include "Scene/Camera.h"
 
-namespace Faint {
-	struct CameraComponent : public AComponent {
+namespace Moon {
+	class CameraComponent : public AComponent {
 	public:
-		Ref<Camera> camera;
-		TransformComponent* transform;
-		bool primary = true;
-		bool fixedAspectRatio = false;
+		Camera camera;
 
-		CameraComponent(Entity& p_owner) : AComponent(p_owner) { camera = CreateRef<Camera>(); }
+		CameraComponent(Entity& p_owner);
 
 		std::string GetName() override { return "Camera"; }
 
-		json Serialize() {
-			BEGIN_SERIALIZE();
-			j["NearPlane"] = camera->m_nearPlane;
-			j["FarPlane"] = camera->m_farPlane;
-			j["FOV"] = camera->m_fieldOfView;
-			j["FixedAspectRatio"] = fixedAspectRatio;
-			j["Primary"] = primary;
-			END_SERIALIZE();
-		}
+		void Update(int renderWidth, int renderHeight);
 
-		bool Deserialize(const json& j) {
-			
-			return true;
-		}
+		void MarkAsDirty();
+
+		void SetFov(float p_value);
+
+		void SetNear(float p_value);
+
+		void SetFar(float p_value);
+
+		float GetFov() const;
+
+		float GetNear() const;
+
+		float GetFar() const;
+
+		json Serialize();
+
+		void Deserialize(const json& j);
+
+	private:
+		bool dirty = false;
+		float m_w = 1.0f, m_h = 1.0f;
 	};
 }

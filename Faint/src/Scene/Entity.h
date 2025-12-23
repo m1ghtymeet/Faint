@@ -3,18 +3,14 @@
 #include <unordered_map>
 #include <memory>
 
-#include "Core/Base.h"
-#include "Common/UUID.h"
-
 #include "Components/AComponent.h"
 #include "Components/CTransform.h"
+#include "Components/CCollider.h"
+#include "Components/Behaviour.h"
 #include "AssetManagment/Serializable.h"
 #include "Event/Event.h"
 
-#include <entt.hpp>
-#include <type_traits>
-
-namespace Faint {
+namespace Moon {
 	class Scene;
 	/**
 	* The Entity is the main class of the ECS, it corresponds to the entity and is
@@ -23,20 +19,17 @@ namespace Faint {
 	class Entity : public ISerializable {
 	public:
 		/**
-		* Constructor of the actor
+		* Constructor of the entity
 		* @param p_gbID
 		* @param p_name
 		* @param p_tag
 		* @param p_playing
 		*/
 		Entity(int64_t p_gbID, const std::string& p_name, const std::string& p_tag, bool& p_playing);
+
 		/**
-		* Constructor of the entity. It will automatically add a name, visibility and transform component
-		* @param handle
-		* @param scene
+		* Desctructor
 		*/
-		Entity(entt::entity handle, Scene* scene, bool& p_playing);
-		//Entity(const Entity& other);
 		~Entity();
 
 		/**
@@ -45,10 +38,21 @@ namespace Faint {
 		const std::string& GetName() const;
 
 		/**
+		* Return the current tag of the gameobject
+		*/
+		const std::string& GetTag() const;
+
+		/**
 		* Defines a new name for the gameobject
 		* @param p_name
 		*/
 		void SetName(const std::string& p_name);
+
+		/**
+		* Defines a new tag for the gameobject
+		* @param p_name
+		*/
+		void SetTag(const std::string& p_tag);
 
 		/**
 		* Enable or disable the gameobject
@@ -78,11 +82,6 @@ namespace Faint {
 		int64_t GetID() const;
 
 		/**
-		* Returns the Handle of the gameobject
-		*/
-		int GetHandle() const { return (int)_entity; }
-
-		/**
 		* Set an gameobject as the parent of this actor
 		* @param p_parent
 		*/
@@ -102,6 +101,12 @@ namespace Faint {
 		* Returns the parents of this gameobject (Or nullptr if no parent)
 		*/
 		Entity* GetParent() const;
+
+		Entity* GetChildByName(const std::string& name) const;
+		//Entity* FindChildByName(const std::string& name, bool recursive = true) const;
+
+		void AddChild(Entity* child);
+		void RemoveChild(Entity* child);
 
 		/**
 		* Returns the children of this gameobject
@@ -130,6 +135,52 @@ namespace Faint {
 		void OnAwake();
 
 		/**
+		* Called when the scene start or when the gameobject
+		* This method will always be called in an ordered triple.
+		* - OnAwake()
+		* - OnEnable()
+		* - OnStart()
+		*/
+		void OnStart();
+
+		/**
+		* Called when the scene start or when the gameobject
+		* This method will always be called in an ordered triple.
+		* - OnAwake()
+		* - OnEnable()
+		* - OnStart()
+		*/
+		void OnEnable();
+
+		/**
+		* Called when the gameobject hierarchical active state changed to false or gets destroyed while beign hierarchically active.
+		* Conditions:
+		* - Play mode only
+		*/
+		void OnDisable();
+
+		/**
+		* Called when the actor gets destroyed if it has been awaked
+		* Conditions:
+		* - Play mode only
+		*/
+		void OnDestroy();
+
+		/**
+		* Called every frame
+		* @param p_deltaTime
+		*/
+		void OnUpdate(float p_deltaTime);
+
+		void OnCollisionEnter(Moon::ColliderComponent& otherBody);
+		void OnCollisionStay(Moon::ColliderComponent& otherBody);
+		void OnCollisionExit(Moon::ColliderComponent& otherBody);
+
+		void OnTriggerEnter(Moon::ColliderComponent& otherBody);
+		void OnTriggerStay(Moon::ColliderComponent& otherBody);
+		void OnTriggerExit(Moon::ColliderComponent& otherBody);
+
+		/**
 		* Add a component to the gameobject (Or return the component if already existing)
 		* @param p_args (Paramter pack forwared to the component constructor)
 		*/
@@ -151,9 +202,17 @@ namespace Faint {
 		/**
 		* Returns a refrence to the vector of components
 		*/
-		std::vector<Ref<AComponent>>& GetComponents();
+		std::vector<std::shared_ptr<AComponent>>& GetComponents();
 
-		//Scene* GetScene() const { return m_scene; }
+		Behaviour& AddBehaviour(const std::string& p_name, const std::string& p_path = "");
+
+		bool RemoveBehaviour(Behaviour& p_behaviour);
+		
+		bool RemoveBehaviour(const std::string& p_name);
+
+		Behaviour* GetBehaviour(const std::string& p_name);
+
+		std::unordered_map<std::string, Behaviour>& GetBehaviours();
 
 		/**
 		* Serialize all the components
@@ -165,7 +224,11 @@ namespace Faint {
 		*/
 		void Deserialize(const json& str) override;
 
-		//TransformComponent& transform;
+		void RecursiveActiveUpdate();
+
+		void RecursiveWasActiveUpdate();
+
+		TransformComponent* transform = nullptr;
 
 		/* Deleted */
 		operator bool() const { return m_id != 0; }
@@ -174,7 +237,7 @@ namespace Faint {
 		* @brief Deleted copy constructor
 		* @param p_entity
 		*/
-		//Entity(const Entity& p_entity) = delete;
+		Entity(const Entity& p_entity) = delete;
 
 	public:
 		/* Some events that are triggeren when an action occur on the gameobject instance */
@@ -183,6 +246,7 @@ namespace Faint {
 
 		/* Some events that are triggered when an action occur on any gameobject */
 		static Event<Entity&> CreatedEvent;
+		static Event<Entity&> DestroyedEvent;
 	private:
 		/* Settings */
 		std::string m_name;
@@ -196,6 +260,7 @@ namespace Faint {
 		bool		m_sleeping = true;
 		bool		m_awaked = false;
 		bool		m_started = false;
+		bool		m_wasActive = false;
 
 		/* Parenting system stuff */
 		int64_t				 m_parentID = 0;
@@ -203,10 +268,8 @@ namespace Faint {
 		std::vector<Entity*> m_children;
 
 		/* Entities components */
-		std::vector<Ref<AComponent>> m_components;
-
-		entt::entity _entity{entt::null};
-		Scene* m_scene = nullptr;
+		std::vector<std::shared_ptr<AComponent>> m_components;
+		std::unordered_map<std::string, Behaviour> m_behaviours;
 	};
 }
 

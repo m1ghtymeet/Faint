@@ -1,0 +1,101 @@
+#shader vertex
+#version 460 core
+layout (location = 0) in vec3 aPos;
+layout (location = 1) in vec2 aTexCoord;
+layout (location = 2) in vec3 aNormal;
+layout (location = 3) in vec3 aTangent;
+
+out vec2 TexCoord;
+out flat int entityID;
+out vec4 WorldPos;
+out vec3 Normal;
+out vec3 Tangent;
+out vec3 BiTangent;
+out vec3 viewPos;
+
+layout(std430, binding = 0) buffer Camera {
+	mat4 u_projection;
+	mat4 u_view;
+};
+uniform mat4 u_modelMatrix;
+
+void main() {
+	TexCoord = aTexCoord;
+	
+	viewPos = inverse(u_view)[3].xyz;
+	
+	mat4 inverseModelMatrix = inverse(u_modelMatrix);
+	mat4 normalMatrix = transpose(inverseModelMatrix);
+	
+	Normal = normalize(u_modelMatrix * vec4(aNormal, 0.0f)).xyz;
+	Tangent = normalize(u_modelMatrix * vec4(aTangent, 0.0f)).xyz;
+	BiTangent = normalize(cross(Normal, Tangent));
+	
+	WorldPos = u_modelMatrix * vec4(aPos, 1.0f);
+	gl_Position = WorldPos;
+}
+
+#shader fragment
+#version 460 core
+layout(location = 0) out vec4 LightingOut;
+
+in vec2 TexCoord;
+in vec4 WorldPos;
+in vec3 Normal;
+in vec3 Tangent;
+in vec3 BiTangent;
+in vec3 viewPos;
+
+layout (binding = 0) uniform sampler2D baseColorTexture;
+layout (binding = 1) uniform sampler2D normalTexture;
+layout (binding = 2) uniform sampler2D specularTexture;
+layout (binding = 3) uniform samplerCube shadowMapTexture;
+
+uniform vec3 u_AlbedoColor;
+uniform int u_HasAlbedo;
+uniform int u_HasNormal;
+uniform float u_TextureOffset;
+
+void main() {
+	vec4 baseColor = vec4(u_AlbedoColor, 1);
+	if (u_HasAlbedo == 1) {
+		vec4 colorTexture = texture(baseColorTexture, vec2(TexCoord.x + u_TextureOffset, TexCoord.y + u_TextureOffset));
+		baseColor = colorTexture;
+		
+		if (colorTexture.a < 0.1f) {
+			discard;
+		}
+	}
+	
+	mat3 TBN = mat3(Tangent, BiTangent, Normal);
+	
+	vec3 normalMap = vec3(0.5f, 0.5f, 1.0f);
+	if (u_HasNormal == 1) {
+		normalMap = texture(normalTexture, TexCoord).rgb;
+	}
+	normalMap = normalize(normalMap * 2.0f - 1.0);
+	normalMap = normalize(TBN * normalMap);
+	vec3 normal = normalMap;
+	
+	vec3 ambient = 0.05 * baseColor.rgb;
+	vec3 lightPos = vec3(0, 0, 5);
+	vec3 lightColor = vec3(1, 1, 1);
+	vec3 lightDir = normalize(lightPos - WorldPos.xyz);
+	float diff = max(dot(lightDir, normal), 0.0);
+	vec3 diffuse = diff * baseColor.rgb * lightColor;
+	
+	vec3 viewDir = normalize(viewPos - WorldPos.xyz);
+	vec3 reflectDir = reflect(-lightDir, normal);
+	float spec = 0.0f;
+	vec3 halfwayDir = normalize(lightDir + viewDir);
+	spec = pow(max(dot(normal, halfwayDir), 0.0), 32.0);
+	vec3 specular = vec3(0.3) * spec;
+	
+	float distance = length(lightPos - WorldPos.xyz);
+	float attenuation = clamp(1.0 - distance / 16.0f, 0.0, 1.0);
+	diffuse *= attenuation;
+	specular *= attenuation;
+	
+	vec3 lighting = (ambient + (diffuse + specular));
+	LightingOut.rgb = lighting;
+}

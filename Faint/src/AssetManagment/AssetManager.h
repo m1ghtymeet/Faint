@@ -1,35 +1,76 @@
 #pragma once
-#include "Core/Base.h"
-#include "Common/UUID.h"
-#include "Common/Types.h"
-#include "Renderer/OpenGL/Types/Mesh.h"
-#include "Renderer/OpenGL/Types/Model.h"
-#include "Renderer/OpenGL/Types/SkinnedMesh.h"
-#include "Renderer/OpenGL/Types/SkinnedModel.h"
-#include "Renderer/Types/Texture.h"
+#include <string>
+#include <unordered_map>
+#include <mutex>
 
-namespace Faint { class Material; }
+namespace Moon::AssetManagment {
 
-using namespace Faint;
+	template<typename T>
+	class AAssetManager {
+	public:
+		/**
+		* Handle the creation of a asset and register it
+		* @param p_path
+		*/
+		T* LoadResource(const std::string& p_path);
+	
+		/**
+		* Handle the destruction of a asset and unregister it
+		* @param p_path
+		*/
+		void UnloadResource(const std::string& p_path);
 
-namespace AssetManager {
+		/**
+		* Return true if the resource exists (= Is registered)
+		* @param p_path
+		*/
+		bool IsResourceRegistered(const std::string& p_path);
 
-	std::map<Faint::UUID, std::string>& GetAssets();
-	std::vector<std::string>& GetLoadLog();
+		/**
+		* Register a resource and associate it with a given path.
+		* After this method is called, the memory managment of the resource
+		* belong the resourcee manager (Pointer memory deallocation)
+		* @param p_path
+		* @param p_instance
+		*/
+		T* RegisterResource(const std::string& p_path, T* p_instance);
 
-	bool IsAssetLoaded(const Faint::UUID& uuid);
+		/**
+		* Unregister a resource (You have to destroy the resource before calling this method
+		* to prevent memory leaks)
+		* @param p_path
+		*/
+		void UnregisterResource(const std::string& p_path);
 
-	// Models
-	Model* LoadModel(const std::string& path, bool absolute = false);
-	Model* GetModelByName(const std::string& name);
+		/**
+		* Return the instance linked to the given path or try to load it if not registered.
+		* Otherwise it will return nullptr.
+		* @param p_path
+		* @param p_tryToLoadIfNotFound
+		*/
+		T* GetResource(const std::string& p_path, bool p_tryToLoadIfNotFound = true);
 
-	// Skinned Models
-	Ref<SkinnedModel> LoadSkinnedModel(const std::string& path, bool absolute = false);
+		/**
+		* Operator engine to get an instance linked to the given path.
+		* @note See GetResource for more informations
+		* @param p_path
+		*/
+		T* operator[](const std::string& p_path);
 
-	// Textures
-	Ref<Texture> LoadTexture(const std::string& path);
-	Texture* GetTextureByIndex(int index);
+		/**
+		* Returns the resource map
+		*/
+		std::unordered_map<std::string, T*>& GetResources();
 
-	// Materials
-	Ref<Material> LoadMaterial(const std::string& path);
+	protected:
+		virtual T* CreateResource(const std::string& p_path) = 0;
+		virtual void DestroyResource(T* p_resource) = 0;
+		virtual void ReloadResource(T* p_resource, const std::string& p_path) = 0;
+
+	private:
+		std::unordered_map<std::string, T*> m_resources;
+		mutable std::mutex m_mutex;
+	};
 }
+
+#include "AssetManager.inl"

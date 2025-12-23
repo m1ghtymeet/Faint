@@ -30,13 +30,13 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
-    <UseDebugLibraries>true</UseDebugLibraries>
+    <UseDebugLibraries>false</UseDebugLibraries>
     <CharacterSet>Unicode</CharacterSet>
     <PlatformToolset>v143</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Dist|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
-    <UseDebugLibraries>true</UseDebugLibraries>
+    <UseDebugLibraries>false</UseDebugLibraries>
     <CharacterSet>Unicode</CharacterSet>
     <PlatformToolset>v143</PlatformToolset>
   </PropertyGroup>
@@ -75,14 +75,11 @@
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;IMGUI_DEFINE_MATH_OPERATORS;GLFW_INCLUDE_NONE;FT_PLATFORM_WINDOWS;FT_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>src;src\Hazel;vendor\filewatch;vendor\nlohmann_json\include;vendor\GLFW\include;vendor\glad\include;vendor\imgui;vendor\glm;vendor\stb_image;vendor\entt\include;vendor\yaml-cpp\include;vendor\physx\include;vendor\tinyobj;vendor\ImGuizmo;.;vendor\assimp\include;vendor\Coral\Coral.Native\Include;vendor\wren\src\include;vendor\lua\include;vendor\soloud\include;vendor\freetype;vendor\msdfgen;vendor\msdf-atlas-gen;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;IMGUI_DEFINE_MATH_OPERATORS;GLFW_INCLUDE_NONE;FT_PLATFORM_WINDOWS;FT_DEBUG;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>src;vendor\zstd\include;vendor\utf8;vendor\msdf-atlas-gen;vendor\nlohmann_json\include;vendor\tiny_gtlf.h;vendor\GLFW\include;vendor\glad\include;vendor\imgui;vendor\glm;vendor\stb_image;vendor\yaml-cpp\include;vendor\physx\include;vendor\ImGuizmo;.;vendor\assimp\include;vendor\freetype\include;vendor\Coral\Coral.Native\Include;vendor\lua\include;vendor\soloud\include;vendor\compressonator\include;vendor\msdfgen;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
-      <MinimalRebuild>false</MinimalRebuild>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
-      <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <AdditionalOptions>/MTd /Zi %(AdditionalOptions)</AdditionalOptions>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <ConformanceMode>true</ConformanceMode>
       <ExternalWarningLevel>Level3</ExternalWarningLevel>
@@ -92,21 +89,18 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <Lib>
-      <AdditionalDependencies>vendor\assimp\lib\assimp-vc143-mtd.lib;vendor\freetype\freetype.lib;vendor\lua\lib\lua-5.4.4.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>vendor\assimp\lib\assimp-vc143-mtd.lib;vendor\lua\lib\lua-5.4.4.lib;vendor\compressonator\lib\CMP_Framework_MTd.lib;vendor\compressonator\lib\Compressonator_MTd.lib;vendor\zstd\lib\libzstd.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;IMGUI_DEFINE_MATH_OPERATORS;GLFW_INCLUDE_NONE;FT_PLATFORM_WINDOWS;FT_RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>src;src\Hazel;vendor\filewatch;vendor\nlohmann_json\include;vendor\GLFW\include;vendor\glad\include;vendor\imgui;vendor\glm;vendor\stb_image;vendor\entt\include;vendor\yaml-cpp\include;vendor\physx\include;vendor\tinyobj;vendor\ImGuizmo;.;vendor\assimp\include;vendor\Coral\Coral.Native\Include;vendor\wren\src\include;vendor\lua\include;vendor\soloud\include;vendor\freetype;vendor\msdfgen;vendor\msdf-atlas-gen;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;IMGUI_DEFINE_MATH_OPERATORS;GLFW_INCLUDE_NONE;FT_PLATFORM_WINDOWS;FT_RELEASE;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>src;vendor\zstd\include;vendor\utf8;vendor\msdf-atlas-gen;vendor\nlohmann_json\include;vendor\tiny_gtlf.h;vendor\GLFW\include;vendor\glad\include;vendor\imgui;vendor\glm;vendor\stb_image;vendor\yaml-cpp\include;vendor\physx\include;vendor\ImGuizmo;.;vendor\assimp\include;vendor\freetype\include;vendor\Coral\Coral.Native\Include;vendor\lua\include;vendor\soloud\include;vendor\compressonator\include;vendor\msdfgen;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
-      <MinimalRebuild>false</MinimalRebuild>
-      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
-      <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <AdditionalOptions>/MTd %(AdditionalOptions)</AdditionalOptions>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <ConformanceMode>true</ConformanceMode>
       <ExternalWarningLevel>Level3</ExternalWarningLevel>
@@ -116,7 +110,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <Lib>
-      <AdditionalDependencies>vendor\assimp\lib\assimp-vc143-mtd.lib;vendor\freetype\freetype.lib;vendor\lua\lib\lua-5.4.4.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>vendor\assimp\lib\assimp-vc143-mtd.lib;vendor\lua\lib\lua-5.4.4.lib;vendor\compressonator\lib\CMP_Framework_MTd.lib;vendor\compressonator\lib\Compressonator_MTd.lib;vendor\zstd\lib\libzstd.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Dist|x64'">
@@ -124,13 +118,10 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;IMGUI_DEFINE_MATH_OPERATORS;GLFW_INCLUDE_NONE;FT_PLATFORM_WINDOWS;FT_DIST;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>src;src\Hazel;vendor\filewatch;vendor\nlohmann_json\include;vendor\GLFW\include;vendor\glad\include;vendor\imgui;vendor\glm;vendor\stb_image;vendor\entt\include;vendor\yaml-cpp\include;vendor\physx\include;vendor\tinyobj;vendor\ImGuizmo;.;vendor\assimp\include;vendor\Coral\Coral.Native\Include;vendor\wren\src\include;vendor\lua\include;vendor\soloud\include;vendor\freetype;vendor\msdfgen;vendor\msdf-atlas-gen;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>src;vendor\zstd\include;vendor\utf8;vendor\msdf-atlas-gen;vendor\nlohmann_json\include;vendor\tiny_gtlf.h;vendor\GLFW\include;vendor\glad\include;vendor\imgui;vendor\glm;vendor\stb_image;vendor\yaml-cpp\include;vendor\physx\include;vendor\ImGuizmo;.;vendor\assimp\include;vendor\freetype\include;vendor\Coral\Coral.Native\Include;vendor\lua\include;vendor\soloud\include;vendor\compressonator\include;vendor\msdfgen;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
-      <MinimalRebuild>false</MinimalRebuild>
-      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
-      <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <AdditionalOptions>/MD %(AdditionalOptions)</AdditionalOptions>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <ConformanceMode>true</ConformanceMode>
       <ExternalWarningLevel>Level3</ExternalWarningLevel>
@@ -140,7 +131,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <Lib>
-      <AdditionalDependencies>vendor\assimp\lib\assimp-vc143-mtd.lib;vendor\freetype\freetype.lib;vendor\lua\lib\lua-5.4.4.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>vendor\assimp\lib\assimp-vc143-mtd.lib;vendor\lua\lib\lua-5.4.4.lib;vendor\compressonator\lib\CMP_Framework_MTd.lib;vendor\compressonator\lib\Compressonator_MTd.lib;vendor\zstd\lib\libzstd.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -148,241 +139,372 @@
     <ClInclude Include="src\Analytics\GPUInfo.h" />
     <ClInclude Include="src\Analytics\RAMInfo.h" />
     <ClInclude Include="src\AssetManagment\AssetManager.h" />
+    <ClInclude Include="src\AssetManagment\AssetManager.inl" />
     <ClInclude Include="src\AssetManagment\Config.h" />
-    <ClInclude Include="src\AssetManagment\FontAwesome5.h" />
-    <ClInclude Include="src\AssetManagment\Prefab.h" />
+    <ClInclude Include="src\AssetManagment\Helper\Serializer.h" />
+    <ClInclude Include="src\AssetManagment\Loader\MaterialLoader.h" />
+    <ClInclude Include="src\AssetManagment\Loader\ModelLoader.h" />
+    <ClInclude Include="src\AssetManagment\Loader\TextureLoader.h" />
+    <ClInclude Include="src\AssetManagment\MaterialManager.h" />
+    <ClInclude Include="src\AssetManagment\MeshManager.h" />
+    <ClInclude Include="src\AssetManagment\ModelManager.h" />
     <ClInclude Include="src\AssetManagment\Project.h" />
-    <ClInclude Include="src\AssetManagment\Resource.h" />
     <ClInclude Include="src\AssetManagment\Serializable.h" />
-    <ClInclude Include="src\AssetManagment\ini.h" />
-    <ClInclude Include="src\Common\Enums.h" />
-    <ClInclude Include="src\Common\Types.h" />
-    <ClInclude Include="src\Common\UUID.h" />
-    <ClInclude Include="src\Core\Application.h" />
-    <ClInclude Include="src\Core\Audio.h" />
-    <ClInclude Include="src\Core\Base.h" />
-    <ClInclude Include="src\Core\EntryPoint.h" />
-    <ClInclude Include="src\Core\Layer.h" />
-    <ClInclude Include="src\Core\LayerStack.h" />
+    <ClInclude Include="src\AssetManagment\TextureManager.h" />
+    <ClInclude Include="src\Core\Audio\Audio.h" />
+    <ClInclude Include="src\Core\GlobalLocator.h" />
     <ClInclude Include="src\Core\OS.h" />
-    <ClInclude Include="src\Core\Object\Object.h" />
-    <ClInclude Include="src\Core\RegisterTypes.h" />
+    <ClInclude Include="src\Core\Rendering\ICamera.h" />
+    <ClInclude Include="src\Core\Settings\WindowSettings.h" />
     <ClInclude Include="src\Core\String.h" />
     <ClInclude Include="src\Core\Time.h" />
     <ClInclude Include="src\Core\Window.h" />
+    <ClInclude Include="src\Debug\Assertion.h" />
     <ClInclude Include="src\Debug\Instrumentor.h" />
     <ClInclude Include="src\Debug\Log.h" />
-    <ClInclude Include="src\Debug\MulticastDelegate.h" />
     <ClInclude Include="src\Engine.h" />
     <ClInclude Include="src\Event\Event.h" />
     <ClInclude Include="src\Event\Event.inl" />
     <ClInclude Include="src\Faint.h" />
-    <ClInclude Include="src\File\File.h" />
-    <ClInclude Include="src\File\FileFormats.h" />
     <ClInclude Include="src\FileSystem\Directory.h" />
     <ClInclude Include="src\FileSystem\File.h" />
     <ClInclude Include="src\FileSystem\FileSystem.h" />
+    <ClInclude Include="src\FileSystem\IniFile.h" />
+    <ClInclude Include="src\FileSystem\MaultFile.h" />
     <ClInclude Include="src\Input\Input.h" />
     <ClInclude Include="src\Input\KeyCodes.h" />
     <ClInclude Include="src\Math\AABB.h" />
+    <ClInclude Include="src\Math\Frustum.h" />
     <ClInclude Include="src\Math\Math.h" />
+    <ClInclude Include="src\Math\Ray.h" />
     <ClInclude Include="src\Math\Transform.h" />
-    <ClInclude Include="src\Modules\Modules.h" />
+    <ClInclude Include="src\Math\Types.h" />
+    <ClInclude Include="src\Physics\CharacterController.h" />
     <ClInclude Include="src\Physics\CollisionReports.h" />
     <ClInclude Include="src\Physics\Physics.h" />
-    <ClInclude Include="src\Physics\Types\RigidDynamic.h" />
-    <ClInclude Include="src\Renderer\EditorCamera.h" />
+    <ClInclude Include="src\Physics\PhysicsActor.h" />
+    <ClInclude Include="src\Physics\PhysicsEngine.h" />
+    <ClInclude Include="src\Physics\Types\IPhysicsShape.h" />
+    <ClInclude Include="src\Physics\Types\PhysicsBox.h" />
+    <ClInclude Include="src\Physics\Types_Old\RigidDynamic.h" />
+    <ClInclude Include="src\Renderer\Common\TBuffer.h" />
+    <ClInclude Include="src\Renderer\Common\TFramebuffer.h" />
+    <ClInclude Include="src\Renderer\Common\TIndexBuffer.h" />
+    <ClInclude Include="src\Renderer\Common\TRenderbuffer.h" />
+    <ClInclude Include="src\Renderer\Common\TTexture.h" />
+    <ClInclude Include="src\Renderer\Common\TVertexArray.h" />
+    <ClInclude Include="src\Renderer\Common\TVertexBuffer.h" />
+    <ClInclude Include="src\Renderer\Common\Types.h" />
+    <ClInclude Include="src\Renderer\Core\ARenderPass.h" />
+    <ClInclude Include="src\Renderer\Core\BaseRenderer.h" />
+    <ClInclude Include="src\Renderer\Core\CompositeRenderer.h" />
+    <ClInclude Include="src\Renderer\Core\CompositeRenderer.inl" />
+    <ClInclude Include="src\Renderer\Core\RenderDataManager.h" />
+    <ClInclude Include="src\Renderer\Data\Describable.h" />
+    <ClInclude Include="src\Renderer\Data\Describable.inl" />
+    <ClInclude Include="src\Renderer\Data\FrameDescriptor.h" />
+    <ClInclude Include="src\Renderer\Enums\AccessSpecified.h" />
+    <ClInclude Include="src\Renderer\Enums\BufferType.h" />
+    <ClInclude Include="src\Renderer\Enums\DataType.h" />
+    <ClInclude Include="src\Renderer\Enums\Format.h" />
+    <ClInclude Include="src\Renderer\Enums\FramebufferAttachment.h" />
+    <ClInclude Include="src\Renderer\Enums\PixelDataType.h" />
+    <ClInclude Include="src\Renderer\Enums\PrimitiveMode.h" />
+    <ClInclude Include="src\Renderer\Enums\RendererAPI.h" />
+    <ClInclude Include="src\Renderer\Enums\TextureType.h" />
+    <ClInclude Include="src\Renderer\Features\ARenderFeature.h" />
+    <ClInclude Include="src\Renderer\Features\DebugLineRenderFeature.h" />
+    <ClInclude Include="src\Renderer\Features\EntityRenderFeature.h" />
+    <ClInclude Include="src\Renderer\Features\LightingRenderFeature.h" />
     <ClInclude Include="src\Renderer\Light.h" />
-    <ClInclude Include="src\Renderer\OpenGL\OpenGLRenderer.h" />
-    <ClInclude Include="src\Renderer\OpenGL\Types\CubemapTexture.h" />
-    <ClInclude Include="src\Renderer\OpenGL\Types\CubemapView.h" />
-    <ClInclude Include="src\Renderer\OpenGL\Types\GL_SSBO.hpp" />
-    <ClInclude Include="src\Renderer\OpenGL\Types\GL_debug_mesh.hpp" />
-    <ClInclude Include="src\Renderer\OpenGL\Types\GL_frameBuffer.h" />
-    <ClInclude Include="src\Renderer\OpenGL\Types\GL_texture.h" />
-    <ClInclude Include="src\Renderer\OpenGL\Types\Mesh.h" />
-    <ClInclude Include="src\Renderer\OpenGL\Types\Model.h" />
-    <ClInclude Include="src\Renderer\OpenGL\Types\OpenGLBuffer.h" />
-    <ClInclude Include="src\Renderer\OpenGL\Types\OpenGLVertexArray.h" />
-    <ClInclude Include="src\Renderer\OpenGL\Types\ShadowMap.h" />
-    <ClInclude Include="src\Renderer\OpenGL\Types\SkinnedMesh.h" />
-    <ClInclude Include="src\Renderer\OpenGL\Types\SkinnedModel.h" />
-    <ClInclude Include="src\Renderer\RenderList.h" />
-    <ClInclude Include="src\Renderer\Renderer.h" />
+    <ClInclude Include="src\Renderer\OpenGL\GL_BackEnd.h" />
+    <ClInclude Include="src\Renderer\OpenGL\GL_Buffer.h" />
+    <ClInclude Include="src\Renderer\OpenGL\GL_DebugMesh.hpp" />
+    <ClInclude Include="src\Renderer\OpenGL\GL_IndexBuffer.h" />
+    <ClInclude Include="src\Renderer\OpenGL\GL_Mesh2D.h" />
+    <ClInclude Include="src\Renderer\OpenGL\GL_PBO.hpp" />
+    <ClInclude Include="src\Renderer\OpenGL\GL_SSBO.hpp" />
+    <ClInclude Include="src\Renderer\OpenGL\GL_Texture.h" />
+    <ClInclude Include="src\Renderer\OpenGL\GL_TextureHandle.h" />
+    <ClInclude Include="src\Renderer\OpenGL\GL_Types.h" />
+    <ClInclude Include="src\Renderer\OpenGL\GL_VertexArray.h" />
+    <ClInclude Include="src\Renderer\OpenGL\GL_VertexBuffer.h" />
+    <ClInclude Include="src\Renderer\OpenGL\GL_frameBuffer.h" />
+    <ClInclude Include="src\Renderer\OpenGL\RenderPasses\GL_GeometryPass.h" />
+    <ClInclude Include="src\Renderer\OpenGL\RenderPasses\GL_LightingPass.h" />
+    <ClInclude Include="src\Renderer\OpenGL\RenderPasses\GL_OutlinePass.h" />
+    <ClInclude Include="src\Renderer\OpenGL\RenderPasses\GL_PostProcessingPass.h" />
+    <ClInclude Include="src\Renderer\OpenGL\RenderPasses\GL_ShadowMapRenderPass.h" />
+    <ClInclude Include="src\Renderer\OpenGL\RenderPasses\GL_SkyboxPass.h" />
+    <ClInclude Include="src\Renderer\OpenGL\RenderPasses\GL_UIPass.h" />
+    <ClInclude Include="src\Renderer\PostProcess\AEffect.h" />
+    <ClInclude Include="src\Renderer\PostProcess\Bloom.h" />
+    <ClInclude Include="src\Renderer\PostProcess\SSAO.h" />
     <ClInclude Include="src\Renderer\SceneRenderer.h" />
     <ClInclude Include="src\Renderer\Shader.h" />
-    <ClInclude Include="src\Renderer\Types\Buffer.h" />
+    <ClInclude Include="src\Renderer\Types\IMesh.h" />
     <ClInclude Include="src\Renderer\Types\Material.h" />
-    <ClInclude Include="src\Renderer\Types\Texture.h" />
-    <ClInclude Include="src\Renderer\Types\Texture3D.h" />
-    <ClInclude Include="src\Renderer\Types\VertexArray.h" />
+    <ClInclude Include="src\Renderer\Types\Material.inl" />
+    <ClInclude Include="src\Renderer\Types\RenderFeatureType.h" />
+    <ClInclude Include="src\Renderer\Types\RenderPassType.h" />
+    <ClInclude Include="src\Renderer\Types\TextureData.h" />
+    <ClInclude Include="src\Renderer\Types\Vertex.h" />
+    <ClInclude Include="src\Renderer\Types\Vertex2D.h" />
+    <ClInclude Include="src\Renderer\Types\WeightedVertex.h" />
+    <ClInclude Include="src\Renderer\Util.h" />
     <ClInclude Include="src\Scene\Camera.h" />
     <ClInclude Include="src\Scene\Components.h" />
     <ClInclude Include="src\Scene\Components\AComponent.h" />
+    <ClInclude Include="src\Scene\Components\Behaviour.h" />
+    <ClInclude Include="src\Scene\Components\CAnimator.h" />
     <ClInclude Include="src\Scene\Components\CAudio.h" />
+    <ClInclude Include="src\Scene\Components\CAudioListener.h" />
     <ClInclude Include="src\Scene\Components\CBoxCollider.h" />
     <ClInclude Include="src\Scene\Components\CCamera.h" />
     <ClInclude Include="src\Scene\Components\CCapsuleCollider.h" />
+    <ClInclude Include="src\Scene\Components\CCharacterController.h" />
+    <ClInclude Include="src\Scene\Components\CCollider.h" />
+    <ClInclude Include="src\Scene\Components\CDirectionalLight.h" />
     <ClInclude Include="src\Scene\Components\CLight.h" />
+    <ClInclude Include="src\Scene\Components\CMaterialRenderer.h" />
     <ClInclude Include="src\Scene\Components\CModelRenderer.h" />
+    <ClInclude Include="src\Scene\Components\CParticle.h" />
+    <ClInclude Include="src\Scene\Components\CPointLight.h" />
+    <ClInclude Include="src\Scene\Components\CPostProcessing.h" />
+    <ClInclude Include="src\Scene\Components\CPrefab.h" />
+    <ClInclude Include="src\Scene\Components\CRigidBody.h" />
+    <ClInclude Include="src\Scene\Components\CSkinnedModelRenderer.h" />
+    <ClInclude Include="src\Scene\Components\CText2D.h" />
     <ClInclude Include="src\Scene\Components\CTransform.h" />
-    <ClInclude Include="src\Scene\Components\CharacterControllerComponent.h" />
-    <ClInclude Include="src\Scene\Components\LuaScriptComponent.h" />
+    <ClInclude Include="src\Scene\Components\CUIButton.h" />
+    <ClInclude Include="src\Scene\Components\CWidget.h" />
     <ClInclude Include="src\Scene\Components\NetScriptComponent.h" />
-    <ClInclude Include="src\Scene\Components\PrefabComponent.h" />
-    <ClInclude Include="src\Scene\Components\RigidBodyComponent.h" />
-    <ClInclude Include="src\Scene\Components\SkinnedMeshRendererComponent.h" />
-    <ClInclude Include="src\Scene\Components\SkyComponent.h" />
-    <ClInclude Include="src\Scene\Components\SphereColliderComponent.h" />
-    <ClInclude Include="src\Scene\Components\WrenScriptComponent.h" />
     <ClInclude Include="src\Scene\Entity.h" />
     <ClInclude Include="src\Scene\Entity.inl" />
-    <ClInclude Include="src\Scene\Environment\Environment.h" />
-    <ClInclude Include="src\Scene\Environment\ProcedularSky.h" />
     <ClInclude Include="src\Scene\Scene.h" />
-    <ClInclude Include="src\Scene\Systems\AudioSystem.h" />
-    <ClInclude Include="src\Scene\Systems\PhysicsSystem.h" />
-    <ClInclude Include="src\Scene\Systems\ScriptingSystem.h" />
-    <ClInclude Include="src\Scene\Systems\System.h" />
-    <ClInclude Include="src\Scene\Systems\TransformSystem.h" />
-    <ClInclude Include="src\Scene\Systems\UISystem.h" />
-    <ClInclude Include="src\Scripting\Modules\EngineModule.h" />
-    <ClInclude Include="src\Scripting\Modules\ScriptModule.h" />
-    <ClInclude Include="src\Scripting\NetModules\EngineNetAPI.h" />
-    <ClInclude Include="src\Scripting\NetModules\InputNetAPI.h" />
-    <ClInclude Include="src\Scripting\NetModules\NetAPIModule.h" />
-    <ClInclude Include="src\Scripting\NetModules\SceneNetAPI.h" />
+    <ClInclude Include="src\Scene\SceneManager.h" />
+    <ClInclude Include="src\Scripting\CSharp\CSharpScript.h" />
+    <ClInclude Include="src\Scripting\CSharp\CSharpScript.inl" />
+    <ClInclude Include="src\Scripting\CSharp\CSharpScriptEngine.h" />
+    <ClInclude Include="src\Scripting\Lua\LuaScript.h" />
+    <ClInclude Include="src\Scripting\Lua\LuaScriptEngine.h" />
     <ClInclude Include="src\Scripting\ScriptEngine.h" />
-    <ClInclude Include="src\Scripting\ScriptingEngine.h" />
-    <ClInclude Include="src\Scripting\ScriptingEngineNet.h" />
-    <ClInclude Include="src\Scripting\WrenScript.h" />
+    <ClInclude Include="src\Scripting\ScriptTypes.h" />
     <ClInclude Include="src\Subprocess.hpp" />
-    <ClInclude Include="src\Threading\Job.h" />
-    <ClInclude Include="src\Threading\JobSystem.h" />
+    <ClInclude Include="src\Types\Audio\AudioListener.h" />
+    <ClInclude Include="src\Types\Audio\AudioSource.h" />
+    <ClInclude Include="src\Types\Renderer\Mesh.h" />
+    <ClInclude Include="src\Types\Renderer\Model.h" />
+    <ClInclude Include="src\Types\Renderer\SkinnedMesh.h" />
+    <ClInclude Include="src\Types\Renderer\SkinnedModel.h" />
+    <ClInclude Include="src\Types\Renderer\TextInstance.h" />
+    <ClInclude Include="src\Types\Renderer\Texture.h" />
+    <ClInclude Include="src\Types\Types.h" />
+    <ClInclude Include="src\UI\Font.h" />
+    <ClInclude Include="src\UI\FontManager.h" />
     <ClInclude Include="src\UI\ImUI.h" />
-    <ClInclude Include="src\UI\Panels\APanel.h" />
-    <ClInclude Include="src\UI\Plugins\IPlugin.h" />
-    <ClInclude Include="src\UI\Plugins\Pluginable.h" />
-    <ClInclude Include="src\UI\Widgets\AWidget.h" />
-    <ClInclude Include="src\UI\Widgets\WidgetContainer.h" />
+    <ClInclude Include="src\UI\Mesh2D.h" />
+    <ClInclude Include="src\UI\UIBackEnd.h" />
+    <ClInclude Include="src\Util\AssimpImporter.h" />
+    <ClInclude Include="src\Util\BlendImporter.h" />
+    <ClInclude Include="src\Util\GLFTImporter.h" />
+    <ClInclude Include="src\Util\ImageTools.h" />
+    <ClInclude Include="src\Util\MSDFGenerator.h" />
+    <ClInclude Include="src\Util\ModelTools.h" />
     <ClInclude Include="src\Util\PlatformUtil.h" />
-    <ClInclude Include="src\Util\Util.h" />
-    <ClInclude Include="src\hzpch.h" />
     <ClInclude Include="vendor\ImGuizmo\ImGuizmo.h" />
-    <ClInclude Include="vendor\filewatch\FileWatch.hpp" />
     <ClInclude Include="vendor\glm\glm.hpp" />
     <ClInclude Include="vendor\glm\glm.inl" />
     <ClInclude Include="vendor\stb_image\stb_image.h" />
+    <ClInclude Include="vendor\stb_image\stb_image_resize.h" />
     <ClInclude Include="vendor\stb_image\stb_image_write.h" />
-    <ClInclude Include="vendor\tinyobj\tiny_obj_loader.h" />
-    <ClInclude Include="vendor\wren\src\vm\wren_common.h" />
-    <ClInclude Include="vendor\wren\src\vm\wren_compiler.h" />
-    <ClInclude Include="vendor\wren\src\vm\wren_core.h" />
-    <ClInclude Include="vendor\wren\src\vm\wren_debug.h" />
-    <ClInclude Include="vendor\wren\src\vm\wren_math.h" />
-    <ClInclude Include="vendor\wren\src\vm\wren_opcodes.h" />
-    <ClInclude Include="vendor\wren\src\vm\wren_primitive.h" />
-    <ClInclude Include="vendor\wren\src\vm\wren_utils.h" />
-    <ClInclude Include="vendor\wren\src\vm\wren_value.h" />
-    <ClInclude Include="vendor\wren\src\vm\wren_vm.h" />
+    <ClInclude Include="vendor\tinygltf\tinygltf.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Analytics\CPUInfo.cpp" />
     <ClCompile Include="src\Analytics\GPUInfo.cpp" />
     <ClCompile Include="src\Analytics\RAMInfo.cpp" />
-    <ClCompile Include="src\AssetManagment\AssetManager.cpp" />
     <ClCompile Include="src\AssetManagment\Config.cpp" />
-    <ClCompile Include="src\AssetManagment\Prefab.cpp" />
+    <ClCompile Include="src\AssetManagment\Helper\Serializer.cpp" />
+    <ClCompile Include="src\AssetManagment\Loader\MaterialLoader.cpp" />
+    <ClCompile Include="src\AssetManagment\Loader\ModelLoader.cpp" />
+    <ClCompile Include="src\AssetManagment\Loader\TextureLoader.cpp" />
+    <ClCompile Include="src\AssetManagment\MeshManager.cpp" />
+    <ClCompile Include="src\AssetManagment\ModelManager.cpp" />
     <ClCompile Include="src\AssetManagment\Project.cpp" />
-    <ClCompile Include="src\Common\UUID.cpp" />
-    <ClCompile Include="src\Core\Application.cpp" />
-    <ClCompile Include="src\Core\Audio.cpp" />
-    <ClCompile Include="src\Core\Layer.cpp" />
-    <ClCompile Include="src\Core\LayerStack.cpp" />
+    <ClCompile Include="src\AssetManagment\TextureManager.cpp" />
+    <ClCompile Include="src\Core\Audio\Audio.cpp" />
+    <ClCompile Include="src\Core\GlobalLocator.cpp" />
     <ClCompile Include="src\Core\OS.cpp" />
     <ClCompile Include="src\Core\String.cpp" />
+    <ClCompile Include="src\Core\Time.cpp" />
     <ClCompile Include="src\Core\Window.cpp" />
     <ClCompile Include="src\Debug\Log.cpp" />
     <ClCompile Include="src\Engine.cpp" />
-    <ClCompile Include="src\File\File.cpp" />
-    <ClCompile Include="src\FileSystem\File.cpp">
-      <ObjectFileName>$(IntDir)\File1.obj</ObjectFileName>
-    </ClCompile>
+    <ClCompile Include="src\FileSystem\Directory.cpp" />
+    <ClCompile Include="src\FileSystem\File.cpp" />
     <ClCompile Include="src\FileSystem\FileSystem.cpp" />
+    <ClCompile Include="src\FileSystem\MaultFile.cpp" />
     <ClCompile Include="src\Input\Input.cpp" />
     <ClCompile Include="src\Math\AABB.cpp" />
+    <ClCompile Include="src\Math\Frustum.cpp" />
     <ClCompile Include="src\Math\Math.cpp" />
+    <ClCompile Include="src\Math\Ray.cpp" />
     <ClCompile Include="src\Math\Transform.cpp" />
+    <ClCompile Include="src\Physics\CharacterController.cpp" />
     <ClCompile Include="src\Physics\Physics.cpp" />
+    <ClCompile Include="src\Physics\PhysicsActor.cpp" />
+    <ClCompile Include="src\Physics\PhysicsEngine.cpp" />
     <ClCompile Include="src\Physics\Physics_debug.cpp" />
     <ClCompile Include="src\Physics\Physics_util.cpp" />
-    <ClCompile Include="src\Physics\Types\RigidDynamic.cpp" />
-    <ClCompile Include="src\Renderer\EditorCamera.cpp" />
+    <ClCompile Include="src\Physics\Types\PhysicsBox.cpp" />
+    <ClCompile Include="src\Physics\Types_Old\RigidDynamic.cpp" />
+    <ClCompile Include="src\Renderer\Core\ARenderPass.cpp" />
+    <ClCompile Include="src\Renderer\Core\BaseRenderer.cpp" />
+    <ClCompile Include="src\Renderer\Core\CompositeRenderer.cpp" />
+    <ClCompile Include="src\Renderer\Core\RenderDataManager.cpp" />
+    <ClCompile Include="src\Renderer\Data\Describable.cpp" />
+    <ClCompile Include="src\Renderer\Features\ARenderFeature.cpp" />
+    <ClCompile Include="src\Renderer\Features\DebugLineRenderFeature.cpp" />
+    <ClCompile Include="src\Renderer\Features\EntityRenderFeature.cpp" />
+    <ClCompile Include="src\Renderer\Features\LightingRenderFeature.cpp" />
     <ClCompile Include="src\Renderer\Light.cpp" />
-    <ClCompile Include="src\Renderer\OpenGL\OpenGLRenderer.cpp" />
-    <ClCompile Include="src\Renderer\OpenGL\OpenGLRenderer_util.cpp" />
-    <ClCompile Include="src\Renderer\OpenGL\Types\CubemapTexture.cpp" />
-    <ClCompile Include="src\Renderer\OpenGL\Types\CubemapView.cpp" />
-    <ClCompile Include="src\Renderer\OpenGL\Types\GL_frameBuffer.cpp" />
-    <ClCompile Include="src\Renderer\OpenGL\Types\GL_texture.cpp" />
-    <ClCompile Include="src\Renderer\OpenGL\Types\Mesh.cpp" />
-    <ClCompile Include="src\Renderer\OpenGL\Types\Model.cpp" />
-    <ClCompile Include="src\Renderer\OpenGL\Types\OpenGLBuffer.cpp" />
-    <ClCompile Include="src\Renderer\OpenGL\Types\OpenGLVertexArray.cpp" />
-    <ClCompile Include="src\Renderer\OpenGL\Types\ShadowMap.cpp" />
-    <ClCompile Include="src\Renderer\OpenGL\Types\SkinnedMesh.cpp" />
-    <ClCompile Include="src\Renderer\OpenGL\Types\SkinnedModel.cpp" />
-    <ClCompile Include="src\Renderer\Renderer.cpp" />
+    <ClCompile Include="src\Renderer\OpenGL\GL_BackEnd.cpp" />
+    <ClCompile Include="src\Renderer\OpenGL\GL_Buffer.cpp" />
+    <ClCompile Include="src\Renderer\OpenGL\GL_IndexBuffer.cpp" />
+    <ClCompile Include="src\Renderer\OpenGL\GL_Texture.cpp" />
+    <ClCompile Include="src\Renderer\OpenGL\GL_TextureHandle.cpp" />
+    <ClCompile Include="src\Renderer\OpenGL\GL_VertexArray.cpp" />
+    <ClCompile Include="src\Renderer\OpenGL\GL_VertexBuffer.cpp" />
+    <ClCompile Include="src\Renderer\OpenGL\GL_frameBuffer.cpp" />
+    <ClCompile Include="src\Renderer\OpenGL\RenderPasses\GL_GeometryPass.cpp" />
+    <ClCompile Include="src\Renderer\OpenGL\RenderPasses\GL_LightingPass.cpp" />
+    <ClCompile Include="src\Renderer\OpenGL\RenderPasses\GL_OutlinePass.cpp" />
+    <ClCompile Include="src\Renderer\OpenGL\RenderPasses\GL_PostProcessingPass.cpp" />
+    <ClCompile Include="src\Renderer\OpenGL\RenderPasses\GL_ShadowMapRenderPass.cpp" />
+    <ClCompile Include="src\Renderer\OpenGL\RenderPasses\GL_SkyboxPass.cpp" />
+    <ClCompile Include="src\Renderer\OpenGL\RenderPasses\GL_UIPass.cpp" />
     <ClCompile Include="src\Renderer\SceneRenderer.cpp" />
-    <ClCompile Include="src\Renderer\SceneRenderer_util.cpp" />
     <ClCompile Include="src\Renderer\Shader.cpp" />
-    <ClCompile Include="src\Renderer\Types\Buffer.cpp" />
     <ClCompile Include="src\Renderer\Types\Material.cpp" />
-    <ClCompile Include="src\Renderer\Types\Texture.cpp" />
-    <ClCompile Include="src\Renderer\Types\Texture3D.cpp" />
-    <ClCompile Include="src\Renderer\Types\VertexArray.cpp" />
+    <ClCompile Include="src\Renderer\Util.cpp" />
     <ClCompile Include="src\Scene\Camera.cpp" />
     <ClCompile Include="src\Scene\Components\AComponent.cpp" />
+    <ClCompile Include="src\Scene\Components\Behaviour.cpp" />
+    <ClCompile Include="src\Scene\Components\CAudio.cpp" />
+    <ClCompile Include="src\Scene\Components\CAudioListener.cpp" />
+    <ClCompile Include="src\Scene\Components\CBoxCollider.cpp" />
+    <ClCompile Include="src\Scene\Components\CCamera.cpp" />
+    <ClCompile Include="src\Scene\Components\CCapsuleCollider.cpp" />
+    <ClCompile Include="src\Scene\Components\CCharacterController.cpp" />
+    <ClCompile Include="src\Scene\Components\CCollider.cpp" />
+    <ClCompile Include="src\Scene\Components\CDirectionalLight.cpp" />
     <ClCompile Include="src\Scene\Components\CLight.cpp" />
+    <ClCompile Include="src\Scene\Components\CMaterialRenderer.cpp" />
     <ClCompile Include="src\Scene\Components\CModelRenderer.cpp" />
+    <ClCompile Include="src\Scene\Components\CPointLight.cpp" />
+    <ClCompile Include="src\Scene\Components\CPrefab.cpp" />
+    <ClCompile Include="src\Scene\Components\CRigidBody.cpp" />
+    <ClCompile Include="src\Scene\Components\CSkinnedModelRenderer.cpp" />
+    <ClCompile Include="src\Scene\Components\CText2D.cpp" />
     <ClCompile Include="src\Scene\Components\CTransform.cpp" />
-    <ClCompile Include="src\Scene\Components\RigidBodyComponent.cpp" />
-    <ClCompile Include="src\Scene\Components\SkinnedMeshRendererComponent.cpp" />
+    <ClCompile Include="src\Scene\Components\CUIButton.cpp" />
+    <ClCompile Include="src\Scene\Components\CWidget.cpp" />
     <ClCompile Include="src\Scene\Entity.cpp" />
-    <ClCompile Include="src\Scene\Environment\Environment.cpp" />
-    <ClCompile Include="src\Scene\Environment\ProcedularSky.cpp" />
     <ClCompile Include="src\Scene\Scene.cpp" />
-    <ClCompile Include="src\Scene\Systems\AudioSystem.cpp" />
-    <ClCompile Include="src\Scene\Systems\PhysicsSystem.cpp" />
-    <ClCompile Include="src\Scene\Systems\ScriptingSystem.cpp" />
-    <ClCompile Include="src\Scene\Systems\TransformSystem.cpp" />
-    <ClCompile Include="src\Scene\Systems\UISystem.cpp" />
-    <ClCompile Include="src\Scripting\NetModules\EngineNetAPI.cpp" />
-    <ClCompile Include="src\Scripting\NetModules\InputNetAPI.cpp" />
-    <ClCompile Include="src\Scripting\NetModules\SceneNetAPI.cpp" />
-    <ClCompile Include="src\Scripting\ScriptEngine.cpp" />
-    <ClCompile Include="src\Scripting\ScriptingEngine.cpp" />
-    <ClCompile Include="src\Scripting\ScriptingEngineNet.cpp" />
-    <ClCompile Include="src\Scripting\WrenScript.cpp" />
-    <ClCompile Include="src\Threading\Job.cpp" />
-    <ClCompile Include="src\Threading\JobSystem.cpp" />
+    <ClCompile Include="src\Scene\SceneManager.cpp" />
+    <ClCompile Include="src\Scripting\CSharp\CSharpScript.cpp" />
+    <ClCompile Include="src\Scripting\CSharp\CSharpScriptEngine.cpp" />
+    <ClCompile Include="src\Scripting\Lua\LuaScript.cpp" />
+    <ClCompile Include="src\Scripting\Lua\LuaScriptEngine.cpp" />
+    <ClCompile Include="src\Scripting\Lua\Modules\LuaBindComponents.cpp" />
+    <ClCompile Include="src\Scripting\Lua\Modules\LuaBindCore.cpp" />
+    <ClCompile Include="src\Scripting\Lua\Modules\LuaBindGlobal.cpp" />
+    <ClCompile Include="src\Scripting\Lua\Modules\LuaBindMath.cpp" />
+    <ClCompile Include="src\Scripting\Lua\Modules\LuaBindPhysics.cpp" />
+    <ClCompile Include="src\Scripting\Lua\Modules\LuaBindScene.cpp" />
+    <ClCompile Include="src\Types\Audio\AudioListener.cpp" />
+    <ClCompile Include="src\Types\Audio\AudioSource.cpp" />
+    <ClCompile Include="src\Types\Renderer\Model.cpp" />
+    <ClCompile Include="src\Types\Renderer\SkinnedModel.cpp" />
+    <ClCompile Include="src\Types\Renderer\Texture.cpp" />
+    <ClCompile Include="src\UI\Font.cpp" />
+    <ClCompile Include="src\UI\FontManager.cpp" />
     <ClCompile Include="src\UI\ImUI.cpp" />
-    <ClCompile Include="src\UI\Panels\APanel.cpp" />
+    <ClCompile Include="src\UI\UIBackEnd.cpp" />
+    <ClCompile Include="src\Util\AssimpImporter.cpp" />
+    <ClCompile Include="src\Util\BlendImporter.cpp" />
+    <ClCompile Include="src\Util\GLFTImporter.cpp" />
+    <ClCompile Include="src\Util\ImageTools.cpp" />
+    <ClCompile Include="src\Util\MSDFGenerator.cpp" />
+    <ClCompile Include="src\Util\ModelTools.cpp" />
     <ClCompile Include="src\Util\PlatformUtil.cpp" />
-    <ClCompile Include="src\Util\Util_mesh.cpp" />
-    <ClCompile Include="src\Util\Util_text.cpp" />
-    <ClCompile Include="src\hzpch.cpp" />
     <ClCompile Include="vendor\ImGuizmo\ImGuizmo.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="vendor\msdf-atlas-gen\Charset.cpp" />
+    <ClCompile Include="vendor\msdf-atlas-gen\FontGeometry.cpp" />
+    <ClCompile Include="vendor\msdf-atlas-gen\GlyphGeometry.cpp" />
+    <ClCompile Include="vendor\msdf-atlas-gen\GridAtlasPacker.cpp" />
+    <ClCompile Include="vendor\msdf-atlas-gen\Padding.cpp" />
+    <ClCompile Include="vendor\msdf-atlas-gen\RectanglePacker.cpp" />
+    <ClCompile Include="vendor\msdf-atlas-gen\TightAtlasPacker.cpp" />
+    <ClCompile Include="vendor\msdf-atlas-gen\Workload.cpp" />
+    <ClCompile Include="vendor\msdf-atlas-gen\artery-font-export.cpp" />
+    <ClCompile Include="vendor\msdf-atlas-gen\bitmap-blit.cpp" />
+    <ClCompile Include="vendor\msdf-atlas-gen\charset-parser.cpp" />
+    <ClCompile Include="vendor\msdf-atlas-gen\csv-export.cpp" />
+    <ClCompile Include="vendor\msdf-atlas-gen\glyph-generators.cpp" />
+    <ClCompile Include="vendor\msdf-atlas-gen\image-encode.cpp" />
+    <ClCompile Include="vendor\msdf-atlas-gen\json-export.cpp" />
+    <ClCompile Include="vendor\msdf-atlas-gen\main.cpp" />
+    <ClCompile Include="vendor\msdf-atlas-gen\shadron-preview-generator.cpp" />
+    <ClCompile Include="vendor\msdf-atlas-gen\size-selectors.cpp" />
+    <ClCompile Include="vendor\msdf-atlas-gen\utf8.cpp" />
+    <ClCompile Include="vendor\msdfgen\CMakeFiles\3.29.3\CompilerIdCXX\CMakeCXXCompilerId.cpp" />
+    <ClCompile Include="vendor\msdfgen\build\release-current\build-win32-omp\CMakeFiles\3.29.3\CompilerIdCXX\CMakeCXXCompilerId.cpp">
+      <ObjectFileName>$(IntDir)\CMakeCXXCompilerId1.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="vendor\msdfgen\build\release-current\build-win32\CMakeFiles\3.29.3\CompilerIdCXX\CMakeCXXCompilerId.cpp">
+      <ObjectFileName>$(IntDir)\CMakeCXXCompilerId2.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="vendor\msdfgen\build\release-current\build-win64-omp\CMakeFiles\3.29.3\CompilerIdCXX\CMakeCXXCompilerId.cpp">
+      <ObjectFileName>$(IntDir)\CMakeCXXCompilerId3.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="vendor\msdfgen\build\release-current\build-win64\CMakeFiles\3.29.3\CompilerIdCXX\CMakeCXXCompilerId.cpp">
+      <ObjectFileName>$(IntDir)\CMakeCXXCompilerId4.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="vendor\msdfgen\core\Contour.cpp" />
+    <ClCompile Include="vendor\msdfgen\core\DistanceMapping.cpp" />
+    <ClCompile Include="vendor\msdfgen\core\EdgeHolder.cpp" />
+    <ClCompile Include="vendor\msdfgen\core\MSDFErrorCorrection.cpp" />
+    <ClCompile Include="vendor\msdfgen\core\Projection.cpp" />
+    <ClCompile Include="vendor\msdfgen\core\Scanline.cpp" />
+    <ClCompile Include="vendor\msdfgen\core\Shape.cpp" />
+    <ClCompile Include="vendor\msdfgen\core\contour-combiners.cpp" />
+    <ClCompile Include="vendor\msdfgen\core\edge-coloring.cpp" />
+    <ClCompile Include="vendor\msdfgen\core\edge-segments.cpp" />
+    <ClCompile Include="vendor\msdfgen\core\edge-selectors.cpp" />
+    <ClCompile Include="vendor\msdfgen\core\equation-solver.cpp" />
+    <ClCompile Include="vendor\msdfgen\core\export-svg.cpp" />
+    <ClCompile Include="vendor\msdfgen\core\msdf-error-correction.cpp" />
+    <ClCompile Include="vendor\msdfgen\core\msdfgen.cpp" />
+    <ClCompile Include="vendor\msdfgen\core\rasterization.cpp" />
+    <ClCompile Include="vendor\msdfgen\core\render-sdf.cpp" />
+    <ClCompile Include="vendor\msdfgen\core\save-bmp.cpp" />
+    <ClCompile Include="vendor\msdfgen\core\save-fl32.cpp" />
+    <ClCompile Include="vendor\msdfgen\core\save-rgba.cpp" />
+    <ClCompile Include="vendor\msdfgen\core\save-tiff.cpp" />
+    <ClCompile Include="vendor\msdfgen\core\sdf-error-estimation.cpp" />
+    <ClCompile Include="vendor\msdfgen\core\shape-description.cpp" />
+    <ClCompile Include="vendor\msdfgen\ext\import-font.cpp" />
+    <ClCompile Include="vendor\msdfgen\ext\import-svg.cpp" />
+    <ClCompile Include="vendor\msdfgen\ext\resolve-shape-geometry.cpp" />
+    <ClCompile Include="vendor\msdfgen\ext\save-png.cpp" />
+    <ClCompile Include="vendor\msdfgen\main.cpp">
+      <ObjectFileName>$(IntDir)\main1.obj</ObjectFileName>
+    </ClCompile>
     <ClCompile Include="vendor\stb_image\stb_image.cpp" />
-    <ClCompile Include="vendor\wren\src\vm\wren_compiler.c" />
-    <ClCompile Include="vendor\wren\src\vm\wren_core.c" />
-    <ClCompile Include="vendor\wren\src\vm\wren_debug.c" />
-    <ClCompile Include="vendor\wren\src\vm\wren_primitive.c" />
-    <ClCompile Include="vendor\wren\src\vm\wren_utils.c" />
-    <ClCompile Include="vendor\wren\src\vm\wren_value.c" />
-    <ClCompile Include="vendor\wren\src\vm\wren_vm.c" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="vendor\GLFW\GLFW.vcxproj">
@@ -405,12 +527,6 @@
     </ProjectReference>
     <ProjectReference Include="vendor\soloud\Soloud.vcxproj">
       <Project>{7BF190D1-6793-BBA7-504E-CFFB3C8F42F8}</Project>
-    </ProjectReference>
-    <ProjectReference Include="vendor\msdfgen.vcxproj">
-      <Project>{8900D8DD-F5DF-5679-FEF7-E14F6A56BDDA}</Project>
-    </ProjectReference>
-    <ProjectReference Include="vendor\msdf-atlas-gen.vcxproj">
-      <Project>{38BD587B-248B-4C81-0D1F-BDA7F98B28E6}</Project>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

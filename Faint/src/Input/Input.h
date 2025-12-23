@@ -1,12 +1,13 @@
 #pragma once
 
 #include "Core/Base.h"
+#include <Core/Window.h>
 
-namespace Faint {
+namespace Moon {
 
 	class Input {
 	public:
-		static void Init();
+		static void Init(Window p_window);
 		static void Update();
 		static void ShowCursor();
 		static void DisableCursor();

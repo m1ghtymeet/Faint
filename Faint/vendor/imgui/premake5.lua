@@ -27,15 +27,18 @@ project "ImGui"
 		"imgui_impl_glfw.cpp",
 		"TextEditor.h",
 		"TextEditor.cpp",
+		"node/**.h",
+		"node/**.cpp"
 	}
 	
 	includedirs {
 		"%{IncludeDir.GLFW}",
+		"%{IncludeDir.ImGui}",
 	}
 
 	filter "system:windows"
 		systemversion "latest"
-		cppdialect "C++17"
+		cppdialect "C++20"
 		staticruntime "On"
 
 	filter "system:linux"

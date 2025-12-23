@@ -1,6 +1,6 @@
 #include "Event.h"
 
-namespace Faint
+namespace Moon
 {
 	template<class... ArgTypes>
 	ListenerID Event<ArgTypes...>::AddListener(Callback callback)

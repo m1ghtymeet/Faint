@@ -17,11 +17,9 @@ project "Faint"
 	targetdir ("%{wks.location}/bin/".. outputdir .."/%{prj.name}")
 	objdir ("%{wks.location}/bin-int/".. outputdir .."/%{prj.name}")
 	
-	--pchheader "hzpch.h"
-	--pchsource "src/hzpch.cpp"
-	
 	files {
 		"src/**.h",
+		"src/**.c",
 		"src/**.cpp",
 		"src/**.hpp",
 		"src/**.inl",
@@ -31,11 +29,11 @@ project "Faint"
 		"vendor/glm/glm.inl",
 		"vendor/ImGuizmo/ImGuizmo.h",
 		"vendor/ImGuizmo/ImGuizmo.cpp",
+		"vendor/msdfgen/**.cpp",
+		"vendor/msdfgen/core/**.cpp",
+		"vendor/msdf-atlas-gen/**.cpp",
 		
-		"vendor/tinyobj/tiny_obj_loader.h",
-		"vendor/filewatch/FileWatch.hpp",
-        "vendor/wren/src/vm/*.c",
-		"vendor/wren/src/vm/*.h",
+		"vendor/tinygltf/tinygltf.h"
 	}
 	
 	defines {
@@ -46,32 +44,28 @@ project "Faint"
 	
 	includedirs {
 		"src",
-		"src/Hazel",
-		"vendor/filewatch",
+		"vendor/zstd/include",
+		"vendor/utf8",
 		"vendor/stb_image/**.h",
+		"vendor/msdf-atlas-gen",
 		"vendor/nlohmann_json/include",
-		-- "vendor/sol.hpp",
+		"vendor/tiny_gtlf.h",
 		"%{IncludeDir.GLFW}",
 		"%{IncludeDir.glad}",
 		"%{IncludeDir.ImGui}",
 		"%{IncludeDir.glm}",
 		"%{IncludeDir.stb_image}",
-		"%{IncludeDir.entt}",
 		"%{IncludeDir.yaml_cpp}",
 		"%{IncludeDir.PhysX}",
-		-- "%{IncludeDir.Jolt}",
-		-- "%{IncludeDir.bullet}",
-		"%{IncludeDir.TinyOBJ}",
 		"%{IncludeDir.ImGuizmo}",
 		"%{IncludeDir.gli}",
 		"%{IncludeDir.Assimp}",
+		"%{IncludeDir.FreeType}",
 		"%{IncludeDir.Coral}",
-		"%{IncludeDir.Wren}",
 		"%{IncludeDir.Lua}",
 		"%{IncludeDir.Soloud}",
-		"%{IncludeDir.FreeType}",
-		"%{IncludeDir.msdfgen}",
-		"%{IncludeDir.msdf_atlas_gen}",
+		"%{wks.location}/Faint/vendor/compressonator/include",
+		"%{wks.location}/Faint/vendor/msdfgen"
 	}
 	
 	links {
@@ -81,23 +75,13 @@ project "Faint"
 		"ImGui",
 		"yaml-cpp",
 		"PhysX",
-		-- "JoltPhysics",
 		"Coral.Native",
 		"soloud",
-		"%{wks.location}/Faint/vendor/freetype/freetype.lib",
 		"%{wks.location}/Faint/vendor/lua/lib/lua-5.4.4.lib",
-		"msdfgen",
-		"msdf-atlas-gen",
-		"opengl32.lib",
-		
-		-- "%{wks.location}/Faint/vendor/bullet/lib/%{cfg.buildcfg}/Bullet3Collision.lib",
-		-- "%{wks.location}/Faint/vendor/bullet/lib/%{cfg.buildcfg}/Bullet3Common.lib",
-		-- "%{wks.location}/Faint/vendor/bullet/lib/%{cfg.buildcfg}/Bullet3Dynamics.lib",
-		-- "%{wks.location}/Faint/vendor/bullet/lib/%{cfg.buildcfg}/Bullet3Geometry.lib",
-		-- "%{wks.location}/Faint/vendor/bullet/lib/%{cfg.buildcfg}/BulletCollision.lib",
-		-- "%{wks.location}/Faint/vendor/bullet/lib/%{cfg.buildcfg}/BulletDynamics.lib",
-		-- "%{wks.location}/Faint/vendor/bullet/lib/%{cfg.buildcfg}/BulletSoftBody.lib",
-		-- "%{wks.location}/Faint/vendor/bullet/lib/%{cfg.buildcfg}/LinearMath.lib",
+		"%{wks.location}/Faint/vendor/compressonator/lib/CMP_Framework_MTd.lib",
+		"%{wks.location}/Faint/vendor/compressonator/lib/Compressonator_MTd.lib",
+		"%{wks.location}/Faint/vendor/zstd/lib/libzstd.lib",
+		"opengl32.lib"
 	}
 	
 	filter "files:vendor/ImGuizmo/**.cpp"
@@ -105,21 +89,19 @@ project "Faint"
 	
 	filter "system:windows"
 		systemversion "latest"
-		defines { "FT_PLATFORM_WINDOWS" }
+		defines "FT_PLATFORM_WINDOWS"
 		
 	filter "configurations:Debug"
-		defines "FT_DEBUG"
-		buildoptions "/MTd"
+		defines { "FT_DEBUG", "_DEBUG" }
+		runtime "Debug"
 		symbols "on"
 		
-		buildoptions {"/Zi"}
-		
 	filter "configurations:Release"
-		defines "FT_RELEASE"
-		buildoptions "/MTd"
+		defines { "FT_RELEASE", "_DEBUG" }
+		runtime "Release"
 		symbols "on"
 		
 	filter "configurations:Dist"
 		defines "FT_DIST"
-		buildoptions "/MD"
+		runtime "Release"
 		symbols "on"

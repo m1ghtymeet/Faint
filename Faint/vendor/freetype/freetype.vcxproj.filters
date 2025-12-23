@@ -66,124 +66,124 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\autofit\autofit.c">
+    <ClCompile Include="freetype\src\autofit\autofit.c">
       <Filter>autofit</Filter>
     </ClCompile>
-    <ClCompile Include="src\base\ftbase.c">
+    <ClCompile Include="freetype\src\base\ftbase.c">
       <Filter>base</Filter>
     </ClCompile>
-    <ClCompile Include="src\base\ftbbox.c">
+    <ClCompile Include="freetype\src\base\ftbbox.c">
       <Filter>base</Filter>
     </ClCompile>
-    <ClCompile Include="src\base\ftbdf.c">
+    <ClCompile Include="freetype\src\base\ftbdf.c">
       <Filter>base</Filter>
     </ClCompile>
-    <ClCompile Include="src\base\ftbitmap.c">
+    <ClCompile Include="freetype\src\base\ftbitmap.c">
       <Filter>base</Filter>
     </ClCompile>
-    <ClCompile Include="src\base\ftcid.c">
+    <ClCompile Include="freetype\src\base\ftcid.c">
       <Filter>base</Filter>
     </ClCompile>
-    <ClCompile Include="src\base\ftdebug.c">
+    <ClCompile Include="freetype\src\base\ftdebug.c">
       <Filter>base</Filter>
     </ClCompile>
-    <ClCompile Include="src\base\ftfstype.c">
+    <ClCompile Include="freetype\src\base\ftfstype.c">
       <Filter>base</Filter>
     </ClCompile>
-    <ClCompile Include="src\base\ftgasp.c">
+    <ClCompile Include="freetype\src\base\ftgasp.c">
       <Filter>base</Filter>
     </ClCompile>
-    <ClCompile Include="src\base\ftglyph.c">
+    <ClCompile Include="freetype\src\base\ftglyph.c">
       <Filter>base</Filter>
     </ClCompile>
-    <ClCompile Include="src\base\ftgxval.c">
+    <ClCompile Include="freetype\src\base\ftgxval.c">
       <Filter>base</Filter>
     </ClCompile>
-    <ClCompile Include="src\base\ftinit.c">
+    <ClCompile Include="freetype\src\base\ftinit.c">
       <Filter>base</Filter>
     </ClCompile>
-    <ClCompile Include="src\base\ftmm.c">
+    <ClCompile Include="freetype\src\base\ftmm.c">
       <Filter>base</Filter>
     </ClCompile>
-    <ClCompile Include="src\base\ftotval.c">
+    <ClCompile Include="freetype\src\base\ftotval.c">
       <Filter>base</Filter>
     </ClCompile>
-    <ClCompile Include="src\base\ftpatent.c">
+    <ClCompile Include="freetype\src\base\ftpatent.c">
       <Filter>base</Filter>
     </ClCompile>
-    <ClCompile Include="src\base\ftpfr.c">
+    <ClCompile Include="freetype\src\base\ftpfr.c">
       <Filter>base</Filter>
     </ClCompile>
-    <ClCompile Include="src\base\ftstroke.c">
+    <ClCompile Include="freetype\src\base\ftstroke.c">
       <Filter>base</Filter>
     </ClCompile>
-    <ClCompile Include="src\base\ftsynth.c">
+    <ClCompile Include="freetype\src\base\ftsynth.c">
       <Filter>base</Filter>
     </ClCompile>
-    <ClCompile Include="src\base\ftsystem.c">
+    <ClCompile Include="freetype\src\base\ftsystem.c">
       <Filter>base</Filter>
     </ClCompile>
-    <ClCompile Include="src\base\fttype1.c">
+    <ClCompile Include="freetype\src\base\fttype1.c">
       <Filter>base</Filter>
     </ClCompile>
-    <ClCompile Include="src\base\ftwinfnt.c">
+    <ClCompile Include="freetype\src\base\ftwinfnt.c">
       <Filter>base</Filter>
     </ClCompile>
-    <ClCompile Include="src\bdf\bdf.c">
+    <ClCompile Include="freetype\src\bdf\bdf.c">
       <Filter>bdf</Filter>
     </ClCompile>
-    <ClCompile Include="src\cache\ftcache.c">
+    <ClCompile Include="freetype\src\cache\ftcache.c">
       <Filter>cache</Filter>
     </ClCompile>
-    <ClCompile Include="src\cff\cff.c">
+    <ClCompile Include="freetype\src\cff\cff.c">
       <Filter>cff</Filter>
     </ClCompile>
-    <ClCompile Include="src\cid\type1cid.c">
+    <ClCompile Include="freetype\src\cid\type1cid.c">
       <Filter>cid</Filter>
     </ClCompile>
-    <ClCompile Include="src\gzip\ftgzip.c">
+    <ClCompile Include="freetype\src\gzip\ftgzip.c">
       <Filter>gzip</Filter>
     </ClCompile>
-    <ClCompile Include="src\lzw\ftlzw.c">
+    <ClCompile Include="freetype\src\lzw\ftlzw.c">
       <Filter>lzw</Filter>
     </ClCompile>
-    <ClCompile Include="src\pcf\pcf.c">
+    <ClCompile Include="freetype\src\pcf\pcf.c">
       <Filter>pcf</Filter>
     </ClCompile>
-    <ClCompile Include="src\pfr\pfr.c">
+    <ClCompile Include="freetype\src\pfr\pfr.c">
       <Filter>pfr</Filter>
     </ClCompile>
-    <ClCompile Include="src\psaux\psaux.c">
+    <ClCompile Include="freetype\src\psaux\psaux.c">
       <Filter>psaux</Filter>
     </ClCompile>
-    <ClCompile Include="src\pshinter\pshinter.c">
+    <ClCompile Include="freetype\src\pshinter\pshinter.c">
       <Filter>pshinter</Filter>
     </ClCompile>
-    <ClCompile Include="src\psnames\psmodule.c">
+    <ClCompile Include="freetype\src\psnames\psmodule.c">
       <Filter>psnames</Filter>
     </ClCompile>
-    <ClCompile Include="src\raster\raster.c">
+    <ClCompile Include="freetype\src\raster\raster.c">
       <Filter>raster</Filter>
     </ClCompile>
-    <ClCompile Include="src\sdf\sdf.c">
+    <ClCompile Include="freetype\src\sdf\sdf.c">
       <Filter>sdf</Filter>
     </ClCompile>
-    <ClCompile Include="src\sfnt\sfnt.c">
+    <ClCompile Include="freetype\src\sfnt\sfnt.c">
       <Filter>sfnt</Filter>
     </ClCompile>
-    <ClCompile Include="src\smooth\smooth.c">
+    <ClCompile Include="freetype\src\smooth\smooth.c">
       <Filter>smooth</Filter>
     </ClCompile>
-    <ClCompile Include="src\truetype\truetype.c">
+    <ClCompile Include="freetype\src\truetype\truetype.c">
       <Filter>truetype</Filter>
     </ClCompile>
-    <ClCompile Include="src\type1\type1.c">
+    <ClCompile Include="freetype\src\type1\type1.c">
       <Filter>type1</Filter>
     </ClCompile>
-    <ClCompile Include="src\type42\type42.c">
+    <ClCompile Include="freetype\src\type42\type42.c">
       <Filter>type42</Filter>
     </ClCompile>
-    <ClCompile Include="src\winfonts\winfnt.c">
+    <ClCompile Include="freetype\src\winfonts\winfnt.c">
       <Filter>winfonts</Filter>
     </ClCompile>
   </ItemGroup>

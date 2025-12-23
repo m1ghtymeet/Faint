@@ -1,27 +1,22 @@
 #include "Engine.h"
-
-#include "Core/Audio.h"
+#include <Debug/Instrumentor.h>
 
 #include "Physics/Physics.h"
 
 #include "FileSystem/FileSystem.h"
-#include "Renderer/SceneRenderer.h"
-#include "Scripting/ScriptingEngineNet.h"
+//#include "Scripting/ScriptingEngineNet.h"
 #include "Scene/Scene.h"
 #include "Input/Input.h"
-
-#include "Threading/JobSystem.h"
-#include "Modules/Modules.h"
 
 #include <GLFW/glfw3.h>
 #include <imgui_impl_glfw.h>
 #include <imgui_impl_opengl3.h>
 
-namespace Faint {
+namespace Moon {
 
     Ref<Project> Engine::currentProject;
     Ref<Scene> Engine::currentScene;
-    Ref<Window> Engine::currentWindow;
+    //Ref<Window> Engine::currentWindow;
     std::string Engine::queuedScene = "";
 
     GameState Engine::gameState = GameState::Stopped;
@@ -33,120 +28,79 @@ namespace Faint {
     void Engine::Init() {
         //ScriptingEngineNet::Get().OnGameAssemblyLoaded().AddStatic(&Engine::OnScriptingEngineGameAssemblyLoaded);
 
-        AudioManager::Get().Initialize();
-        Physics::Init();
+        //Physics::Init();
 
         // Create a window
-        currentWindow = Window::Get();
-        SceneRenderer::Init();
+        //currentWindow = CreateRef<Window>(Settings::WindowSettings());
 
-        Input::Init();
         HZ_CORE_INFO("Engine Initialized!");
-
-        Modules::StartupModules();
     }
 
-    void Engine::Update(Time time) {
-        JobSystem::Get().Update();
+    void Engine::Update(float p_deltaTime) {
+        //JobSystem::Get().Update();
 
         if (Engine::IsPlayMode()) {
             if (!queuedScene.empty()) {
                 Ref<Scene> nextScene = CreateRef<Scene>();
                 if (FileSystem::FileExists(queuedScene)) {
                     const std::string& fileContent = FileSystem::ReadFile(queuedScene);
-                    //SceneSerializer serializer(nextScene);
-                    //serializer.Deserialize(queuedScene);
 
-                    GetCurrentScene()->OnExit();
+                    //GetCurrentScene()->OnExit();
 
-                    SetCurrentScene(nextScene);
+                    //SetCurrentScene(nextScene);
 
                     //PhysicsManager::Get().ReInit();
-                    GetCurrentScene()->OnInit();
+                    //GetCurrentScene()->OnInit();
 
                     queuedScene = "";
                 }
             }
         }
 
-        float scaledDeltatime = time * 1.0f;
+        float scaledDeltatime = p_deltaTime * 1.0f;
 
-        if (currentWindow->GetScene()) {
+        //if (GetCurrentScene()) {
 
-            currentWindow->Update(scaledDeltatime);
+            //GetCurrentScene()->Update(scaledDeltatime);
 
-            if (!Engine::IsPlayMode())
-                GetCurrentScene()->EditorUpdate(time);
+            //if (!Engine::IsPlayMode())
+            //    GetCurrentScene()->EditorUpdate(p_deltaTime);
 
-            fixedUpdateDifference += time;
+            fixedUpdateDifference += p_deltaTime;
 
             while (fixedUpdateDifference >= fixedUpdateRate) {
-                currentWindow->FixedUpdate(fixedUpdateRate);
                 fixedUpdateDifference -= fixedUpdateRate;
             }
 
-            Input::Update();
-            AudioManager::Get().AudioUpdate();
-        }
+        //}
     }
 
     void Engine::Close() {
 
     }
 
-    void Engine::EnterPlayMode() {
-        if (GetGameState() == GameState::Playing || GetGameState() == GameState::Loading) {
-            HZ_CORE_ERROR("Cannot enter play mode if is already in play mode or is loading.");
-            return;
-        }
-
-        SetGameState(GameState::Loading);
-
-        //PhysicsManager::Get().ReInit();
-
-        if (GetCurrentScene()->OnInit()) {
-            SetGameState(GameState::Playing);
-        }
-        else {
-            HZ_CORE_ERROR("Cannot enter play mode. Scene OnInit failed!");
-            GetCurrentScene()->OnExit();
-        }
-    }
-
-    void Engine::ExitPlayMode() {
-        // Don't trigger exit if already not in play mode
-        if (GetGameState() != GameState::Stopped) {
-            GetCurrentScene()->OnExit();
-            //Input::ShowCursor();
-            SetGameState(GameState::Stopped);
-        }
-    }
-
-    void Engine::Draw() {
-        HZ_PROFILE_FUNCTION();
-        ImGui_ImplOpenGL3_NewFrame();
-        ImGui_ImplGlfw_NewFrame();
-        ImGui::NewFrame();
-        Window::Get()->Draw();
-    }
-
     void Engine::EndDraw() {
-        Window::Get()->EndDraw();
+        if (ImGui::GetIO().ConfigFlags & ImGuiConfigFlags_ViewportsEnable) {
+            GLFWwindow* backup_current_context = glfwGetCurrentContext();
+            ImGui::UpdatePlatformWindows();
+            ImGui::RenderPlatformWindowsDefault();
+            glfwMakeContextCurrent(backup_current_context);
+        }
     }
 
     bool Engine::LoadProject(Ref<Project> project) {
         currentProject = project;
         /*if (!Engine::SetCurrentScene(currentProject->defaultScene))
             return false;*/
-        FileSystem::SetRootDirectory(FileSystem::GetParentPath(project->FullPath));
-        ScriptingEngineNet::Get().Uninitialize();
-        ScriptingEngineNet::Get().Initialize();
-        ScriptingEngineNet::Get().LoadProjectAssembly(project);
+        //FileSystem::SetRootDirectory(FileSystem::GetParentPath(project->FullPath));
+        //ScriptingEngineNet::Get().Uninitialize();
+        //ScriptingEngineNet::Get().Initialize();
+        //ScriptingEngineNet::Get().LoadProjectAssembly(project);
         return true;
     }
 
     bool Engine::SetCurrentScene(Ref<Scene> scene) {
-        currentWindow->SetScene(scene);
+        currentScene = scene;
         return true;
     }
 
@@ -163,17 +117,15 @@ namespace Faint {
     }
 
     Ref<Scene> Engine::GetCurrentScene() {
-        if (currentWindow)
-            return currentWindow->GetScene();
-        return nullptr;
+        return currentScene;
     }
 
-    Ref<Window> Engine::GetCurrentWindow() {
-        return currentWindow;
-    }
+    //Ref<Window> Engine::GetCurrentWindow() {
+    //    return currentWindow;
+    //}
 
     bool Engine::LoadScene(Ref<Scene> scene) {
-        currentWindow->SetScene(scene);
+       
         return true;
     }
 
@@ -193,9 +145,9 @@ namespace Faint {
         //subsystems.clear();
         //scriptedSubsystemMap.clear();
 
-        const Coral::ManagedAssembly& gameAssembly = ScriptingEngineNet::Get().GetGameAssembly();
+        //const Coral::ManagedAssembly& gameAssembly = ScriptingEngineNet::Get().GetGameAssembly();
 
-        const auto scriptTypeEngineSubsystem = gameAssembly.GetType("Faint.Net.EngineSubsystem");
+        //const auto scriptTypeEngineSubsystem = gameAssembly.GetType("Moon.Net.EngineSubsystem");
         
         //const auto& types = gameAssembly.GetTypes();
         //for (const auto& type : types) {

@@ -1,0 +1,255 @@
+#shader vertex
+#version 460
+layout (location = 0) in vec3 aPos;
+layout (location = 1) in vec2 aTexCoord;
+out vec2 TexCoord;
+void main() {
+	TexCoord = aTexCoord;
+	gl_Position = vec4(aPos, 1.0f);
+}
+#shader fragment
+#version 460 core
+out vec4 FragOut;
+
+in vec2 TexCoord;
+
+layout (binding = 0) uniform sampler2D albedoTexture;
+layout (binding = 1) uniform sampler2D normalTexture;
+layout (binding = 2) uniform sampler2D RMATexture; // R = Roughness, M = Metallic, A = AO
+layout (binding = 3) uniform sampler2D WorldPositionTexture;
+layout (binding = 4) uniform samplerCube ShadowMapTexture;
+
+uniform mat4 u_invView;
+uniform vec3 u_viewPos;
+
+layout(std430, binding = 2) buffer GlobalBuffer {
+	int lightCount;
+};
+
+struct Light {
+    int type;           // 0 = Point, 1 = Directional, 2 = Spot
+    float intensity;
+    float colorR;
+    float colorG;
+    float colorB;
+    float padding[3];
+    mat4 data;          // Light-specific data
+};
+
+struct PointLight {
+    float intensity;
+    vec3 color;
+    vec3 position;
+    float constant;
+    float linear;
+    float quadratic;
+};
+
+struct DirectionalLight {
+	float intensity;
+    vec3 color;
+	vec3 direction;
+};
+
+// SSBO binding
+readonly restrict layout(std430, binding = 1) buffer lightsBuffer {
+    Light lights[];
+};
+
+PointLight UnpackPointLight(Light light) {
+    PointLight pl;
+    pl.intensity = light.intensity;
+    pl.color = vec3(light.colorR, light.colorG, light.colorB);
+    pl.position = light.data[0].xyz;
+    pl.constant = light.data[0].w;
+    pl.linear = light.data[1].x;
+    pl.quadratic = light.data[1].y;
+    return pl;
+}
+
+DirectionalLight UnpackDirectionalLight(Light light) {
+    DirectionalLight dl;
+    dl.intensity = light.intensity;
+    dl.color = vec3(light.colorR, light.colorG, light.colorB);
+    dl.direction = light.data[0].xyz;
+    //dl.hasShadow = light.data[0].w > 0.5;
+    return dl;
+}
+
+const float PI = 3.14159265359;
+
+float DistributionGGX(vec3 N, vec3 H, float roughness) {
+    float a = roughness*roughness;
+    float a2 = a*a;
+    float NdotH = max(dot(N, H), 0.0);
+    float NdotH2 = NdotH*NdotH;
+    float nom   = a2;
+    float denom = (NdotH2 * (a2 - 1.0) + 1.0);
+    denom = PI * denom * denom;
+    return nom / denom;
+}
+
+float GeometrySchlickGGX(float NdotV, float roughness) {
+    float r = (roughness + 1.0);
+    //float r = 0.5 + 0.5 * roughness; // Disney remapping
+    float k = (r*r) / 8.0;
+    float nom   = NdotV;
+    float denom = NdotV * (1.0 - k) + k;
+    return nom / denom;
+}
+
+float GeometrySmith(vec3 N, vec3 V, vec3 L, float roughness) {
+    float NdotV = max(dot(N, V), 0.0);
+    float NdotL = max(dot(N, L), 0.0);
+    float ggx2 = GeometrySchlickGGX(NdotV, roughness);
+    float ggx1 = GeometrySchlickGGX(NdotL, roughness);
+    return ggx1 * ggx2;
+}
+
+vec3 FresnelSchlick(float cosTheta, vec3 F0) {
+    return F0 + (1.0 - F0) * pow(clamp(1.0 - cosTheta, 0.0, 1.0), 5.0);
+}
+
+vec3 microfacetBRDF(in vec3 L, in vec3 V, vec3 N, in vec3 baseColor, in float metallic, in float fresnelReflect, in float roughness) {
+    vec3 H = normalize(V + L);
+    float NoV = clamp(dot(N, V), 0.0, 1.0);
+    float NoL = clamp(dot(N, L), 0.0, 1.0);
+    float NoH = clamp(dot(N, H), 0.0, 1.0);
+    float VoH = clamp(dot(V, H), 0.0, 1.0);
+    vec3 F0 = vec3(0.04 * fresnelReflect); 
+    F0 = mix(F0, baseColor, metallic);
+    float NDF = DistributionGGX(N, H, roughness);   
+    float G   = GeometrySmith(N, V, L, roughness);      
+    vec3 F    = FresnelSchlick(max(dot(H, V), 0.0), F0);
+    vec3 numerator    = NDF * G * F; 
+    float denominator = 4.0 * max(dot(N, V), 0.0) * max(dot(N, L), 0.0) + 0.0001;
+    vec3 specular = numerator / denominator;
+    vec3 kS = F;
+    vec3 kD = vec3(1.0) - kS;
+    kD *= 1.0 - metallic;	  
+    float NdotL = max(dot(N, L), 0.0);        
+    return (kD * baseColor / PI + specular);
+}
+
+vec3 GetDirectLighting(vec3 lightPos, vec3 lightColor, float radius, float strength, vec3 Normal, vec3 WorldPos, vec3 baseColor, float roughness, float metallic, vec3 viewPos) {       
+    float fresnelReflect = 1.0;
+	vec3 viewDir = normalize(viewPos - WorldPos);
+	float lightRadiance = strength;
+	vec3 lightDir = normalize(lightPos - WorldPos);   
+	float lightAttenuation = smoothstep(radius, 0, length(lightPos - WorldPos));
+	float irradiance = max(dot(lightDir, Normal), 0.0) ;
+	irradiance *= lightAttenuation * lightRadiance;
+	vec3 brdf = microfacetBRDF(lightDir, viewDir, Normal, baseColor, metallic, fresnelReflect, roughness);
+    return brdf * irradiance * clamp(lightColor, 0, 1);
+}
+
+vec3 GetDirectionalLighting(vec3 lightDirection, vec3 lightColor, float intensity, vec3 Normal, vec3 WorldPos, vec3 baseColor, float roughness, float metallic, vec3 viewPos) {
+    float fresnelReflect = 1.0;
+    vec3 viewDir = normalize(viewPos - WorldPos);
+    
+    // Light direction should point FROM surface TO light
+    vec3 lightDir = -lightDirection;
+    
+    // Calculate irradiance (no attenuation for directional lights)
+    float irradiance = max(dot(lightDir, Normal), 0.0);
+    irradiance *= intensity;
+    
+    // Calculate BRDF
+    vec3 brdf = microfacetBRDF(lightDir, viewDir, Normal, baseColor, metallic, fresnelReflect, roughness);
+    
+    return brdf * irradiance * clamp(lightColor, 0, 1);
+}
+
+vec3 poissonDisk3D[16] = vec3[](
+   vec3(0.098, 0.971, -0.218), vec3(-0.956, -0.289, 0.036), 
+   vec3(-0.369, 0.874, -0.316), vec3(0.752, -0.619, 0.226),
+   vec3(-0.696, 0.631, 0.342), vec3(0.445, 0.845, -0.296),
+   vec3(-0.731, -0.661, -0.169), vec3(0.340, -0.883, -0.324),
+   vec3(0.813, 0.476, 0.334), vec3(-0.468, -0.727, 0.502),
+   vec3(0.186, -0.959, 0.214), vec3(-0.128, 0.957, 0.261),
+   vec3(0.681, -0.663, -0.310), vec3(-0.845, 0.523, -0.115),
+   vec3(0.738, 0.255, -0.625), vec3(-0.309, -0.128, -0.942)
+);
+
+float ShadowCalculation(vec3 fragPos, vec3 lightPos, vec3 normal, vec3 lightDir, float farPlane, vec3 viewPos) {
+    vec3 fragToLight = fragPos - lightPos;
+    float currentDepth = length(fragToLight);
+    
+    vec3 L = normalize(fragToLight);
+    float bias = max(0.05 * (1.0 - dot(normal, L)), 0.015);
+    
+    float viewDistance = length(viewPos - fragPos);
+    float filterRadius = (0.005 + 1.0 * 0.01) * (1.0 + viewDistance / farPlane);
+    
+    float shadow = 0.0;
+    int samples = 1;
+    
+    for(int i = 0; i < samples; ++i) {
+        vec3 sampleDir = normalize(fragToLight + poissonDisk3D[i] * filterRadius);
+        float closestDepth = texture(ShadowMapTexture, sampleDir).r;
+        closestDepth *= farPlane;
+        
+        shadow += (currentDepth - bias > closestDepth) ? 1.0 : 0.0;
+    }
+    //shadow /= float(samples);
+    
+    float shadowFade = 1.0 - smoothstep(farPlane * 0.6, farPlane, currentDepth);
+    return shadow * shadowFade;
+}
+
+void main() {
+	vec4 albedo = texture(albedoTexture, TexCoord);
+	//albedo.rgb = pow(albedo.rgb, vec3(2.2));
+	vec3 N = texture(normalTexture, TexCoord).rgb;
+	vec3 RMA = texture(RMATexture, TexCoord).rgb;
+	vec4 WorldPos = texture(WorldPositionTexture, TexCoord);
+	
+	float roughness = RMA.r;
+	float metallic = RMA.g;
+	float ao = RMA.b;
+	
+	vec3 V = normalize(u_viewPos - WorldPos.rgb);
+   
+    vec3 lighting = vec3(0.0);
+    for (int i = 0; i < lightCount; ++i) {
+        Light light = lights[i];
+		if (light.type == 0) { // Point Light
+			PointLight pl = UnpackPointLight(light);
+			vec3 lightPos = pl.position;
+			vec3 lightColor = pl.color;
+			float lightRadius = 16;
+			float lightStrength = pl.intensity;
+			vec3 lightDir = normalize(lightPos - WorldPos.rgb);
+			float shadow = ShadowCalculation(WorldPos.xyz, lightPos, N, lightDir, lightRadius, V);
+			lighting += GetDirectLighting(
+				lightPos,
+				lightColor,
+				lightRadius,
+				lightStrength,
+				N,
+				WorldPos.xyz,
+				albedo.rgb,
+				roughness,
+				metallic, V) /* (1.0 - shadow)*/;
+		}
+		else if (light.type == 1) { // Directional Light
+			DirectionalLight dl = UnpackDirectionalLight(light);
+			lighting += GetDirectionalLighting(
+				dl.direction,
+				dl.color,
+				dl.intensity,
+				N,
+				WorldPos.xyz,
+				albedo.rgb,
+				roughness,
+				metallic,
+				u_viewPos
+			);
+		}
+		// Add spot light handling here if needed
+    }
+	//lighting = pow(lighting, vec3(1.0 / 2.2));
+	//lighting = albedo.rgb;
+	
+	FragOut = vec4(lighting, 1);
+}

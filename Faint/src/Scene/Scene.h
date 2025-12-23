@@ -1,42 +1,29 @@
 #pragma once
 
-#include "Core/Time.h"
-#include "Common/UUID.h"
-#include "Renderer/EditorCamera.h"
-
-#include "Scene/Systems/PhysicsSystem.h"
-#include "Scene/Systems/TransformSystem.h"
-#include "Scene/Systems/ScriptingSystem.h"
 #include "Entity.h"
 
 #include "Components/CModelRenderer.h"
+#include "Components/CSkinnedModelRenderer.h"
 #include "Components/CCamera.h"
+#include "Components/CLight.h"
+#include "Components/CAudio.h"
+#include "Components/CText2D.h"
+#include "Components/CWidget.h"
 
-#include <entt.hpp>
-
-namespace Faint {
-	class PhysicsSystem;
-
-	enum SelectedType {
-		NONE = 0,
-		_CAMERA,
-		_LIGHT,
-		OTHER
-	};
-
+namespace Moon {
 	/**
 	* The scene is a set of gameobjects
 	*/
 	class Scene : public ISerializable {
-	private:
-
-		std::vector<Ref<System>> m_systems;
 	public:
-		Ref<ScriptingSystem> m_ScriptingSystem;
-		
 		struct FastAccessComponents {
 			std::vector<MeshRendererComponent*> modelRenderers;
+			std::vector<SkinnedMeshRendererComp*> skinnedModelRenderers;
 			std::vector<CameraComponent*> cameras;
+			std::vector<LightComponent*> lights;
+			std::vector<AudioComponent*> audios;
+			std::vector<Text2DComponent*> texts;
+			std::vector<UI::WidgetComponent*> widgets;
 		};
 
 		/**
@@ -49,21 +36,27 @@ namespace Faint {
 		*/
 		~Scene();
 
+		void AddDefaultCamera();
+
+		void AddDefaultLights();
+
 		/**
 		* Play the scene
 		*/
 		void Play();
 
+		bool IsPlaying() const;
+
 		/**
 		* Update every gameobjects
 		* @param time
 		*/
-		void Update(Time time);
+		void Update(float p_deltaTime);
 
 		/**
 		* Update every gameobjects 60 frames per seconds
 		*/
-		void FixedUpdate(Time time);
+		void FixedUpdate(float p_deltaTime);
 
 		/**
 		* @param name
@@ -86,7 +79,9 @@ namespace Faint {
 		* Destroy and gameobject and return true on success
 		* @param p_entity
 		*/
-		void DestroyEntity(Entity& p_entity);
+		bool DestroyEntity(Entity& p_entity);
+
+		void CollectGarbages();
 
 		/**
 		* Return the first gameobject identified by the given name, or nullptr on fail
@@ -98,7 +93,7 @@ namespace Faint {
 		* Return the first gameobject identified by the given tag, or nullptr on fail
 		* @param p_tag
 		*/
-		Entity* GetEntityByTag(const std::string& p_tag) const;
+		Moon::Entity* GetEntityByTag(const std::string& p_tag) const;
 
 		/**
 		* Return the gameobject identified by the given ID (Returns nullptr on fail)
@@ -106,41 +101,41 @@ namespace Faint {
 		*/
 		Entity* GetEntityByID(int64_t p_id) const;
 
-		std::string FullPath;
+		/**
+		* 
+		*/
+		CameraComponent* FindMainCamera() const;
 
-		bool OnInit();
-		void OnExit();
-		void EditorUpdate(Time time);
+		/**
+		* Callback method called everytime a component is added on an entity of the scene
+		* @param p_component
+		*/
+		void OnComponentAdded(AComponent& p_component);
 
-		void Draw();
-		void Draw(const Matrix4& projection, const Matrix4& view);
-
-		static Ref<Scene> Save();
-
-		bool EntityExists(const std::string& name);
+		/**
+		* Callback method called everytime a component is removed on an entity of the scene
+		* @param p_component
+		*/
+		void OnComponentRemoved(AComponent& p_component);
 
 		/**
 		* Return a refrence on the gameobject map
 		*/
-		std::vector<Entity*>& GetAllEntities();
-
-		void OnViewportResize(float width, float height);
-
-		Entity DuplicateEntity(Entity entity);
-
-		Ref<Camera> GetCurrentCamera();
-
-		entt::registry& Reg() { return _registry; }
-
-		Entity* GetPrimaryCameraEntity();
-
-		Ref<EditorCamera> m_EditorCamera;
-		SelectedType selectedType;
+		std::vector<std::unique_ptr<Entity>>& GetAllEntities();
+		const std::vector<std::unique_ptr<Entity>>& GetAllEntities() const;
 
 		/**
-		* Return the fast access components data structure 
+		* Return the fast access components data structure
 		*/
 		const FastAccessComponents& GetFastAccessComponents() const;
+
+		Moon::Entity& InstantiatePrefab(const std::string& prefabPath);
+		Moon::Entity& InstantiatePrefabChild(Moon::Entity& parent, const json& childJson);
+
+		/* =================== */
+		std::string FullPath;
+
+		bool EntityExists(const std::string& name);
 
 		/**
 		* Serialize the scene
@@ -155,23 +150,10 @@ namespace Faint {
 	private:
 		int64_t m_availableID = 1;
 		bool m_isPlaying = false;
-		std::vector<Entity*> m_entities;
-
-		FastAccessComponents m_fastAccessComponents;
-
-	private:
-		template<typename T>
-		void OnComponentAdded(Entity entity, T& component);
-	private:
-		entt::registry _registry;
-		float _viewportWidth = 1280, _viewportHeight = 720;
-
-		float fixedUpdateRate = 1.0f / 90.0f;
-		float fixedUpdateDifference = 0;
-
+		std::vector<std::unique_ptr<Entity>> m_entities;
 		std::unordered_map<uint32_t, Entity*> m_EntityIDMap;
 		std::unordered_map<std::string, Entity*> m_EntityNameMap;
 
-		friend Entity;
+		FastAccessComponents m_fastAccessComponents;
 	};
 }

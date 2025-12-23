@@ -1,10 +1,8 @@
-#include "hzpch.h"
 #include "Math.h"
 
-#include "Common/Types.h"
 #include <glm/gtx/matrix_decompose.hpp>
 
-namespace Faint::Math {
+namespace Moon::Math {
 
     bool DecomposeTransform(const glm::mat4& transform, glm::vec3& translation, glm::quat& rotation, glm::vec3& scale) {
         
@@ -58,15 +56,5 @@ namespace Faint::Math {
         }
 
         return true;
-    }
-
-    Quat QuatFromEuler(float x, float y, float z)
-    {
-        Quat pitchQuat = glm::angleAxis(Rad(x), Vec3(1.0f, 0.0f, 0.0f));
-        Quat yawQuat = glm::angleAxis(Rad(y), Vec3(0.0f, 1.0f, 0.0f));
-        Quat rollQuat = glm::angleAxis(Rad(z), Vec3(0.0f, 0.0f, -1.0f));
-        Quat orientation = yawQuat * pitchQuat * rollQuat;
-
-        return glm::normalize(orientation);
     }
 }

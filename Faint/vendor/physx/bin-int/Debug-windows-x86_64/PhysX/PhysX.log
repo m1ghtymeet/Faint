@@ -1,5 +1,4 @@
-﻿cl : command line  warning D9025: overriding '/MTd' with '/MT'
-  phys.cpp
+﻿  phys.cpp
 PhysXCommon_64.lib(PhysXCommon_64.dll) : warning LNK4006: __NULL_IMPORT_DESCRIPTOR already defined in PhysX_64.lib(PhysX_64.dll); second definition ignored
 PhysXCooking_64.lib(PhysXCooking_64.dll) : warning LNK4006: "__declspec(dllimport) public: void __cdecl physx::Gu::AABBTreeBounds::takeOwnership(void)" (__imp_?takeOwnership@AABBTreeBounds@Gu@physx@@QEAAXXZ) already defined in PhysXCommon_64.lib(PhysXCommon_64.dll); second definition ignored
 PhysXCooking_64.lib(PhysXCooking_64.dll) : warning LNK4006: "public: void __cdecl physx::Gu::AABBTreeBounds::takeOwnership(void)" (?takeOwnership@AABBTreeBounds@Gu@physx@@QEAAXXZ) already defined in PhysXCommon_64.lib(PhysXCommon_64.dll); second definition ignored
@@ -91,4 +90,4 @@ PhysXFoundation_64.lib(PhysXFoundation_64.dll) : warning LNK4006: "__declspec(dl
 PhysXFoundation_64.lib(PhysXFoundation_64.dll) : warning LNK4006: "public: __cdecl physx::PxFoundation::PxFoundation(class physx::PxFoundation const &)" (??0PxFoundation@physx@@QEAA@AEBV01@@Z) already defined in PhysX_64.lib(PhysX_64.dll); second definition ignored
 PhysXFoundation_64.lib(PhysXFoundation_64.dll) : warning LNK4006: __NULL_IMPORT_DESCRIPTOR already defined in PhysX_64.lib(PhysX_64.dll); second definition ignored
 PVDRuntime_64.lib(PVDRuntime_64.dll) : warning LNK4006: __NULL_IMPORT_DESCRIPTOR already defined in PhysX_64.lib(PhysX_64.dll); second definition ignored
-  PhysX.vcxproj -> D:\C++ Projects\Faint\Faint\vendor\PhysX\bin\Debug-windows-x86_64\PhysX\PhysX.lib
+  PhysX.vcxproj -> D:\C++ Projects\Moon\Faint\vendor\PhysX\bin\Debug-windows-x86_64\PhysX\PhysX.lib

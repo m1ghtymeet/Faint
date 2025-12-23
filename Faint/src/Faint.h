@@ -1,14 +1,10 @@
 #pragma once
 
-// For use by Faint applications
+// For use by Moon applications
 #include "Core/Base.h"
 #include "Core/Time.h"
 #include "Core/String.h"
 #include "Core/OS.h"
-#include "Common/Types.h"
-
-#include "Core/Application.h"
-#include "Core/Layer.h"
 
 #include "Debug/Log.h"
 
@@ -26,14 +22,7 @@
 
 /* ------- Asset/Resource ------- */
 #include "AssetManagment/AssetManager.h"
-#include "AssetManagment/FontAwesome5.h"
 
 /* ---------- Renderer ---------- */
-#include "Renderer/Renderer.h"
 
 #include "Renderer/Shader.h"
-#include "Renderer/Types/VertexArray.h"
-#include "Renderer/Types/Buffer.h"
-#include "Renderer/Types/Texture.h"
-#include "Renderer/Types/Texture3D.h"
-#include "Renderer/OpenGL/Types/GL_Framebuffer.h"

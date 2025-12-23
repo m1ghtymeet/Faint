@@ -1,130 +1,181 @@
 #pragma once
-#include "Core/Base.h"
-#include "Math/Math.h"
 
-#include "Renderer/Shader.h"
+#include <AssetManagment/Serializable.h>
+#include <Renderer/Shader.h>
+#include <Types/Renderer/Texture.h>
 
-#include "Renderer/Types/Texture.h"
-#include "FileSystem/FileSystem.h"
-#include "AssetManagment/Serializable.h"
-#include "AssetManagment/Resource.h"
+#include <variant>
+#include <mutex>
+#include <memory>
+#include <atomic>
+#include <shared_mutex>
+#include <unordered_map>
+#include <optional>
 
-namespace Faint {
-	struct MaterialData {
-		int hasAlbedo;
-		float padding0;
-		float padding1;
-		float padding2;
-		glm::vec3 albedoColor;
-		int hasNormal;
-		int hasMetalness;
-		int hasRoughness;
+namespace Moon::Rendering {
+
+	// Material property types with extended support
+	using MaterialPropertyType = std::variant<
+		std::monostate,
+		bool,
+		int,
+		float,
+		glm::vec2,
+		glm::vec3,
+		glm::vec4,
+		glm::mat3,
+		glm::mat4,
+		Assets::Texture*
+	>;
+
+	struct MaterialProperty {
+		MaterialPropertyType value;
+		bool singleUse = false;
+		bool isDirty = true;
+
+		MaterialProperty() = default;
+		MaterialProperty(const MaterialPropertyType& v, bool single = false)
+			: value(v), singleUse(single), isDirty(true) { }
 	};
 
-	class Material : ISerializable, public Resource {
-	private:
-		std::string m_Name;
+	enum class MaterialType {
+		STANDARD,
+		PBR,
+		UNLIT,
+		CUSTOM
+	};
+
+	enum class BlendMode {
+		_OPAQUE,
+		MASKED,
+		_TRANSLUCENT,
+		ADDITIVE,
+		MODULATE
+	};
+
+	struct MaterialGPUCache {
+		std::vector<float> uniformBuffer;
+		std::unordered_map<std::string, size_t> uniformOffsets;
+		bool needsUpdate = true;
+
+		void Clear() {
+			uniformBuffer.clear();
+			uniformOffsets.clear();
+			needsUpdate = true;
+		}
+	};
+
+	/**
+	* A material is a combination of a shader and some settings
+	*/
+	class Material : public ISerializable {
 	public:
-		int id;
+		using PropertyMap = std::map<std::string, MaterialProperty>;
 
-		Ref<Texture> m_Albedo;
-		Ref<Texture> m_AO;
-		Ref<Texture> m_Metalness;
-		Ref<Texture> m_Roughness;
-		Ref<Texture> m_Normal;
-
-		MaterialData data;
-
-		static Ref<Texture> m_DefaultAlbedo;
-		static Ref<Texture> m_DefaultAO;
-		static Ref<Texture> m_DefaultMetalness;
-		static Ref<Texture> m_DefaultRoughness;
-		static Ref<Texture> m_DefaultNormal;
-		static Ref<Texture> m_DefaultDisplacement;
-
-		Material();
-		Material(const std::string albedo);
-		Material(Ref<Texture> texture) { m_Albedo = texture; }
-		Material(const Vec3 albedoColor);
+		Material(std::shared_ptr<Moon::Shader> p_shader = nullptr);
+		Material(const Material& p_other);
+		Material& operator=(const Material& other);
+		Material(Material&& other) noexcept;
+		Material& operator=(Material&& other) noexcept;
 		~Material() = default;
 
-		void Bind(Shader* shader);
+		// Shader Managment
+		void SetShader(std::shared_ptr<Moon::Shader> p_shader);
+		std::shared_ptr<Moon::Shader> GetShader() const;
+		bool IsValid() const;
 
-		void SetName(const std::string name);
-		std::string GetName();
+		// Binding & Rendering
+		void Bind(Rendering::Texture* p_emptyTexture2D = nullptr);
+		void Unbind() const;
+		void BindTextures();
+		void BindUniforms();
 
-		bool HasAlbedo() { return m_Albedo != nullptr; }
-		void SetAlbedo(const std::string path) { m_Albedo = CreateRef<Texture>(path); }
-		void SetAlbedo(Ref<Texture> texture) { m_Albedo = texture; }
+		// Property Managment
+		void SetProperty(const std::string p_name, const MaterialPropertyType& p_value, bool p_singleUse = false);
+		void RemoveProperty(const std::string& name);
+		std::optional<MaterialProperty> GetProperty(const std::string p_key) const;
+		PropertyMap& GetProperties();
 
-		bool HasNormal() { return m_Normal != nullptr; }
-		void SetNormal(const std::string path) { m_Normal = CreateRef<Texture>(path); }
-		void SetNormal(Ref<Texture> texture) { m_Normal = texture; }
+		// Material State
+		void SetBlendMode(BlendMode mode);
+		BlendMode GetBlendMode() const;
 
-		bool HasMetalness() { return m_Metalness != nullptr; }
-		void SetMetalness(const std::string path) { m_Metalness = CreateRef<Texture>(path); }
-		void SetMetalness(Ref<Texture> texture) { m_Metalness = texture; }
+		void SetBlendable(bool p_blended);
+		bool IsBlendable() const;
 
-		bool HasRoughness() { return m_Roughness != nullptr; }
-		void SetRoughness(const std::string path) { m_Roughness = CreateRef<Texture>(path); }
-		void SetRoughness(Ref<Texture> texture) { m_Roughness = texture; }
+		void SetBackfaceCulling(bool p_backface);
+		bool HasBackfaceCulling() const;
 
-		json Serialize() override {
-			BEGIN_SERIALIZE();
-			j["Path"] = Path;
-			j["UUID"] = static_cast<uint64_t>(id);
-			j["HasAlbedo"] = this->HasAlbedo();
-			if (HasAlbedo()) {
-				j["Albedo"] = this->m_Albedo->Serialize();
-				//Vec3 Color = Vec3();
-				//SERIALIZE_VEC3(Color);
-			}
+		void SetFrontfaceCulling(bool p_frontface);
 
-			j["HasNormal"] = this->HasNormal();
-			if (HasNormal())
-				j["Normal"] = this->m_Normal->Serialize();
+		void SetDepthTest(bool p_depthTest);
+		bool HasDepthTest() const;
 
-			j["HasMetalness"] = this->HasMetalness();
-			if (HasMetalness()) {
-				j["Metalness"] = m_Metalness->Serialize();
-				j["Metalness"]["Value"] = 0;
-			}
+		void SetDepthWriting(bool p_depthWrite);
+		bool HasDepthWriting() const;
 
-			j["HasRoughness"] = this->HasRoughness();
-			if (HasRoughness()) {
-				j["Roughness"] = m_Roughness->Serialize();
-				j["Roughness"]["Value"] = 0;
-			}
+		void SetColorWriting(bool p_colorWrite);
+		bool HasColorWriting() const;
 
-			END_SERIALIZE();
-		}
+		// Advanced Features
+		//void SetRenderQueue(int queue);
+		//int GetRenderQueue() const;
 
-		void Deserialize(const json& j) override {
+		// Texture Managment
+		void SetTexture(const std::string& name, const std::string& filepath);
+		//void SetTexture(const std::string& name, Assets::Texture* texture);
+		//Assets::Texture* GetTexture(const std::string& name) const;
 
-			if (j.contains("Albedo")) {
-				const auto& texturePath = j["Albedo"]["Path"];
-				const std::string absolutePath = FileSystem::RelativeToAbsolute(texturePath);
-				Ref<Texture> albedoTexture = CreateRef<Texture>(absolutePath);
-				SetAlbedo(albedoTexture);
-			}
-			if (j.contains("Normal")) {
-				const auto& texturePath = j["Normal"]["Path"];
-				const std::string absolutePath = FileSystem::RelativeToAbsolute(texturePath);
-				Ref<Texture> texture = CreateRef<Texture>(absolutePath);
-				SetNormal(texture);
-			}
-			if (j.contains("Roughness")) {
-				const auto& texturePath = j["Roughness"]["Path"];
-				const std::string absolutePath = FileSystem::RelativeToAbsolute(texturePath);
-				Ref<Texture> roughnessTexture = CreateRef<Texture>(absolutePath);
-				SetRoughness(roughnessTexture);
-			}
-			if (j.contains("Metalness")) {
-				const auto& texturePath = j["Metalness"]["Path"];
-				const std::string absolutePath = FileSystem::RelativeToAbsolute(texturePath);
-				Ref<Texture> roughnessTexture = CreateRef<Texture>(absolutePath);
-				SetMetalness(roughnessTexture);
-			}
-		}
+		void MakeDirty();
+		void MakeClean();
+		bool IsDirty() const;
+
+		//std::string GetDebugInfo() const;
+
+		virtual json Serialize() override;
+		virtual void Deserialize(const json& j) override;
+
+		std::string path;
+		MaterialType type;
+		std::unordered_map<std::string, uint32_t> m_systemTextures;
+
+	private:
+		void CopyFrom(const Material& other);
+		void UpdateTextureSlotCache();
+		void ApplyBlendMode();
+
+		void UpdateCache();
+
+	private:
+		std::shared_ptr<Moon::Shader> m_shader;
+		PropertyMap m_properties;
+		mutable std::shared_mutex m_propertiesMutex;
+
+		MaterialGPUCache m_gpuCache;
+		std::unordered_map<std::string, int> m_textureSlotCache;
+		std::atomic<bool> m_isDirty{ true };
+
+		// Thread-Safe Property Access
+		template<typename Func>
+		auto AccessProperties(Func&& func) const -> decltype(func(m_properties));
+
+		template<typename Func>
+		void ModifyProperties(Func&& func);
+
+		BlendMode m_blendMode = BlendMode::_OPAQUE;
+		bool m_blendable = false;
+		bool m_backfaceCulling = true;
+		bool m_frontfaceCulling = false;
+		bool m_depthTest = true;
+		bool m_depthWriting = true;
+		bool m_colorWriting = true;
+		bool m_castShadows = true;
+		bool m_receiveShadows = true;
+
+		bool m_instancingEnabled = false;
+		int m_maxInstances = 1;
+		int m_renderQueue = 2000;
 	};
 }
+
+#include "Material.inl"

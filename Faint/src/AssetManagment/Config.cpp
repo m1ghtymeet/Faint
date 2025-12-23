@@ -1,6 +1,6 @@
 #include "Config.h"
 
-namespace Faint::Config {
+namespace Moon::Config {
 
 	std::string currentPath;
 

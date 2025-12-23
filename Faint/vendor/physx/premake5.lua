@@ -3,7 +3,6 @@ project "PhysX"
 	language "C++"
 	staticruntime "On"
 	warnings 'Off'
-	optimize 'Speed'
 	
 	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
 	objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
@@ -18,29 +17,39 @@ project "PhysX"
 		"include"
 	}
 	
-	links {
-		"lib/%{cfg.buildcfg}/PhysX_64",
-		"lib/%{cfg.buildcfg}/PhysXCharacterKinematic_static_64",
-		"lib/%{cfg.buildcfg}/PhysXCommon_64",
-		"lib/%{cfg.buildcfg}/PhysXCooking_64",
-		"lib/%{cfg.buildcfg}/PhysXExtensions_static_64",
-		"lib/%{cfg.buildcfg}/PhysXFoundation_64",
-		"lib/%{cfg.buildcfg}/PhysXPvdSDK_static_64",
-		"lib/%{cfg.buildcfg}/PhysXTask_static_64",
-		"lib/%{cfg.buildcfg}/PVDRuntime_64",
-	}
-	
 	filter "system:windows"
 		systemversion "latest"
 		
 	filter "configurations:Debug"
-		buildoptions "/MT"
 		cppdialect "C++17"
 		runtime "Debug"
 		symbols "on"
+		
+		links {
+		"lib/Debug/PhysX_64",
+		"lib/Debug/PhysXCharacterKinematic_static_64",
+		"lib/Debug/PhysXCommon_64",
+		"lib/Debug/PhysXCooking_64",
+		"lib/Debug/PhysXExtensions_static_64",
+		"lib/Debug/PhysXFoundation_64",
+		"lib/Debug/PhysXPvdSDK_static_64",
+		"lib/Debug/PhysXTask_static_64",
+		"lib/Debug/PVDRuntime_64",
+		}
 
 	filter "configurations:Release"
-		buildoptions "/MT"
 		cppdialect "C++17"
 		runtime "Release"
 		optimize "on"
+		
+		links {
+		"lib/Release/PhysX_64",
+		"lib/Release/PhysXCharacterKinematic_static_64",
+		"lib/Release/PhysXCommon_64",
+		"lib/Release/PhysXCooking_64",
+		"lib/Release/PhysXExtensions_static_64",
+		"lib/Release/PhysXFoundation_64",
+		"lib/Release/PhysXPvdSDK_static_64",
+		"lib/Release/PhysXTask_static_64",
+		"lib/Release/PVDRuntime_64",
+		}

@@ -1,25 +1,19 @@
 #pragma once
-#include <sol/sol.hpp>
 
-#include "Scene/Entity.h"
-#include "Engine.h"
+#define FT_LUASCRIPTING 1
 
-#include "Input/Input.h"
+#ifdef FT_LUASCRIPTING
+#include "Lua/LuaScriptEngine.h"
+#include "Lua/LuaScript.h"
+#endif
 
-namespace Faint {
-	class ScriptEngine {
-	public:
-		static void Init();
-		static void Shutdown();
+namespace Moon::Scripting {
 
-		static sol::state& GetLuaState() { return *luaState; }
-
-	private:
-		static std::unique_ptr<sol::state> luaState;
-
-		static void BindCoreTypes();
-		static void BindInput();
-		static void BindEntity();
-		static void BindComponents();
-	};
+#ifdef FT_LUASCRIPTING
+	using Script = Moon::Scripting::LuaScript;
+	using ScriptEngine = Moon::Scripting::LuaScriptEngine;
+#elif FT_CSHARPSCRIPTING
+	using Script;
+	using ScriptEngine;
+#endif
 }

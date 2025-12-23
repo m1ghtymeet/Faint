@@ -1,0 +1,30 @@
+#shader vertex
+#version 450 core
+layout (location = 0) in vec3 aPos;
+layout (location = 1) in vec2 aTexCoord;
+out vec2 TexCoord;
+void main() {
+    TexCoord = aTexCoord;
+    gl_Position = vec4(aPos.xy, 0.0, 1.0);
+}
+
+#shader fragment
+#version 450 core
+in vec2 TexCoord;
+out float FragOut;
+uniform sampler2D ssaoInput;
+uniform bool horizontal;
+
+void main() {
+    float result = 0.0;
+    float weights[5] = float[](0.227027, 0.316216, 0.070270, 0.070270, 0.316216);
+    vec2 tex_offset = 1.0 / textureSize(ssaoInput, 0); // pixel size
+
+    for (int i = -2; i <= 2; i++) {
+        vec2 offset = horizontal ? vec2(tex_offset.x * i, 0.0)
+                                 : vec2(0.0, tex_offset.y * i);
+        result += texture(ssaoInput, TexCoord + offset).r * weights[abs(i)];
+    }
+
+    FragOut = result;
+}

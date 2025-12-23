@@ -3,7 +3,7 @@
 #include <algorithm>
 #include "Core/Window.h"
 
-namespace Faint {
+namespace Moon {
 
 	void Camera::Update() {
 		m_inverseViewMatrix = glm::translate(glm::mat4(1), m_position) * glm::mat4_cast(m_rotationQ);
@@ -46,7 +46,7 @@ namespace Faint {
 		m_viewMatrix = view;
 	}
 
-	const glm::mat4& Faint::Camera::GetProjectionMatrix() const {
+	const glm::mat4& Moon::Camera::GetProjectionMatrix() const {
 		return m_projectionMatrix;
 	}
 
